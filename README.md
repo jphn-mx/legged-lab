@@ -121,6 +121,28 @@ python scripts/rsl_rl/train.py --task Lab-Locomotion-Velocity-Flat-G1-v0 --num_e
 python scripts/rsl_rl/play.py --task Lab-Locomotion-Amp-A1-v0
 ```
 
+### Whole-Body Tracking
+
+```bash
+cd whole_body_tracking
+
+# Convert motion CSV to npz format (for training)
+python scripts/csv_to_npz.py --input_file LAFAN/dance1_subject2.csv --input_fps 30 \
+    --frame_range 122 722 --output_file ./scripts/motions/dance1.npz --output_fps 50
+
+# Train whole-body tracking policy (A1)
+python scripts/rsl_rl/train.py --task Tracking-Flat-A1-v0 --num_envs 4096
+
+# Train without state estimation
+python scripts/rsl_rl/train.py --task Tracking-Flat-A1-Wo-State-Estimation-v0 --num_envs 4096
+
+# Play/evaluate trained tracking policy
+python scripts/rsl_rl/play.py --task Tracking-Flat-A1-v0
+
+# Replay motion npz file for visualization
+python scripts/replay_npz.py
+```
+
 ### Motion Retargeting (GMR)
 
 ```bash
