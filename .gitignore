@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.pytest_cache/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs, outputs, training artifacts
+**/logs/
+**/outputs/
+**/runs/
+**/recordings/
+**/wandb/
+**/.neptune/
+
+# Large data - exclude bulk motion data (keep ACCAD_a1_gmr as example)
+GMR/motion_data/ACCAD/
+GMR/motion_data/lafan1/
+GMR/motion_data/lafan1.zip
+GMR/motion_data/smplx/
+
+# Large assets - exclude all except a1_legs_v1 (example)
+GMR/assets/agibot_a2/
+GMR/assets/berkeley_humanoid_lite/
+GMR/assets/body_models/
+GMR/assets/booster_k1/
+GMR/assets/booster_t1/
+GMR/assets/booster_t1_29dof/
+GMR/assets/engineai_pm01/
+GMR/assets/fourier_gr3v2_1_1/
+GMR/assets/fourier_n1/
+GMR/assets/galaxea_r1pro/
+GMR/assets/hard_motions/
+GMR/assets/hightorque_hi/
+GMR/assets/kuavo_s45/
+GMR/assets/openloong/
+GMR/assets/pal_talos/
+GMR/assets/pnd_adam_lite/
+GMR/assets/stanford_toddy/
+GMR/assets/tienkung/
+GMR/assets/unitree_g1/
+GMR/assets/unitree_h1/
+GMR/assets/unitree_h1_2/
+GMR/assets/xsens_bvh_test/
+
+# GMR output
+GMR/output/
+
+# Model weights (keep one example)
+human/policy/policy_0508_good.onnx
+human/policy/policy_2026-05-09_15-14-41good.onnx
+human/policy/policy_3000.onnx
+human/policy/policy_him_0409_1_p10d01.onnx
+human/policy/policy_torch(1).pt
+human/policy/policy_torch.pt
+human/policy/policy_torch_5kg.pt
+
+# Zip archives
+human.zip
+
+# MuJoCo logs
+MUJOCO_LOG.TXT
+**/MUJOCO_LOG.TXT
+
+# Temp
+*.tmp
+**/temp/
+**/tmp/
+
+# Isaac Sim
+_isaac_sim*
+_repo
+_build
+.lastformat
+
+# Omniverse
+**/*.dmp
+**/.thumbs
+
+# Codex
+.codex/env.local.sh
+
+# Nested .git dirs (submodules handled separately)
+GMR/.git/
+whole_body_tracking/.git/
+legged_lab/.git/

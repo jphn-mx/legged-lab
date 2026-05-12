@@ -1,0 +1,36 @@
+policy_path: "policy/policy.onnx"
+model_type: "onnx"
+xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+simulation_duration: 600.0
+simulation_dt: 0.001
+control_decimation: 20
+kps: [30, 30, 30, 30, 30, 30,
+      30, 30, 30, 30, 30, 30,]
+kds: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
+      0.3, 0.3, 0.3, 0.3, 0.3, 0.3,]
+
+default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+
+action_scale: 0.25
+num_actions: 12
+num_obs: 48
+num_history: 5
+
+cmd_init: [0, 0, 0.]
+cmd_scale: [1.0, 1.0, 1.0]
+
+simulate_type: 'lab'
+
+# MuJoCo joint order (from XML): R1,R2,R3,R4,R5,R6,L1,L2,L3,L4,L5,L6
+# Isaac Lab joint order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+obs_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+obs_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+action_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+action_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+
+# Key body names in MuJoCo (for FK)
+key_body_names: ["Link_L6", "Link_R6"]
+
+# Observation order matching AMP policy
+obs_index: ['base_ang_vel', 'root_local_rot_tan_norm', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action'] #, 'key_body_pos_b']

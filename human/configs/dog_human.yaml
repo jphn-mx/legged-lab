@@ -1,0 +1,44 @@
+##gym
+policy_path: "policy/policy_torch.pt" # "policy/policy_gym_0319_1_p10d01.onnx"
+model_type: "jit"
+xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+simulation_duration: 600.0
+simulation_dt: 0.001
+control_decimation: 10
+kps: [
+      30,30,30,
+      30,30,30,
+      30,30,30,
+      30,30,30,
+      ] # gym中action腿的顺序 
+kds: [
+      0.3,0.3,0.3,
+      0.3,0.3,0.3,
+      0.3,0.3,0.3,
+      0.3,0.3,0.3,
+      ]
+
+default_angles: [-0.22, 0.0, 0.0, 0.70, -0.48, 0.0, -0.22, 0.0, 0.0, 0.70, -0.48, 0.0]
+
+# ang_vel_scale: 0.25
+ang_vel_scale: 1.0
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+action_scale: 0.25
+cmd_scale: [2.0, 2.0, 1.0]
+num_actions: 12
+num_obs: 47
+num_history: 10
+# cycle_time: 0.5
+cycle_time: 0.5
+
+model: 'kaiw'
+simulate_type: 'gym'
+cmd_init: [0, 0, 0.]
+obs_index_in_gym: ["L1","L2","L3","L4","L5","L6","R1","R2","R3","R4","R5","R6"]
+obs_index_in_mj: ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"] 
+action_index_in_gym: ["L1","L2","L3","L4","L5","L6","R1","R2","R3","R4","R5","R6"]
+action_index_in_mj: ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"] 
+
+obs_index: ["phase",'velocity_commands','joint_pos_rel','joint_vel_rel','last_action','base_ang_vel','euler_angles'] #''projected_gravity''
+
