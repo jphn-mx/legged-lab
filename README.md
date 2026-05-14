@@ -173,28 +173,64 @@ python scripts/bvh_to_robot.py --bvh_file <path> --robot unitree_g1 --save_path 
 ```bash
 cd human
 
-# Deploy AMP policy with keyboard control
+# Deploy AMP locomotion policy with keyboard velocity control
 python deploy_a1_amp.py
 
-# Controls: W/S = forward/backward, A/D = yaw, J/L = lateral, Space = stop, R = reset
+# Deploy Whole-Body Tracking policy (plays back motion trajectory)
+python deploy_a1_wbt.py
+
+# Deploy Combined policy (AMP walking + press '1' to trigger WBT jump skill)
+python deploy_a1_combined.py
+
+# Controls (AMP): W/S = forward/backward, A/D = yaw, J/L = lateral, Space = stop, R = reset
+# Controls (Combined): same as AMP + '1' = execute jump motion, auto-returns to AMP
+# Controls (WBT): R = reset, Q = quit
+```
+
+### Data Conversion
+
+```bash
+cd whole_body_tracking/scripts
+
+# Convert GMR retargeted pkl to CSV (intermediate format)
+python pkl_to_csv.py <input.pkl> --output <output.csv>
+
+# Convert CSV to npz (for whole-body tracking training)
+python csv_to_npz.py --input_file <input.csv> --input_fps 30 \
+    --frame_range 0 200 --output_file <output.npz> --output_fps 50
 ```
 
 ## Training Pipeline
 
 ```
-Human Motion Data (SMPL-X / BVH)
+Human Motion Data (SMPL-X / BVH / OptiTrack CSV)
         │
         ▼
-   GMR Retargeting ──────► Robot Motion References (.pkl/.npz)
-                                    │
-                                    ▼
-                    Isaac Lab Training (AMP / DeepMimic)
-                                    │
-                                    ▼
-                         Trained Policy (.pt / .onnx)
-                                    │
-                                    ▼
-                    MuJoCo Deployment (human/deploy_a1_amp.py)
+   GMR Retargeting ──────► Robot Joint Trajectories (.pkl)
+        │                           │
+        │                           ├──► pkl_to_csv.py ──► csv_to_npz.py ──► .npz (WBT training)
+        │                           │
+        │                           └──► gmr_to_lab.py ──► .npz (AMP / DeepMimic training)
+        │
+        ▼
+┌───────────────────────────────────────────────────┐
+│  Isaac Lab + RSL-RL Training                      │
+│  ├── AMP: discriminator style reward              │
+│  ├── DeepMimic: dense tracking reward             │
+│  ├── Velocity Tracking: command-conditioned       │
+│  └── Whole-Body Tracking: anchor-relative         │
+└───────────────────────┬───────────────────────────┘
+                        │
+                        ▼
+             Trained Policy (.pt / .onnx)
+                        │
+                        ▼
+┌───────────────────────────────────────────────────┐
+│  MuJoCo Deployment                                │
+│  ├── deploy_a1_amp.py      (velocity locomotion)  │
+│  ├── deploy_a1_wbt.py      (motion playback)      │
+│  └── deploy_a1_combined.py (AMP + WBT skills)     │
+└───────────────────────────────────────────────────┘
 ```
 
 ## License

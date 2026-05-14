@@ -160,14 +160,15 @@ python scripts/rsl_rl/train.py --task Tracking-Flat-G1-v0 --num_envs 4096
 │  2. Motion Retargeting (GMR)                                    │
 │     - IK-based human → robot mapping                            │
 │     - Automatic height scaling                                  │
-│     - Output: robot joint trajectories (.pkl / .csv)            │
+│     - Output: robot joint trajectories (.pkl)                   │
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  3. Data Conversion                                             │
-│     - csv_to_npz.py (for whole-body tracking)                   │
-│     - gmr_to_lab.py (for AMP/DeepMimic)                         │
+│     - pkl_to_csv.py (GMR pkl → CSV intermediate)                │
+│     - csv_to_npz.py (CSV → npz for whole-body tracking)        │
+│     - gmr_to_lab.py (pkl → npz for AMP/DeepMimic)              │
 │     - Frame rate resampling & range selection                   │
 └────────────────────────┬────────────────────────────────────────┘
                          │
@@ -182,16 +183,21 @@ python scripts/rsl_rl/train.py --task Tracking-Flat-G1-v0 --num_envs 4096
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  5. Policy Export & Deployment                                  │
+│  5. Policy Export & Deployment (MuJoCo)                         │
 │     - Export: .pt (TorchScript) / .onnx                         │
-│     - Sim deploy: MuJoCo + PD control + keyboard teleop         │
-│     - Real deploy: (hardware interface, future work)            │
+│     - deploy_a1_amp.py: velocity locomotion (keyboard teleop)   │
+│     - deploy_a1_wbt.py: motion playback (trajectory tracking)   │
+│     - deploy_a1_combined.py: multi-skill (AMP + WBT switching)  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Deployment Controls (MuJoCo)
+## Deployment Modes (MuJoCo)
+
+### Mode 1: AMP Locomotion (`deploy_a1_amp.py`)
+
+Velocity-commanded walking with keyboard teleoperation.
 
 | Key | Action |
 |-----|--------|
@@ -204,3 +210,26 @@ python scripts/rsl_rl/train.py --task Tracking-Flat-G1-v0 --num_envs 4096
 Velocity arrows are rendered above the robot:
 - **Green arrow** — commanded velocity direction
 - **Blue arrow** — actual velocity direction
+
+### Mode 2: Whole-Body Tracking (`deploy_a1_wbt.py`)
+
+Autonomous motion playback — the robot executes a pre-recorded trajectory (e.g., jump) frame by frame using the WBT policy.
+
+| Key | Action |
+|-----|--------|
+| R | Reset robot and replay from beginning |
+| Q | Quit |
+
+The policy takes `(obs, time_step)` as input and outputs actions along with reference trajectory data (joint positions, body positions/orientations).
+
+### Mode 3: Combined AMP + WBT (`deploy_a1_combined.py`)
+
+Multi-skill deployment — AMP locomotion as the base skill, with WBT motions triggered on demand.
+
+| Key | Action |
+|-----|--------|
+| W / S / A / D / J / L / Space | AMP velocity control (same as Mode 1) |
+| 1 | Execute jump motion (WBT policy), auto-returns to AMP |
+| R | Reset robot to default pose |
+
+This demonstrates skill composition: the robot walks using AMP, then seamlessly transitions to a WBT motion (jump) and back.
