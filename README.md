@@ -11,7 +11,17 @@ This repository integrates multiple modules for training, retargeting, and deplo
 | `legged_lab/` | Core RL training environments (AMP, DeepMimic, Velocity Tracking, Animation) built on Isaac Lab |
 | `whole_body_tracking/` | Whole-body motion tracking for humanoid and quadruped robots |
 | `GMR/` | General Motion Retargeting — real-time human-to-robot motion retargeting |
+| `rsl_rl/` | RSL-RL training framework (PPO, AMP discriminator) |
 | `human/` | MuJoCo-based sim deployment for trained policies (A1 bipedal robot) |
+
+**Upstream Projects:**
+
+| Module | Original Repository |
+|--------|-------------------|
+| `legged_lab/` | Based on [Isaac Lab](https://github.com/isaac-sim/IsaacLab) extension template |
+| `whole_body_tracking/` | Based on [ExBody2](https://github.com/WholeBodyTracking/ExBody2) |
+| `GMR/` | Fork of [GMR (General Motion Retargeting)](https://github.com/YanjieZe/GMR) |
+| `rsl_rl/` | Fork of [RSL-RL](https://github.com/leggedrobotics/rsl_rl) |
 
 ## Supported Robots
 
@@ -35,6 +45,9 @@ legged_lab/
 │   ├── general_motion_retargeting/  # Core retargeting library
 │   ├── scripts/          # Retargeting entry points
 │   └── assets/           # Robot models (a1_legs_v1 example included)
+├── rsl_rl/               # RSL-RL training framework
+│   ├── rsl_rl/           # Core library (PPO, AMP, runners)
+│   └── config/           # Training configurations
 ├── human/                # MuJoCo deployment
 │   ├── deploy_a1_amp.py  # Real-time policy deployment with keyboard control
 │   ├── configs/          # Deployment YAML configs
