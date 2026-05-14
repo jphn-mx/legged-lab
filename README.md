@@ -18,10 +18,10 @@ This repository integrates multiple modules for training, retargeting, and deplo
 
 | Module | Original Repository |
 |--------|-------------------|
-| `legged_lab/` | Based on [Isaac Lab](https://github.com/isaac-sim/IsaacLab) extension template |
-| `whole_body_tracking/` | Based on [ExBody2](https://github.com/WholeBodyTracking/ExBody2) |
+| `legged_lab/` | Fork of [legged_lab](https://github.com/zitongbai/legged_lab) |
+| `whole_body_tracking/` | Fork of [whole_body_tracking](https://github.com/HybridRobotics/whole_body_tracking) |
 | `GMR/` | Fork of [GMR (General Motion Retargeting)](https://github.com/YanjieZe/GMR) |
-| `rsl_rl/` | Fork of [RSL-RL](https://github.com/leggedrobotics/rsl_rl) |
+| `rsl_rl/` | Fork of [rsl_rl](https://github.com/zitongbai/rsl_rl) |
 
 ## Supported Robots
 
