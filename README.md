@@ -139,10 +139,6 @@ python scripts/rsl_rl/play.py --task Lab-Locomotion-Amp-A1-v0
 ```bash
 cd whole_body_tracking
 
-# Convert motion CSV to npz format (for training)
-python scripts/csv_to_npz.py --input_file LAFAN/dance1_subject2.csv --input_fps 30 \
-    --frame_range 122 722 --output_file ./scripts/motions/dance1.npz --output_fps 50
-
 # Train whole-body tracking policy (A1)
 python scripts/rsl_rl/train.py --task Tracking-Flat-A1-v0 --num_envs 4096
 
@@ -168,6 +164,33 @@ python scripts/smplx_to_robot.py --smplx_file <path> --robot a1_legs_v1 --save_p
 python scripts/bvh_to_robot.py --bvh_file <path> --robot unitree_g1 --save_path output.pkl
 ```
 
+### Data Conversion (GMR → Training Format)
+
+```bash
+# === For legged_lab (AMP / DeepMimic) ===
+cd legged_lab
+
+# Single file: convert GMR pkl to Legged Lab format (reorders DOFs, computes key body positions)
+python scripts/tools/retarget/single_retarget.py --robot a1 \
+    --input_file <gmr_output.pkl> --output_file <lab_motion.pkl> \
+    --config_file scripts/tools/retarget/config/a1_12dof.yaml --loop wrap
+
+# Batch: convert entire directory of GMR pkls
+python scripts/tools/retarget/dataset_retarget.py --robot g1 \
+    --input_dir data/gmr/ --output_dir data/lab/ \
+    --config_file scripts/tools/retarget/config/g1_29dof.yaml --loop clamp
+
+# === For whole_body_tracking ===
+cd whole_body_tracking/scripts
+
+# Step 1: GMR pkl → CSV (intermediate format)
+python pkl_to_csv.py <gmr_output.pkl> --output motion.csv
+
+# Step 2: CSV → npz (training format with FK-computed body positions)
+python csv_to_npz.py --input_file motion.csv --input_fps 30 \
+    --frame_range 0 200 --output_file motions/motion.npz --output_fps 50
+```
+
 ### MuJoCo Deployment
 
 ```bash
@@ -185,19 +208,6 @@ python deploy_a1_combined.py
 # Controls (AMP): W/S = forward/backward, A/D = yaw, J/L = lateral, Space = stop, R = reset
 # Controls (Combined): same as AMP + '1' = execute jump motion, auto-returns to AMP
 # Controls (WBT): R = reset, Q = quit
-```
-
-### Data Conversion
-
-```bash
-cd whole_body_tracking/scripts
-
-# Convert GMR retargeted pkl to CSV (intermediate format)
-python pkl_to_csv.py <input.pkl> --output <output.csv>
-
-# Convert CSV to npz (for whole-body tracking training)
-python csv_to_npz.py --input_file <input.csv> --input_fps 30 \
-    --frame_range 0 200 --output_file <output.npz> --output_fps 50
 ```
 
 ## Training Pipeline
