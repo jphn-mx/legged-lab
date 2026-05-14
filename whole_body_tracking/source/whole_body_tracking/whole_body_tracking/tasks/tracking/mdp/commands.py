@@ -367,8 +367,8 @@ class MotionCommandCfg(CommandTermCfg):
 
     adaptive_kernel_size: int = 1
     adaptive_lambda: float = 0.8
-    adaptive_uniform_ratio: float = 0.1
-    adaptive_alpha: float = 0.001
+    adaptive_uniform_ratio: float = 0.3
+    adaptive_alpha: float = 0.01
 
     anchor_visualizer_cfg: VisualizationMarkersCfg = FRAME_MARKER_CFG.replace(prim_path="/Visuals/Command/pose")
     anchor_visualizer_cfg.markers["frame"].scale = (0.2, 0.2, 0.2)

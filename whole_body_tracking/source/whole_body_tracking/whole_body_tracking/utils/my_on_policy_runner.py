@@ -17,7 +17,8 @@ class MyOnPolicyRunner(OnPolicyRunner):
         if logger_type in ["wandb"]:
             policy_path = path.split("model")[0]
             filename = policy_path.split("/")[-2] + ".onnx"
-            export_policy_as_onnx(self.alg.policy, normalizer=self.obs_normalizer, path=policy_path, filename=filename)
+            normalizer = getattr(self.alg.policy, "actor_obs_normalizer", None)
+            export_policy_as_onnx(self.alg.policy, normalizer=normalizer, path=policy_path, filename=filename)
             attach_onnx_metadata(self.env.unwrapped, wandb.run.name, path=policy_path, filename=filename)
             wandb.save(policy_path + filename, base_path=os.path.dirname(policy_path))
 
@@ -36,8 +37,9 @@ class MotionOnPolicyRunner(OnPolicyRunner):
         if logger_type in ["wandb"]:
             policy_path = path.split("model")[0]
             filename = policy_path.split("/")[-2] + ".onnx"
+            normalizer = getattr(self.alg.policy, "actor_obs_normalizer", None)
             export_motion_policy_as_onnx(
-                self.env.unwrapped, self.alg.policy, normalizer=self.obs_normalizer, path=policy_path, filename=filename
+                self.env.unwrapped, self.alg.policy, normalizer=normalizer, path=policy_path, filename=filename
             )
             attach_onnx_metadata(self.env.unwrapped, wandb.run.name, path=policy_path, filename=filename)
             wandb.save(policy_path + filename, base_path=os.path.dirname(policy_path))

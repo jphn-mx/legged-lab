@@ -1,0 +1,37 @@
+policy_path: "policy/policy_jump.onnx"
+model_type: "onnx"
+xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+simulation_duration: 600.0
+simulation_dt: 0.001
+control_decimation: 20
+
+# PD gains (Lab/ONNX order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6)
+kps: [30, 30, 30, 30, 30, 30,
+      30, 30, 30, 30, 30, 30]
+kds: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
+      0.3, 0.3, 0.3, 0.3, 0.3, 0.3]
+
+# Default joint positions (Lab/ONNX order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6)
+default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+
+# Action scale per joint (Lab/ONNX order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6)
+# joints 1-4 (hip/knee): 0.25 * 27 / 30 = 0.225
+# joints 5-6 (ankle): 0.25 * 7 / 30 = 0.058
+action_scale: [0.225, 0.225, 0.225, 0.225, 0.225, 0.225,
+               0.225, 0.225, 0.058, 0.058, 0.058, 0.058]
+
+num_actions: 12
+num_obs: 69
+
+# Effort limits per joint (Lab/ONNX order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6)
+effort_limits: [27, 27, 27, 27, 27, 27,
+                27, 27, 7, 7, 7, 7]
+
+# Joint ordering mapping between ONNX (Lab) and MuJoCo
+# ONNX/Lab order: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+# MuJoCo order:   R1,R2,R3,R4,R5,R6,L1,L2,L3,L4,L5,L6
+obs_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+obs_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+action_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+action_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]

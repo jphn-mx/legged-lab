@@ -35,7 +35,8 @@ class A1FlatEnvCfg(TrackingEnvCfg):
         # Override base_com event: use "base" instead of "torso_link"
         self.events.base_com.params["asset_cfg"] = SceneEntityCfg("robot", body_names="base")
 
-
+        # self.commands.motion.adaptive_uniform_ratio = 0.3
+        # self.terminations.anchor_pos.params["threshold"] = 0.8
 @configclass
 class A1FlatWoStateEstimationEnvCfg(A1FlatEnvCfg):
     def __post_init__(self):
