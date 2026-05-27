@@ -1,0 +1,30 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/agents/rsl_rl_ppo_cfg.py
+  h_3a925938c75d22 67,71,74
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg.py
+  s_153c6c0a5b4562::t_1fcf8ab9e348ca 103-106
+  h_3a925938c75d22 19
+  s_153c6c0a5b4562::t_f9f5ca7f256f24 100-102,107-118
+  s_153c6c0a5b4562::t_a4e85d10f6f2b9 180
+  s_153c6c0a5b4562::t_86c9c34f716f50 181-182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a72d42b39fd29614b909b206fd5040464b38dccd",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_153c6c0a5b4562": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c6a43935-6455-462f-a4d9-ab683e979f41",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
