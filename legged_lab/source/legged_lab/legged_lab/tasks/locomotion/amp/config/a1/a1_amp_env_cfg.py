@@ -16,7 +16,7 @@ KEY_BODY_NAMES = [
     "Link_R6",
 ]
 ANIMATION_TERM_NAME = "animation"
-AMP_NUM_STEPS = 8
+AMP_NUM_STEPS = 2
 
 
 @configclass
@@ -46,7 +46,7 @@ class A1AmpRewards:
 
     joint_deviation_hip = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.2,
+        weight=-0.1,
         # params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_R3", "joint_L1", "joint_L3"])},
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_R3", "joint_L1", "joint_L3"])},
     )
@@ -60,18 +60,18 @@ class A1AmpRewards:
     #         "threshold": 0.4,
     #     },
     # )
-    feet_slide = RewTerm(
-        func=mdp.feet_slide,
-        weight=-0.125,
-        params={
-            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
-            "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
-        },
-    )
+    # feet_slide = RewTerm(
+    #     func=mdp.feet_slide,
+    #     weight=-0.125,
+    #     params={
+    #         "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
+    #         "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
+    #     },
+    # )
 
     stand_still = RewTerm(
         func=mdp.stand_still_joint_deviation_l1,
-        weight=-0.1,
+        weight=-0.01,
         params={"command_name": "base_velocity"},
     )
 
@@ -94,26 +94,43 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
         # motion data
         # ------------------------------------------------------
         self.motion_data.motion_dataset.motion_data_dir = os.path.join(
-            LEGGED_LAB_ROOT_DIR, "data", "MotionData", "a1_12dof", "amp", "walk1_subject5"
+            LEGGED_LAB_ROOT_DIR, "data", "a1_4"
         )
         self.motion_data.motion_dataset.motion_data_weights = {
-            "walk1_subject5_turn1": 1.0,
-            "walk1_subject5_walk1": 1.0,
-            "walk1_subject5_walk2": 1.0,
-            # "walk2_subject1_lowspeed": 1.0,
-            # "walk3_subject2_back": 1.0,
+            # forward walk (~0.55-0.65 m/s)
+            "B3_-_walk1": 2.0,
+            "B14_-__Walk_turn_right_45_t2": 1.0,
+            # forward run (~1.0-2.6 m/s)
+            "C5_-_walk_to_run": 1.5,
+            "C4_-_Run_to_walk1": 1.5,
+            "C3_-_Run": 1.0,
+            # backward walk (~0.5-0.6 m/s)
+            "B5_-__Walk_backwards": 1.5,
+            # turns (~0.55-0.62 m/s)
+            "B9_-__Walk_turn_left_90": 1.0,
+            "B13_-__Walk_turn_right_90": 1.0,
+            "B11_-__Walk_turn_left_135": 1.0,
+            "B15_-__Walk_turn_around": 1.0,
+            # side step (~0.35-0.44 m/s)
+            "B22_-_side_step_left": 1.0,
+            "B23_-_side_step_right": 1.0,
+            # direction change
+            "B16_-_walk_turn_change_direction": 1.0,
         }
         # self.motion_data.motion_dataset.motion_data_dir = os.path.join(
-        #     LEGGED_LAB_ROOT_DIR, "data", "MotionData", "a1_12dof", "amp", "ACCAD_walk"
+        #     LEGGED_LAB_ROOT_DIR, "data", "MotionData", "a1_12dof", "amp", "walk1_subject5"
         # )
         # self.motion_data.motion_dataset.motion_data_weights = {
-        #     "Walk_B10_-_Walk_turn_left_45": 1.0,
-        #     "Walk_B13_-_Walk_turn_right_45": 1.0,
-        #     "Walk_B15_-_Walk_turn_around": 1.0,
-        #     "Walk_B16_-_Walk_turn_change": 1.0,
-        #     "Walk_B22_-_Side_step_left": 2.0,
-        #     "Walk_B23_-_Side_step_right": 2.0,
-        #     "Walk_B4_-_Stand_to_Walk_Back": 2.0,
+        #     # "Walk_B10_-_Walk_turn_left_45": 1.0,
+        #     # "Walk_B13_-_Walk_turn_right_45": 1.0,
+        #     # "Walk_B15_-_Walk_turn_around": 1.0,
+        #     # "Walk_B16_-_Walk_turn_change": 1.0,
+        #     # "Walk_B22_-_Side_step_left": 2.0,
+        #     # "Walk_B23_-_Side_step_right": 2.0,
+        #     # "Walk_B4_-_Stand_to_Walk_Back": 2.0,
+        #     "walk1_subject5_turn":1.0,
+        #     "walk1_subject5_walk":1.0,
+        #     "walk3_subject2_back":1.0,
         # }
 
 
@@ -160,9 +177,9 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
         # ------------------------------------------------------
         # Commands
         # ------------------------------------------------------
-        self.commands.base_velocity.ranges.lin_vel_x = (-0.5, 1.2)
-        self.commands.base_velocity.ranges.lin_vel_y = (-0.6, 0.6)
-        self.commands.base_velocity.ranges.ang_vel_z = (-1.2, 1.2)
+        self.commands.base_velocity.ranges.lin_vel_x = (-0.5, 1.8)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0.4, 0.4)
+        self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
         self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
 
         # ------------------------------------------------------
