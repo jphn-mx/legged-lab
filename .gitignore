@@ -29,14 +29,7 @@ GMR/motion_data/lafan1/
 GMR/motion_data/lafan1.zip
 GMR/motion_data/smplx/
 
-# Robot model files (URDF, MJCF, USD, meshes)
-A1-legs_V1/
-A1-legs_V1_mjcf/
-GMR/assets/a1_legs_v1/
-human/model/
-legged_lab/source/legged_lab/legged_lab/data/Robots/
-
-# Large assets - exclude all
+# Large assets - exclude all except a1_legs_v1 (example)
 GMR/assets/agibot_a2/
 GMR/assets/berkeley_humanoid_lite/
 GMR/assets/body_models/
