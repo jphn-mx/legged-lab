@@ -100,6 +100,8 @@ python deploy_a1_combined.py     # Combined AMP + WBT skills
 
 ## Installation
 
+Environment: `conda activate env_isaaclab` (Python 3.11, Isaac Sim 5.0, Isaac Lab 0.44.9, PyTorch 2.7+cu128)
+
 ```bash
 # Isaac Lab extensions (editable install)
 pip install -e legged_lab/source/legged_lab

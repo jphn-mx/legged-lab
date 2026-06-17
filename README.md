@@ -90,10 +90,11 @@ legged_lab/
 ## Installation
 
 ### Prerequisites
-- NVIDIA Isaac Sim 4.x
-- Isaac Lab (installed as extension)
-- Python 3.10+
-- PyTorch, CUDA
+- NVIDIA Isaac Sim 5.0
+- Isaac Lab 0.44.9
+- Python 3.11
+- PyTorch 2.7+ (CUDA 12.8)
+- Conda environment: `conda activate env_isaaclab`
 
 ### Setup
 
