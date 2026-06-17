@@ -1,0 +1,26 @@
+CLAUDE.md
+  s_7615e9c8cc44cc::t_684a30e2451add 103-104
+README.md
+  s_7615e9c8cc44cc::t_cec4ecef7fbf52 93-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "977bb4b5a9a9600774db33e7d3434b1ef53848ca",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
