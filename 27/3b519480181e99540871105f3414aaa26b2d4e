@@ -1,0 +1,191 @@
+legged_lab/source/legged_lab/legged_lab/rsl_rl/amp_cfg.py
+  s_c8187d3a232011::t_8341b0dac7cbbc 45-50
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg.py
+  s_6a225e2a5a3308::t_df49ee8e8c5fd8 51
+  s_c8187d3a232011::t_73c5788e274749 106,114
+  s_c8187d3a232011::t_5b8c2829c5efa5 292
+  s_c8187d3a232011::t_6aacaf41be82c9 110-112
+  s_c8187d3a232011::t_20d1b936cd88db 264
+  s_c8187d3a232011::t_409bf1a56bc8aa 147-154,156-157,170
+  s_c8187d3a232011::t_f8a46151b55e94 163-169
+  s_c8187d3a232011::t_c3c6fa04d4eebc 107-109
+  s_c8187d3a232011::t_a3034fe1cd3c2a 234-237,239,241-244
+  h_3a925938c75d22 21,30,39,57,81,85,115-140,144,146,155,162,265,273,281
+  s_153c6c0a5b4562::t_ebff155a8fad87 52-56,58
+  s_c8187d3a232011::t_179e1d7363823b 141-143
+  s_c8187d3a232011::t_167a268657b600 248-252,254-262,266-272,274-275
+  s_c8187d3a232011::t_4c8368325589fd 263
+  s_c8187d3a232011::t_84ae2bb8811573 253
+  s_c8187d3a232011::t_5803815f85606e 6,10
+rsl_rl/rsl_rl/modules/amp.py
+  s_c8187d3a232011::t_434ac8a3c78909 37
+  s_c8187d3a232011::t_19e801ff51d356 57-71,75,79-80,83
+whole_body_tracking/source/whole_body_tracking/whole_body_tracking/robots/a1.py
+  s_ef88e950adfaff::t_f97a91aa902691 76-78,84-86
+  s_ef88e950adfaff::t_64a4d9fcc58415 7-27
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+  s_8f02b93fbff032::t_77b624da51993b 1-6,13,15,17-18,21-24,26-44,54
+  s_8f02b93fbff032::t_d147aeed91ecb2 19-20,25
+  h_3a925938c75d22 49,51
+  s_8f02b93fbff032::t_6f2443201d5ef6 7-12,14,16,45-48,50,52-53,55
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/agents/rsl_rl_ppo_cfg.py
+  s_c8187d3a232011::t_cba41fe1fc0074 76
+  h_3a925938c75d22 23,68-69,72,75,83,85
+  s_153c6c0a5b4562::t_bee0b61d4bc52f 11
+A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+  h_3a925938c75d22 1-142
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/__init__.py
+  s_8f02b93fbff032::t_b1e47d46ebab9b 1-4
+human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
+  s_a0ddf95b153e83::t_62c351428422a3 79-82
+  s_a0ddf95b153e83::t_7316d2ad73bc5e 121-124
+legged_lab/source/legged_lab/legged_lab/assets/a1.py
+  s_ef88e950adfaff::t_8af54626bc7002 85-87,93-95
+  s_ef88e950adfaff::t_9d9a7bd8e5ec15 10-31
+  h_3a925938c75d22 35-36
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/curriculums.py
+  s_c8187d3a232011::t_3702ab60abc25f 94,103
+  s_c8187d3a232011::t_a15148fa7cd5e5 64,73
+human/configs/a1_amp.yaml
+  h_3a925938c75d22 1,3-4,8-16
+CLAUDE.md
+  s_c8187d3a232011::t_3fc003634cecd2 131
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+  h_3a925938c75d22 139-140,151,161
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+  s_8f02b93fbff032::t_d33db2d3346226 225-246
+  s_8f02b93fbff032::t_92ce8073c14a5e 247-248,253-254,262
+  s_8f02b93fbff032::t_d2bda328b271a1 15,20,25-79
+  s_8f02b93fbff032::t_725cf38f345092 113-115,121-123,134-136
+  s_8f02b93fbff032::t_dc9b4f8119dece 249-252,255-261,263-264
+  s_8f02b93fbff032::t_f8958fcf31bef1 301-317
+human/deploy_a1_flat.py
+  s_a0ddf95b153e83::t_aa7cb56e3cb246 221-223
+  s_a0ddf95b153e83::t_fb9c9c06e627e1 143-151
+  s_a0ddf95b153e83::t_d8ad7e065437ed 23-49
+  s_a0ddf95b153e83::t_41fbed2f9ec38b 185
+  s_a0ddf95b153e83::t_9881646bb5ec18 1-22,50,71-123,125-140,142,152-184,187-220,224-240
+  s_a0ddf95b153e83::t_af7150b067171b 51-70
+  s_a0ddf95b153e83::t_e38645434d1940 141
+  s_a0ddf95b153e83::t_c553a41a1278d8 124
+  s_a0ddf95b153e83::t_a6dd00b122f64d 186
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/symmetry.py
+  s_8f02b93fbff032::t_2775b5ad0cbaa7 1-130
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2.json
+  s_0549cb6a23a33b::t_aad91e8de8860b 12-13
+  h_3a925938c75d22 4
+  s_0549cb6a23a33b::t_ea8e9ab6c03104 9-11,14-15
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/observations.py
+  s_8f02b93fbff032::t_568c3c7bacf7aa 16-28
+  s_8f02b93fbff032::t_6099886453cea4 5,8,10,29-77
+  s_8f02b93fbff032::t_8d699f5e31021f 3
+human/configs/a1_flat.yaml
+  s_a0ddf95b153e83::t_5d7fe3dfcc1777 25-27,30
+  s_a0ddf95b153e83::t_14672e9242b9e8 1,3,6-18,21-24,31-42
+  s_a0ddf95b153e83::t_b64c1c33ab4d32 19-20
+  h_3a925938c75d22 2,4-5,28-29
+human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+  h_3a925938c75d22 1-142
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/__init__.py
+  s_8f02b93fbff032::t_2e4bf47a97b185 1-27
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+  s_8f02b93fbff032::t_42d77b2016fccc 194-196,198,200-204
+  s_8f02b93fbff032::t_4838a6eb8a3de5 108-111
+  s_8f02b93fbff032::t_702743ad05d96a 341-343
+  s_8f02b93fbff032::t_f7e5de2ea5f702 158,160,163-164
+  s_8f02b93fbff032::t_227594cfaa3b62 77
+  s_8f02b93fbff032::t_b591d59f773e46 193
+  s_8f02b93fbff032::t_7899f9bafe1744 3
+  s_8f02b93fbff032::t_2bc14050cd8e84 25-27,29-30
+  s_8f02b93fbff032::t_c68b6be7dace4e 165-167
+  s_8f02b93fbff032::t_1044b3de1f93fe 43,45-49,51-52,54-55
+  s_8f02b93fbff032::t_256ffe3cf0c72a 57-58
+  s_8f02b93fbff032::t_f229e4955037de 313-315
+  s_8f02b93fbff032::t_849c364078d9a0 206-210,212-217
+  s_8f02b93fbff032::t_9d4348950ba150 149,154
+  s_8f02b93fbff032::t_f6f141e271de74 219-226
+  s_8f02b93fbff032::t_55584f899d0513 326-327
+  s_8f02b93fbff032::t_dd3cd07b79c5bb 228-233,235-243
+  s_8f02b93fbff032::t_48302310b8c441 159,161
+  s_8f02b93fbff032::t_682fb38f920a51 4,14,21-22,24,31-34
+  s_8f02b93fbff032::t_5486eef0591ebe 263-275
+  s_8f02b93fbff032::t_a62c390a1426e5 134-135
+  s_8f02b93fbff032::t_4ffb62c4a2fdcb 178-184,186-187
+  h_3a925938c75d22 23,28,61,98-99,103-104,112-113,121-122,132,142,150,153,162,168-175,185,191,199,211,234,256-257,282,316-318,328,344-360
+  s_8f02b93fbff032::t_4317c35ab05e60 1-2,5-13,15-20,35-42,44,50,53,56,59-60,62-76,78-97,100-102,105-107,114-120,123-131,133,136-141,143-148,151-152,155-157,176-177,188-190,192,197,205,218,227,244-245,288-290,292-312,319-325,329-340,361-376
+  s_8f02b93fbff032::t_5f579294743dcf 246-255,258-262,276-281,283-287,291
+  s_8f02b93fbff032::t_4d78afb5837038 377-383
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/__init__.py
+  s_8f02b93fbff032::t_ba797e29c8cf44 6
+GMR/scripts/retarget_accad_walk_to_a1.py
+  h_3a925938c75d22 8,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "273b519480181e99540871105f3414aaa26b2d4e",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_0549cb6a23a33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "902118b7-878e-4f68-b5e6-54a9e0d09a4c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_153c6c0a5b4562": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c6a43935-6455-462f-a4d9-ab683e979f41",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_6a225e2a5a3308": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "53fca68a-0863-4215-b960-cc632c30a958",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_8f02b93fbff032": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5957fe8-42d9-4a84-ac29-6e8099dd096f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_a0ddf95b153e83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "53255f49-c1e0-4873-8c0a-963bf9dc293a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_c8187d3a232011": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "34dabbc0-7ce5-4b22-90b0-bc07b8a4cf1a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_ef88e950adfaff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "92229a44-dbfd-4261-99c8-09d0d5c73eb3",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
