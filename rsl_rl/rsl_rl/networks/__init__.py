@@ -6,12 +6,14 @@
 """Definitions for components of modules."""
 
 from .cnn import CNN
+from .diff_normalization import DiffNormalizer
 from .memory import HiddenState, Memory
 from .mlp import MLP
 from .normalization import EmpiricalDiscountedVariationNormalization, EmpiricalNormalization
 
 __all__ = [
     "CNN",
+    "DiffNormalizer",
     "MLP",
     "EmpiricalDiscountedVariationNormalization",
     "EmpiricalNormalization",

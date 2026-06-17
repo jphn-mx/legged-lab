@@ -11,7 +11,7 @@ from rsl_rl.modules.rnd import RandomNetworkDistillation
 from rsl_rl.storage import RolloutStorage, CircularBuffer
 from rsl_rl.utils import string_to_callable
 from rsl_rl.algorithms import PPO
-from rsl_rl.modules.amp import LossType
+from rsl_rl.modules.amp import LossType, RewardType
 
 
 class PPOAMP(PPO):
@@ -82,12 +82,23 @@ class PPOAMP(PPO):
             self.loss_type = LossType.WGAN
         else:
             raise ValueError(f"Unknown AMP loss type: {self.amp_cfg['loss_type']}. Should be 'GAN', 'LSGAN', or 'WGAN'")
-        
+
+        reward_type_str = self.amp_cfg.get("reward_type", "LSGAN")
+        if reward_type_str == "LSGAN":
+            self.reward_type = RewardType.LSGAN
+        elif reward_type_str == "GAIL":
+            self.reward_type = RewardType.GAIL
+        elif reward_type_str == "AIRL":
+            self.reward_type = RewardType.AIRL
+        else:
+            raise ValueError(f"Unknown reward type: {reward_type_str}. Should be 'LSGAN', 'GAIL', or 'AIRL'")
+
         self.amp_discriminator: AMPDiscriminator = AMPDiscriminator(
             disc_obs_dim=self.amp_cfg["disc_obs_dim"],
             disc_obs_steps=self.amp_cfg["disc_obs_steps"],
             obs_groups=self.policy.obs_groups,
             loss_type=self.loss_type,
+            reward_type=self.reward_type,
             device=device,
             **self.amp_cfg.get("amp_discriminator", {})
         ).to(self.device)
@@ -383,6 +394,7 @@ class PPOAMP(PPO):
             if self.rnd_optimizer:
                 self.rnd_optimizer.step()
             # Apply the gradients for AMP discriminator
+            nn.utils.clip_grad_norm_(self.amp_discriminator.parameters(), self.disc_max_grad_norm)
             self.disc_optimizer.step()
             # Update the AMP normalizer
             self.amp_discriminator.update_normalization(disc_obs_batch)

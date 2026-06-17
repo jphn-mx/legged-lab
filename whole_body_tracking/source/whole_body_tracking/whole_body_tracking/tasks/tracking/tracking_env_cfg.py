@@ -71,6 +71,13 @@ class MySceneCfg(InteractiveSceneCfg):
     contact_forces = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True, force_threshold=10.0, debug_vis=True
     )
+    self_contact_forces = ContactSensorCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/.*",
+        filter_prim_paths_expr=["{ENV_REGEX_NS}/Robot/.*"],
+        history_length=1,
+        track_air_time=False,
+        force_threshold=1.0,
+    )
 
 
 ##
@@ -202,7 +209,7 @@ class RewardsCfg:
     motion_global_anchor_pos = RewTerm(
         func=mdp.motion_global_anchor_position_error_exp,
         weight=1.5,
-        params={"command_name": "motion", "std": 0.15},
+        params={"command_name": "motion", "std": 0.25},
     )
     motion_global_anchor_ori = RewTerm(
         func=mdp.motion_global_anchor_orientation_error_exp,

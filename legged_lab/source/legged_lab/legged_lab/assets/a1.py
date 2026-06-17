@@ -7,9 +7,33 @@ from isaaclab.assets.articulation import ArticulationCfg
 from legged_lab import LEGGED_LAB_ROOT_DIR
 
 
+# Heuristic PD gains following the WBT paper (2508.08241v4, Supp. S1):
+#   k_p = I * w^2,  k_d = 2 * I * zeta * w,  with I = g^2 * J_rotor (reflected armature).
+# Motors (Damiao DM-J series, rotor inertia from datasheet):
+#   DM-J4340  hip/knee (joint 1-4, peak torque 27 N.m): g=40, J_rotor=2.0e-5
+#   DM-J4310  ankle    (joint 5-6, peak torque  7 N.m): g=10, J_rotor=1.8e-5
+ROTOR_INERTIA_4340 = 2.00e-5
+ROTOR_INERTIA_4310 = 1.80e-5
+GEAR_4340 = 40.0
+GEAR_4310 = 10.0
+
+NATURAL_FREQ = 10 * 2.0 * 3.1415926535  # 10Hz -> w ~= 62.83 rad/s (low value promotes compliance)
+DAMPING_RATIO = 2.0  # zeta = 2 (overdamped, compensates for inertia underestimation)
+
+ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.0320
+ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.0018
+
+STIFFNESS_4340 = ARMATURE_4340 * NATURAL_FREQ**2  # ~= 126
+STIFFNESS_4310 = ARMATURE_4310 * NATURAL_FREQ**2  # ~= 7.1
+DAMPING_4340 = 2.0 * DAMPING_RATIO * ARMATURE_4340 * NATURAL_FREQ  # ~= 8.0
+DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 0.45
+
+
 A1_LEGS_V1_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
-        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1/A1-legs_V1.urdf",
+        # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1/A1-legs_V1.urdf",
+        # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2.urdf",
+        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_ball.urdf",
         fix_base=False,
         joint_drive=sim_utils.UrdfFileCfg.JointDriveCfg(
             drive_type="force",
@@ -58,17 +82,17 @@ A1_LEGS_V1_CFG = ArticulationCfg(
             joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
             effort_limit_sim=27.0,
             velocity_limit_sim=36.0,
-            stiffness=30.0,
-            damping=0.3,
-            armature=0.01,
+            stiffness=STIFFNESS_4340,
+            damping=DAMPING_4340,
+            armature=ARMATURE_4340,
         ),
         "ankle": ImplicitActuatorCfg(
             joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
             effort_limit_sim=7.0,
             velocity_limit_sim=120.0,
-            stiffness=30.0,
-            damping=0.3,
-            armature=0.01,
+            stiffness=STIFFNESS_4310,
+            damping=DAMPING_4310,
+            armature=ARMATURE_4310,
         ),
     },
 )

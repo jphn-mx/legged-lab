@@ -5,7 +5,7 @@ import sys
 
 HERE = pathlib.Path(__file__).parent
 ACCAD_ROOT = HERE / ".." / "motion_data" / "ACCAD"
-TGT_ROOT = HERE / ".." / "motion_data" / "ACCAD_a1_gmr"
+TGT_ROOT = HERE / ".." / "motion_data" / "ACCAD_g1_gmr2"
 
 walk_dirs = [
     "Male2Walking_c3d",
@@ -36,7 +36,7 @@ for smplx_file, subdir in files:
         sys.executable,
         str(HERE / "smplx_to_robot.py"),
         "--smplx_file", smplx_file,
-        "--robot", "a1_legs_v1",
+        "--robot", "unitree_g1",#"a1_legs_v2",
         "--save_path", save_path,
         "--rate_limit",
     ]

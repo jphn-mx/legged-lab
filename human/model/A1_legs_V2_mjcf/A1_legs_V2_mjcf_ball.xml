@@ -1,0 +1,148 @@
+<mujoco model="legs_URDF">
+  <compiler angle="radian" meshdir="meshes/" />
+  <asset>
+    <mesh name="base_link" file="base_link.STL" />
+    <mesh name="Link_R0" file="Link_R0.STL" />
+    <mesh name="Link_R1" file="Link_R1.STL" />
+    <mesh name="Link_R2" file="Link_R2.STL" />
+    <mesh name="Link_R3" file="Link_R3.STL" />
+    <mesh name="Link_R4" file="Link_R4.STL" />
+    <mesh name="Link_R5" file="Link_R5.STL" />
+    <mesh name="Link_R6" file="Link_R6.STL" />
+    <mesh name="Link_L0" file="Link_L0.STL" />
+    <mesh name="Link_L1" file="Link_L1.STL" />
+    <mesh name="Link_L2" file="Link_L2.STL" />
+    <mesh name="Link_L3" file="Link_L3.STL" />
+    <mesh name="Link_L4" file="Link_L4.STL" />
+    <mesh name="Link_L5" file="Link_L5.STL" />
+    <mesh name="Link_L6" file="Link_L6.STL" />
+    <material name="base_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_R0_mat" rgba="0.7725 0.7529 0.7333 1" specular="0" />
+    <material name="Link_R1_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_R2_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_R3_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_R4_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_R5_mat" rgba="1 1 1 1" specular="0" />
+    <material name="Link_R6_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L0_mat" rgba="0.7725 0.7529 0.7333 1" specular="0" />
+    <material name="Link_L1_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L2_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L3_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L4_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L5_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <material name="Link_L6_mat" rgba="0.898 0.9137 0.9255 1" specular="0" />
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
+          width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0." texture="texplane" texrepeat="1 1" texuniform="true"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+    <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" conaffinity="15" friction="1.0 0.005 0.0001"/>
+    <body name="base" pos="0 0 0.65">
+      <freejoint/>
+      <inertial pos="0 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
+      <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="base_mat" type="mesh" mesh="base_link" />
+      <geom pos="0 0 0.07" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="box" size="0.09 0.1 0.075" />
+      <body name="Link_R0" pos="0 -0.021 0.055">
+        <inertial pos="0.0000344 -0.0297324 0.0000527" mass="0.7356663" fullinertia="0.0004923 0.0004979 0.0005018 0.000001 0 -0.000001"/>
+        <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R0_mat" type="mesh" mesh="Link_R0" />
+        <body name="Link_R1" pos="0 -0.06025 0">
+          <joint name="joint_R1" type="hinge" axis="0 1 0" limited="true" range="-1.05 1.05" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+          <inertial pos="-0.0013788 -0.0795199 0.0000709" mass="0.5530088" fullinertia="0.0002976 0.0002785 0.0003644 -0.0000239 0.0000003 0"/>
+          <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R1_mat" type="mesh" mesh="Link_R1" />
+          <geom pos="0 -0.1 0" quat="0.5 -0.5 -0.5 0.5" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.04" />
+          <body name="Link_R2" pos="0 -0.0987 0">
+            <joint name="joint_R2" type="hinge" axis="1 0 0" limited="true" range="-1.05 0.26" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+            <inertial pos="0.0045774 0 -0.0743865" mass="0.5459822" fullinertia="0.0003158 0.0003989 0.0003074 0 -0.0000331 0"/>
+            <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R2_mat" type="mesh" mesh="Link_R2" />
+            <geom pos="0 0 -0.1" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.05" />
+            <body name="Link_R3" pos="0 0 -0.1215">
+              <joint name="joint_R3" type="hinge" axis="0 0 1" limited="true" range="-1 1" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+              <inertial pos="0.0000005 0.0001085 -0.0958044" mass="0.5207862" fullinertia="0.0004243 0.0003483 0.0002701 0 0 0.0000153"/>
+              <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R3_mat" type="mesh" mesh="Link_R3" />
+              <geom pos="0 0 -0.1" quat="0.7071068 -0.7071068 0 0" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.05" />
+              <body name="Link_R4" pos="0 0 -0.112">
+                <joint name="joint_R4" type="hinge" axis="0 1 0" limited="true" range="0 1.92" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+                <inertial pos="-0.0000005 -0.002464 -0.1405535" mass="0.8551582" fullinertia="0.0005475 0.0004903 0.000386 0 0 0.0000278"/>
+                <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R4_mat" type="mesh" mesh="Link_R4" />
+                <geom pos="0 0 -0.14" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.075" />
+                <body name="Link_R5" pos="0 0 -0.221">
+                  <joint name="joint_R5" type="hinge" axis="0 1 0" limited="true" range="-0.52 0.52" actuatorfrclimited="true" actuatorfrcrange="-7 7" damping="0" frictionloss="0" armature="0.0018"/>
+                  <inertial pos="0.0605483 0.0029049 -0.0030212" mass="0.4048744" fullinertia="0.0001794 0.0001738 0.0001658 0.0000034 -0.0000096 -0.000007"/>
+                  <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R5_mat" type="mesh" mesh="Link_R5" />
+                  <body name="Link_R6" pos="0 0 -0.055093">
+                    <joint name="joint_R6" type="hinge" axis="1 0 0" limited="true" range="-0.35 0.35" actuatorfrclimited="true" actuatorfrcrange="-7 7" damping="0" frictionloss="0" armature="0.0018"/>
+                    <inertial pos="0.0523825 0.0000146 -0.0056262" mass="0.3002968" fullinertia="0.0001474 0.0007728 0.0009173 0 -0.0000001 0"/>
+                    <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R6_mat" type="mesh" mesh="Link_R6" />
+                    <geom name="r_foot_1" pos="0.15 0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="r_foot_2" pos="0.15 -0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="r_foot_3" pos="-0.05 0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="r_foot_4" pos="-0.05 -0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="Link_L0" pos="0 0.021 0.055">
+        <inertial pos="0.0000344 0.0286962 -0.0000527" mass="0.7356663" fullinertia="0.0004923 0.0004979 0.0005018 -0.000001 0 -0.000001"/>
+        <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L0_mat" type="mesh" mesh="Link_L0" />
+        <body name="Link_L1" pos="0 0.06025 0">
+          <joint name="joint_L1" type="hinge" axis="0 1 0" limited="true" range="-1.05 1.05" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+          <inertial pos="-0.0014478 0.0795199 0.0000709" mass="0.5530088" fullinertia="0.0002976 0.0002785 0.0003644 0.0000239 0.0000003 0"/>
+          <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L1_mat" type="mesh" mesh="Link_L1" />
+          <geom pos="0 0.1 0" quat="0.7071068 0 0.7071068 0" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.04" />
+          <body name="Link_L2" pos="0 0.0987 0">
+            <joint name="joint_L2" type="hinge" axis="1 0 0" limited="true" range="-0.26 1.05" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+            <inertial pos="0.0044774 0 -0.0743865" mass="0.5459822" fullinertia="0.0003158 0.0003989 0.0003074 0 -0.0000331 0"/>
+            <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L2_mat" type="mesh" mesh="Link_L2" />
+            <geom pos="0 0 -0.1" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.05" />
+            <body name="Link_L3" pos="-0.0001 0 -0.1215">
+              <joint name="joint_L3" type="hinge" axis="0 0 1" limited="true" range="-1 1" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+              <inertial pos="0 -0.0001081 -0.0958044" mass="0.5207862" fullinertia="0.0004243 0.0003483 0.0002701 0 0 -0.0000153"/>
+              <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L3_mat" type="mesh" mesh="Link_L3" />
+              <geom pos="0 0 -0.1" quat="0.7071068 -0.7071068 0 0" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.05" />
+              <body name="Link_L4" pos="0 0 -0.112">
+                <joint name="joint_L4" type="hinge" axis="0 1 0" limited="true" range="0 1.92" actuatorfrclimited="true" actuatorfrcrange="-27 27" damping="0" frictionloss="0" armature="0.032"/>
+                <inertial pos="0.0000002 0.0024635 -0.1405535" mass="0.8551582" fullinertia="0.0005475 0.0004903 0.000386 0 0 -0.0000278"/>
+                <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L4_mat" type="mesh" mesh="Link_L4" />
+                <geom pos="0 0 -0.14" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="cylinder" size="0.04 0.075" />
+                <body name="Link_L5" pos="0 0 -0.221">
+                  <joint name="joint_L5" type="hinge" axis="0 1 0" limited="true" range="-0.52 0.52" actuatorfrclimited="true" actuatorfrcrange="-7 7" damping="0" frictionloss="0" armature="0.0018"/>
+                  <inertial pos="0.0605625 -0.0035236 -0.0030213" mass="0.4048746" fullinertia="0.0001794 0.0001738 0.0001658 -0.0000035 -0.0000096 0.000007"/>
+                  <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L5_mat" type="mesh" mesh="Link_L5" />
+                  <body name="Link_L6" pos="0.0001007 0 -0.055093">
+                    <joint name="joint_L6" type="hinge" axis="1 0 0" limited="true" range="-0.35 0.35" actuatorfrclimited="true" actuatorfrcrange="-7 7" damping="0" frictionloss="0" armature="0.0018"/>
+                    <inertial pos="0.0522817 -0.000739 -0.0056262" mass="0.3002968" fullinertia="0.0001474 0.0007728 0.0009173 0 -0.0000001 0"/>
+                    <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L6_mat" type="mesh" mesh="Link_L6" />
+                    <geom name="l_foot_1" pos="0.15 0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="l_foot_2" pos="0.15 -0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="l_foot_3" pos="-0.05 0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                    <geom name="l_foot_4" pos="-0.05 -0.04 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="sphere" size="0.01" />
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <motor name="joint_R1_motor" joint="joint_R1" gear="1" />
+    <motor name="joint_R2_motor" joint="joint_R2" gear="1" />
+    <motor name="joint_R3_motor" joint="joint_R3" gear="1" />
+    <motor name="joint_R4_motor" joint="joint_R4" gear="1" />
+    <motor name="joint_R5_motor" joint="joint_R5" gear="1" />
+    <motor name="joint_R6_motor" joint="joint_R6" gear="1" />
+    <motor name="joint_L1_motor" joint="joint_L1" gear="1" />
+    <motor name="joint_L2_motor" joint="joint_L2" gear="1" />
+    <motor name="joint_L3_motor" joint="joint_L3" gear="1" />
+    <motor name="joint_L4_motor" joint="joint_L4" gear="1" />
+    <motor name="joint_L5_motor" joint="joint_L5" gear="1" />
+    <motor name="joint_L6_motor" joint="joint_L6" gear="1" />
+  </actuator>
+</mujoco>

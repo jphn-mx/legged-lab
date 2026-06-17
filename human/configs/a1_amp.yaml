@@ -1,13 +1,19 @@
-policy_path: "policy/policy.onnx"
+policy_path: "policy/policy_amp.onnx"
 model_type: "onnx"
-xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+# xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
 simulation_duration: 600.0
 simulation_dt: 0.001
 control_decimation: 20
-kps: [30, 30, 30, 30, 30, 30,
-      30, 30, 30, 30, 30, 30,]
-kds: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
-      0.3, 0.3, 0.3, 0.3, 0.3, 0.3,]
+# kps: [30, 30, 30, 30, 30, 30,
+#       30, 30, 30, 30, 30, 30,]
+# kds: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
+#       0.3, 0.3, 0.3, 0.3, 0.3, 0.3,]
+kps: [126, 126, 126, 126, 7, 7,
+      126, 126, 126, 126, 7, 7,]
+
+kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
+      8.0, 8.0, 8.0, 8.0, 0.4, 0.4, ]
 
 default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]

@@ -1,4 +1,4 @@
-policy_path: "policy/policy_jump.onnx"
+policy_path: "policy/policy_test.onnx"
 model_type: "onnx"
 xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
 simulation_duration: 600.0

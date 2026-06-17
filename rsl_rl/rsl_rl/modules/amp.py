@@ -17,20 +17,28 @@ class LossType(Enum):
     WGAN = 2
 
 
+class RewardType(Enum):
+    LSGAN = 0
+    GAIL = 1
+    AIRL = 2
+
+
 class AMPDiscriminator(nn.Module):
-    def __init__(self, 
+    def __init__(self,
             disc_obs_dim: int,
             disc_obs_steps: int,
             obs_groups: dict,
             loss_type: LossType = LossType.LSGAN,
+            reward_type: RewardType = RewardType.LSGAN,
             hidden_dims = [256, 256, 256],
             activation="relu",
-            style_reward_scale=1.0, 
+            style_reward_scale=1.0,
             task_style_lerp=0.0,
+            use_spectral_norm: bool = False,
             device="cpu",
         ):
         super().__init__()
-        
+
         self.input_dim = disc_obs_dim * disc_obs_steps
         self.disc_obs_dim = disc_obs_dim
         self.disc_obs_steps = disc_obs_steps
@@ -41,22 +49,38 @@ class AMPDiscriminator(nn.Module):
         self.task_style_lerp = task_style_lerp
         self.device = device
         self.loss_type = loss_type
+        self.reward_type = reward_type
         
         # Discriminator observation normalizer
         self.disc_obs_normalizer = EmpiricalNormalization(shape=self.disc_obs_dim, until=1e8).to(device)
 
-        # Build the discriminator network
+        # Build the discriminator network.
+        # If use_spectral_norm is set, wrap every Linear in spectral normalization:
+        # this caps each layer's largest singular value (-> bounds the network's
+        # Lipschitz constant), so the discriminator cannot form an arbitrarily sharp /
+        # over-confident decision boundary. It keeps disc scores away from the saturated
+        # +-1 regime where the LSGAN style reward flattens to ~0, so the style signal
+        # stays alive for the whole run. Does NOT change the score / reward formula.
+        self.use_spectral_norm = use_spectral_norm
+
+        def _linear(in_dim, out_dim):
+            layer = nn.Linear(in_dim, out_dim)
+            if use_spectral_norm:
+                layer = nn.utils.parametrizations.spectral_norm(layer)
+            return layer
+
         disc_layers = []
         curr_in_dim = self.input_dim
         for hidden_dim in hidden_dims:
-            disc_layers.append(nn.Linear(curr_in_dim, hidden_dim))
+            disc_layers.append(_linear(curr_in_dim, hidden_dim))
             disc_layers.append(activation)
             curr_in_dim = hidden_dim
         self.disc_trunk = nn.Sequential(*disc_layers)
-        self.disc_linear = nn.Linear(hidden_dims[-1], 1)
-        
+        self.disc_linear = _linear(hidden_dims[-1], 1)
+
         print(f"AMP Discriminator MLP: {self.disc_trunk}")
         print(f"AMP Discriminator Output Layer: {self.disc_linear}")
+        print(f"AMP Discriminator Spectral Norm: {'ENABLED' if use_spectral_norm else 'disabled'}")
         
         if self.loss_type == LossType.WGAN:
             self.disc_output_normalizer = EmpiricalNormalization(shape=1, until=1e8).to(device)
@@ -177,17 +201,23 @@ class AMPDiscriminator(nn.Module):
             normed_disc_obs = normed_disc_obs.view(-1, self.disc_obs_steps * self.disc_obs_dim)  # [num_envs, disc_obs_steps * disc_obs_dim]
         
             disc_score = self.forward(normed_disc_obs)  # [num_envs, 1]
-            
-            rew = 0
-            if self.loss_type == LossType.GAN:
-                prob = 1.0 / (1.0 + torch.exp(-disc_score))
-                rew = - torch.log(torch.maximum(1-prob, torch.tensor(1e-6, device=self.device)))  # [num_envs, 1]
-            elif self.loss_type == LossType.LSGAN:
-                rew =  torch.clamp(1 - (1/4) * torch.square(disc_score - 1), min=0) # [num_envs, 1]
-            elif self.loss_type == LossType.WGAN:
-                rew = self.disc_output_normalizer(disc_score) # [num_envs, 1]
-            else: 
-                raise ValueError(f"Unknown AMP loss type: {self.loss_type}. Should be 'GAN', 'LSGAN', or 'WGAN'")
+
+            if self.reward_type == RewardType.LSGAN:
+                rew = torch.clamp(1 - (1/4) * torch.square(disc_score - 1), min=0)  # [num_envs, 1]
+            elif self.reward_type == RewardType.GAIL:
+                # Non-saturating: -log(1 - sigmoid(d)), gives gradient even when disc is strong
+                prob = torch.sigmoid(disc_score)
+                rew = -torch.log(torch.clamp(1 - prob, min=1e-6))  # [num_envs, 1]
+            elif self.reward_type == RewardType.AIRL:
+                # log D - log(1-D) = logit(D), unbounded, recovers advantage under optimal disc
+                prob = torch.sigmoid(disc_score)
+                rew = torch.log(torch.clamp(prob, min=1e-6)) - torch.log(torch.clamp(1 - prob, min=1e-6))  # [num_envs, 1]
+            else:
+                raise ValueError(f"Unknown reward type: {self.reward_type}. Should be 'LSGAN', 'GAIL', or 'AIRL'")
+
+            # WGAN uses normalized output as reward regardless of reward_type setting
+            if self.loss_type == LossType.WGAN:
+                rew = self.disc_output_normalizer(disc_score)  # [num_envs, 1]
             
             style_reward = dt * self.style_reward_scale * rew
             

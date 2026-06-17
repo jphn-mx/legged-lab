@@ -42,8 +42,18 @@ class RslRlAmpCfg:
         task_style_lerp: float = 0.0
         """Linear interpolation factor for the task style reward in the AMP training."""
 
+        use_spectral_norm: bool = False
+        """If True, wrap every discriminator Linear layer in spectral normalization to
+        bound its Lipschitz constant. This stops the discriminator from saturating into
+        over-confident +-1 scores (which flattens the style reward to ~0 and kills the
+        style gradient mid-run). Does not change the reward formula. Default False."""
+
     amp_discriminator: AMPDiscriminatorCfg = AMPDiscriminatorCfg()
     """Configuration for the AMP discriminator network."""
 
     loss_type: Literal["GAN", "LSGAN", "WGAN"] = "LSGAN"
-    """Type of loss function used for the AMP discriminator (e.g., 'GAN', 'LSGAN', 'WGAN')"""
+    """Type of loss function used for the AMP discriminator training (e.g., 'GAN', 'LSGAN', 'WGAN')"""
+
+    reward_type: Literal["LSGAN", "GAIL", "AIRL"] = "LSGAN"
+    """Type of reward formula for the policy. 'LSGAN' saturates when disc is strong;
+    'GAIL' (-log(1-sigmoid(d))) is non-saturating; 'AIRL' (logit) is unbounded."""

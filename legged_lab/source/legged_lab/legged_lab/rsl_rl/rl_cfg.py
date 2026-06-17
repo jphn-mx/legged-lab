@@ -3,6 +3,7 @@ from __future__ import annotations
 from isaaclab.utils import configclass
 from isaaclab_rl.rsl_rl import RslRlPpoActorCriticCfg, RslRlPpoAlgorithmCfg
 
+from .add_cfg import RslRlAddCfg
 from .amp_cfg import RslRlAmpCfg
 
 #########################
@@ -42,6 +43,17 @@ class RslRlPpoAmpAlgorithmCfg(RslRlPpoAlgorithmCfg):
 
     amp_cfg: RslRlAmpCfg = RslRlAmpCfg()
     """Configuration for the AMP (Adversarial Motion Priors) in the training."""
+
+
+@configclass
+class RslRlPpoAddAlgorithmCfg(RslRlPpoAlgorithmCfg):
+    """Configuration for the ADD (Adversarial Differential Discriminator) algorithm."""
+
+    class_name: str = "PPOADD"
+    """The algorithm class name. Default is PPOADD."""
+
+    amp_cfg: RslRlAddCfg = RslRlAddCfg()
+    """Configuration for the ADD discriminator training."""
 
 
 #########################

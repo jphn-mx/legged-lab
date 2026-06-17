@@ -24,6 +24,7 @@ ROBOT_XML_DICT = {
     "pal_talos": ASSET_ROOT / "pal_talos" / "talos.xml",
     "fourier_gr3": ASSET_ROOT / "fourier_gr3v2_1_1" / "mjcf" / "gr3v2_1_1_dummy_hand.xml",
     "a1_legs_v1": ASSET_ROOT / "a1_legs_v1" / "A1-legs_V1.xml",
+    "a1_legs_v2": ASSET_ROOT / "a1_legs_v2" / "A1_legs_V2_mjcf.xml",
 }
 
 IK_CONFIG_DICT = {
@@ -47,6 +48,7 @@ IK_CONFIG_DICT = {
         "tienkung": IK_CONFIG_ROOT / "smplx_to_tienkung.json",
         "fourier_gr3": IK_CONFIG_ROOT / "smplx_to_gr3.json",
         "a1_legs_v1": IK_CONFIG_ROOT / "smplx_to_a1_legs.json",
+        "a1_legs_v2": IK_CONFIG_ROOT / "smplx_to_a1_legs_v2.json",
     },
     "bvh_lafan1":{
         "unitree_g1": IK_CONFIG_ROOT / "bvh_lafan1_to_g1.json",
@@ -57,6 +59,7 @@ IK_CONFIG_DICT = {
         "engineai_pm01": IK_CONFIG_ROOT / "bvh_lafan1_to_pm01.json",
         "pal_talos": IK_CONFIG_ROOT / "bvh_to_talos.json",
         "a1_legs_v1": IK_CONFIG_ROOT / "bvh_lafan1_to_a1_legs.json",
+        "a1_legs_v2": IK_CONFIG_ROOT / "bvh_lafan1_to_a1_legs_v2.json",
     },
     "bvh_nokov":{
         "unitree_g1": IK_CONFIG_ROOT / "bvh_nokov_to_g1.json",
@@ -102,6 +105,7 @@ ROBOT_BASE_DICT = {
     "pal_talos": "base_link",
     "fourier_gr3": "base_link",
     "a1_legs_v1": "base",
+    "a1_legs_v2": "base",
 }
 
 VIEWER_CAM_DISTANCE_DICT = {
@@ -124,4 +128,5 @@ VIEWER_CAM_DISTANCE_DICT = {
     "pal_talos": 3.0,
     "fourier_gr3": 2.0,
     "a1_legs_v1": 2.0,
+    "a1_legs_v2": 2.0,
 }

@@ -1,0 +1,42 @@
+# Pure-RL velocity (flat) policy — A1FlatEnvCfg sim2sim deployment
+policy_path: "policy/policy_flat_0616good2.onnx"   # <-- replace with the trained flat/velocity policy
+model_type: "onnx"
+# xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
+xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml"
+simulation_duration: 600.0
+simulation_dt: 0.001
+control_decimation: 20               # 20 * 0.001 = 0.02 s == env step_dt (decimation 4 * sim.dt 0.005)
+
+kps: [126, 126, 126, 126, 7, 7,
+      126, 126, 126, 126, 7, 7,]
+kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
+      8.0, 8.0, 8.0, 8.0, 0.4, 0.4,]
+default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+
+action_scale: 0.25
+num_actions: 12
+num_obs: 47          # per-frame: 3 + 3 + 3 + 12 + 12 + 12 + 2
+num_history: 5       # policy group history_length (policy input = num_obs * num_history)
+
+cmd_init: [0, 0, 0.]
+cmd_scale: [1.0, 1.0, 1.0]
+
+# Observation latency emulation (control steps), applied to sensor terms only
+# (base_ang_vel, projected_gravity, joint_pos, joint_vel). Independent per-term lag,
+# sampled in [min_delay_steps, max_delay_steps] once per episode. Set max=0 to disable.
+min_delay_steps: 1
+max_delay_steps: 4
+
+gait_period: 0.5     # GAIT_PERIOD in flat_env_cfg.py (gait_phase / feet_gait)
+step_dt: 0.02        # env step_dt, advances the gait clock
+
+# MuJoCo joint order (from XML): R1,R2,R3,R4,R5,R6,L1,L2,L3,L4,L5,L6
+# Isaac Lab joint order:          L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+obs_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+obs_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+action_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+action_index_in_mj:  ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+
+# Observation order matching A1FlatEnvCfg.PolicyCfg (history_length=1)
+obs_index: ['base_ang_vel', 'projected_gravity', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action', 'gait_phase']

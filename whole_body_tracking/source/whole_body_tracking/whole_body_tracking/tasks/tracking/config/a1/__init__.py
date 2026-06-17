@@ -25,3 +25,23 @@ gym.register(
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:A1FlatPPORunnerCfg",
     },
 )
+
+gym.register(
+    id="Tracking-Flat-A1-Dance-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.A1FlatDanceWoStateEstimationEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:A1FlatPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Tracking-Flat-A1-GetUp-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.A1FlatGetUpWoStateEstimationEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:A1FlatPPORunnerCfg",
+    },
+)

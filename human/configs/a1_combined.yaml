@@ -9,7 +9,7 @@ cmd_scale: [1.0, 1.0, 1.0]
 key_body_names: ["Link_L6", "Link_R6"]
 
 # WBT (jump skill) policy
-wbt_policy_path: "policy/policy_jump.onnx"
+wbt_policy_path: "policy/policy_good_double_jump.onnx"
 wbt_action_scale: [0.225, 0.225, 0.225, 0.225, 0.225, 0.225,
                    0.225, 0.225, 0.058, 0.058, 0.058, 0.058]
 wbt_num_obs: 69

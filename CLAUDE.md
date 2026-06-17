@@ -128,7 +128,7 @@ pip install mujoco onnxruntime scipy pyyaml
 ## AMP Training Notes
 
 - Discriminator learning rate sweet spot: 3e-5 ~ 5e-5 for A1. Too high → pure task behavior; too low → pure style imitation.
-- `task_style_lerp` controls task vs style reward balance (0 = all task, 1 = all style).
+- `task_style_lerp` controls task vs style reward balance — it is the weight on the **task** reward: `total = task_style_lerp * task + (1 - task_style_lerp) * style` (see `rsl_rl/rsl_rl/modules/amp.py:lerp_reward`). So **0 = all style, 1 = all task** (e.g. 0.2 means 80% style / 20% task).
 - Symmetry augmentation available via `RslRlSymmetryCfg` (data augmentation or mirror loss).
 - AMP observation groups: `policy`, `critic`, `discriminator`, `discriminator_demonstration`.
 
