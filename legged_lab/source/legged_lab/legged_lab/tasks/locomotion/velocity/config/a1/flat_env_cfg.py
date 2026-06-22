@@ -20,7 +20,7 @@ from legged_lab.tasks.locomotion.velocity.velocity_env_cfg import EventCfg, Loco
 FEET_BODY_NAMES = ["Link_R6", "Link_L6"]
 
 # Observation latency range, in control steps (1 step = decimation * sim.dt = 0.02 s here).
-OBS_DELAY_STEPS = {"min_delay_steps": 1, "max_delay_steps": 6}
+OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 3}
 
 # Gait clock: the robot is rewarded for stepping at this frequency at ALL times, even when the
 # velocity command is zero (marching in place). GAIT_PERIOD is the full stride period in seconds;
@@ -101,7 +101,7 @@ class A1RewardsCfg:
     track_ang_vel_z_exp = RewTerm(
         func=mdp.track_ang_vel_z_world_exp,
         weight=0.75,
-        params={"command_name": "base_velocity", "std": 0.5},
+        params={"command_name": "base_velocity", "std": 0.3},
     )
 
     # -- base
@@ -129,7 +129,7 @@ class A1RewardsCfg:
     # -- feet
     feet_air_time = RewTerm(
         func=mdp.feet_air_time_positive_biped,
-        weight=1.0,
+        weight=3.0,
         params={
             # None => reward stepping even at zero command, consistent with the always-on gait
             "command_name": None,
@@ -139,7 +139,7 @@ class A1RewardsCfg:
     )
     feet_slide = RewTerm(
         func=mdp.feet_slide,
-        weight=-0.1,
+        weight=-1.5,
         params={
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
             "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES),
@@ -149,7 +149,7 @@ class A1RewardsCfg:
         func=mdp.feet_clearance_swing,
         weight=1.5,
         params={
-            "std": 0.05,
+            "std": 0.25,
             "target_height": 0.15,
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
             "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES),
@@ -163,16 +163,29 @@ class A1RewardsCfg:
         params={"asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES)},
     )
     # penalize uneven swing height between the two legs (one foot lifts high, the other drags).
-    # Value is |peak_clearance_R - peak_clearance_L| in metres; weight tuned so a ~5 cm asymmetry
-    # costs a similar amount to the other feet penalties. Increase magnitude if asymmetry persists.
-    # feet_swing_height_symmetry = RewTerm(
-    #     func=mdp.feet_swing_height_symmetry,
-    #     weight=-20.0,
-    #     params={
-    #         "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES, preserve_order=True),
-    #         "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES, preserve_order=True),
-    #     },
-    # )
+    # CAUTION: this penalty is minimized by NOT lifting either foot (peak_L = peak_R = 0). Keep the
+    # weight small enough that even clumsy/asymmetric early lifting stays net-positive against the
+    # feet_clearance (+1.5) / feet_air_time (+1.0) rewards, otherwise the policy collapses to "don't
+    # lift" to avoid the penalty. Only raise it once a stepping gait has emerged.
+    feet_swing_height_symmetry = RewTerm(
+        func=mdp.feet_swing_height_symmetry,
+        weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-2 to refine symmetry
+        params={
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES, preserve_order=True),
+            "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES, preserve_order=True),
+        },
+    )
+
+    # Left/right step-timing symmetry: penalize the variance (i.e. the difference, for 2 feet) of the
+    # two feet's last air-time AND last contact-time, so both legs swing and stand for equal durations.
+    # This is a temporal symmetry (correct for an anti-phase gait) -- it does NOT fight the alternation
+    # the way an instantaneous |q_L - q_R| posture penalty would. Same caveat as the height symmetry:
+    # its minimum is "both feet motionless", so keep the weight gentle. Raise once the gait is stable.
+    feet_air_time_symmetry = RewTerm(
+        func=mdp.air_time_variance_penalty,
+        weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-0.5 to refine symmetry
+        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES)},
+    )
 
     # -- posture
     # joint_*1 is the hip PITCH (Y-axis), the main leg-swing joint. With the torso staying level, the
@@ -200,7 +213,7 @@ class A1RewardsCfg:
         params={
             "command_name": "base_velocity",
             "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R3", "joint_L3"]),
-            "ang_vel_threshold": 0.3,
+            "ang_vel_threshold": 1.0,
         },
     )
     # joint_*6 is the ankle ROLL (X-axis) joint -- keep it near default so the foot does not invert/
@@ -212,7 +225,7 @@ class A1RewardsCfg:
         params={
             "command_name": "base_velocity",
             "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R6", "joint_L6"]),
-            "ang_vel_threshold": 0.3,
+            "ang_vel_threshold": 1.0,
         },
     )
 
@@ -231,7 +244,7 @@ class A1RewardsCfg:
     # the gait_phase observation so the policy's clock matches the rewarded contact pattern.
     feet_gait = RewTerm(
         func=mdp.feet_gait,
-        weight=0.8,
+        weight=1.2,
         params={
             "period": GAIT_PERIOD,
             "offset": GAIT_OFFSETS,
@@ -315,7 +328,7 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
         # early discovery toward walking forward and avoids collapsing into the backward local optimum.
         self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.5)
         self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
-        self.commands.base_velocity.ranges.ang_vel_z = (-0.3, 0.3)
+        self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
         self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
 
         # -----------------------------------------------------------------------------

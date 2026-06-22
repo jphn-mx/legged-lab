@@ -4,14 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from isaaclab.utils import configclass
-from isaaclab_rl.rsl_rl import (
-    RslRlOnPolicyRunnerCfg,
-    RslRlPpoActorCriticCfg,
-    RslRlPpoAlgorithmCfg,
-    RslRlSymmetryCfg,
-)
-
-from legged_lab.tasks.locomotion.velocity.config.a1 import symmetry as a1_symmetry
+from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, RslRlPpoAlgorithmCfg
 
 
 @configclass
@@ -42,14 +35,6 @@ class A1FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         lam=0.95,
         desired_kl=0.01,
         max_grad_norm=1.0,
-        # Left-right symmetry to fix the asymmetric gait (uneven step timing/height, drifting / turning
-        # in place). Data augmentation mirrors each rollout sample; the mirror loss explicitly penalizes
-        # asymmetric action means. See config/a1/symmetry.py -- its mirror layout MUST track PolicyCfg.
-        symmetry_cfg=RslRlSymmetryCfg(
-            use_data_augmentation=False,
-            data_augmentation_func=a1_symmetry.compute_symmetric_states,
-            use_mirror_loss=False,
-            mirror_loss_coeff=0.1,
-        ),
     )
+
 
