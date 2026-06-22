@@ -1,0 +1,47 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+  s_8f02b93fbff032::t_a36280645a1264 7
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+  s_a0ddf95b153e83::t_2c5ccc3f7a2f61 170-171,173-177
+  s_a0ddf95b153e83::t_c44ac45aab586c 166-169
+  s_a0ddf95b153e83::t_0294f611cf5738 132
+  s_a0ddf95b153e83::t_8bd81ed4c7c8c1 172
+  s_a0ddf95b153e83::t_8cb1d610b1fa67 179-181,184-185,187-188
+  s_a0ddf95b153e83::t_0c4e27cd4118a6 182-183
+  s_a0ddf95b153e83::t_e9ebaec44ae8c5 186
+  s_a0ddf95b153e83::t_07c52f79c1957c 142
+  s_a0ddf95b153e83::t_ae672fbd012e9a 247
+  h_3a925938c75d22 23,104,152,216,228,331
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+  h_3a925938c75d22 139-140
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
+  s_8f02b93fbff032::t_307daf5c89e41e 1-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "eed70ef72ec37dc3d09a96126091e0702d251dcd",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_8f02b93fbff032": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5957fe8-42d9-4a84-ac29-6e8099dd096f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_a0ddf95b153e83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "53255f49-c1e0-4873-8c0a-963bf9dc293a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
