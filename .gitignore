@@ -23,8 +23,7 @@ build/
 **/wandb/
 **/.neptune/
 
-# Large data - exclude bulk motion data (keep ACCAD_a1_gmr as example)
-GMR/motion_data/ACCAD/
+# Large data - exclude bulk motion data
 GMR/motion_data/lafan1/
 GMR/motion_data/lafan1.zip
 GMR/motion_data/smplx/

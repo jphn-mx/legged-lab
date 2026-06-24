@@ -73,7 +73,7 @@ class A1RslRlOnPolicyRunnerAmpCfg(RslRlOnPolicyRunnerCfg):
             disc_max_grad_norm=1.0,
             amp_discriminator=RslRlAmpCfg.AMPDiscriminatorCfg(
                 hidden_dims=[512, 256], activation="elu", style_reward_scale=2.0, task_style_lerp=0.4,
-                use_spectral_norm=True,  # cap disc Lipschitz -> stop it saturating to +-0.98 -> keep style alive
+                use_spectral_norm=False,  # cap disc Lipschitz -> stop it saturating to +-0.98 -> keep style alive
             ),
             loss_type="LSGAN",
             # loss_type="WGAN",
