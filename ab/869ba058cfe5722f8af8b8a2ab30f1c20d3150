@@ -1,0 +1,63 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+  h_3a925938c75d22 26-27,34
+  s_a0ddf95b153e83::t_b0660bd14d93c2 7-12
+  s_a0ddf95b153e83::t_772ba19c781c9e 43-56
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+  h_3a925938c75d22 139-140
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+  h_3a925938c75d22 23,98,103-104,157,221-225,289-290,303,316-335,347-364,409-411,495-500
+  s_e1cd26c2cdba50::t_be3f22f3333d82 430-436
+  s_f98da663ab6ecd::t_3cf88526b9706c 121-135
+  s_a0ddf95b153e83::t_3de329d3d2aea3 481-485,487-490
+  s_e1cd26c2cdba50::t_a1d7afbf7365e1 337-346
+  s_f98da663ab6ecd::t_db98e20ed75a91 309-315,336
+  s_e1cd26c2cdba50::t_e671c61341271f 418-424
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/symmetry.py
+  s_a0ddf95b153e83::t_e72dd8c9fc31bb 1-246
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+  s_f98da663ab6ecd::t_60c8e6b2acfa4b 91-108
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
+  s_e1cd26c2cdba50::t_4fc239f99f6fc0 51-104
+legged_lab/source/legged_lab/legged_lab/assets/a1.py
+  h_3a925938c75d22 4,22,37,58,65-78,80,83-84,86,89-90,95-112,114,117-119,121-122,124,127-129,131-132,142
+  s_f98da663ab6ecd::t_4a8922149fca62 8
+  s_f98da663ab6ecd::t_c1023a53b46a1e 133,136-141,143-151,154
+  s_f98da663ab6ecd::t_9967fc530454bd 134-135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ab869ba058cfe5722f8af8b8a2ab30f1c20d3150",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_a0ddf95b153e83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "53255f49-c1e0-4873-8c0a-963bf9dc293a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_e1cd26c2cdba50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9cc39c8b-4804-4ef0-9d47-f6af9c4411fe",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_f98da663ab6ecd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37a12830-3fa3-4323-8aec-867729f32764",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
