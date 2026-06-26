@@ -20,7 +20,7 @@ from legged_lab.tasks.locomotion.velocity.velocity_env_cfg import EventCfg, Loco
 FEET_BODY_NAMES = ["Link_R6", "Link_L6"]
 
 # Observation latency range, in control steps (1 step = decimation * sim.dt = 0.02 s here).
-OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 3}
+OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 0}
 
 # Gait clock: the robot is rewarded for stepping at this frequency at ALL times, even when the
 # velocity command is zero (marching in place). GAIT_PERIOD is the full stride period in seconds;
@@ -95,13 +95,13 @@ class A1RewardsCfg:
     # -- task
     track_lin_vel_xy_exp = RewTerm(
         func=mdp.track_lin_vel_xy_yaw_frame_exp,
-        weight=1.5,
+        weight=1.,
         params={"command_name": "base_velocity", "std": 0.5},
     )
     track_ang_vel_z_exp = RewTerm(
         func=mdp.track_ang_vel_z_world_exp,
-        weight=0.75,
-        params={"command_name": "base_velocity", "std": 0.3},
+        weight=1.,
+        params={"command_name": "base_velocity", "std": 0.5},
     )
 
     # -- base
@@ -117,6 +117,21 @@ class A1RewardsCfg:
         func=mdp.joint_torques_l2,
         weight=-2.0e-6,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
+    )
+    # Soft thermal limit: penalize ONLY the torque ABOVE each motor's rated (continuous) value, so
+    # brief peaks (impacts/push-off, up to the hard effort_limit) stay free but sustained high torque
+    # is punished. Rated: DM-J4340 hip/knee = 9 N*m, DM-J4310 ankle = 3 N*m. excess^2 can be large
+    # (hip can reach (27-9)^2=324), so the weights are small -- tune by watching the torque histogram:
+    # raise if the policy parks above rated, lower if the gait gets too weak/slow.
+    joint_torque_over_rated_hip_knee = RewTerm(
+        func=mdp.joint_torque_over_limit_l2,
+        weight=-2.0e-4,
+        params={"limit": 9.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
+    )
+    joint_torque_over_rated_ankle = RewTerm(
+        func=mdp.joint_torque_over_limit_l2,
+        weight=-2.0e-4,
+        params={"limit": 3.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"])},
     )
     joint_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.0e-7)
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.02)
@@ -139,7 +154,7 @@ class A1RewardsCfg:
     )
     feet_slide = RewTerm(
         func=mdp.feet_slide,
-        weight=-1.5,
+        weight=-3.0,
         params={
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
             "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES),
@@ -202,6 +217,11 @@ class A1RewardsCfg:
         func=mdp.joint_deviation_l1,
         weight=-0.8,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R2", "joint_L2"])},
+    )
+    joint_deviation_hip = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.8,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R5", "joint_L5"])},
     )
     # joint_*3 is the hip YAW (Z-axis) joint -- the primary DOF for redirecting/turning the leg.
     # Command-gated: a LARGE weight keeps the yaw joints centered while going straight (prevents the
@@ -266,8 +286,8 @@ class A1EventCfg(EventCfg):
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
-            "stiffness_distribution_params": (0.8, 1.2),
-            "damping_distribution_params": (0.8, 1.2),
+            "stiffness_distribution_params": (0.9, 1.1),
+            "damping_distribution_params": (0.9, 1.1),
             "operation": "scale",
             "distribution": "uniform",
         },
@@ -280,11 +300,68 @@ class A1EventCfg(EventCfg):
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
-            "armature_distribution_params": (0.8, 1.2),
+            "armature_distribution_params": (0.9, 1.1),
             "operation": "scale",
             "distribution": "uniform",
         },
     )
+
+    # Bridge the UNMEASURED dry (Coulomb) friction with domain randomization instead of a bench test.
+    # The implicit actuators have no Fs/Fd; PhysX joint `friction` acts as a static friction torque
+    # (N*m), so we sample an absolute value per joint at startup. operation="abs" (NOT scale -- the
+    # base friction is 0, so scaling would stay 0). Ranges are conservative guesses bounded by motor
+    # size; tighten the center/width later once a bench sweep gives the real Fs.
+    #   hip/knee = DM-J4340 (40:1, peak 27 N*m) -> larger gearbox friction
+    #   ankle    = DM-J4310 (10:1, peak  7 N*m) -> smaller
+    # randomize_joint_friction_hip_knee = EventTerm(
+    #     func=mdp.randomize_joint_parameters,
+    #     mode="startup",
+    #     params={
+    #         "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"]),
+    #         "friction_distribution_params": (0.2, 1.5),
+    #         "operation": "abs",
+    #         "distribution": "uniform",
+    #     },
+    # )
+    # randomize_joint_friction_ankle = EventTerm(
+    #     func=mdp.randomize_joint_parameters,
+    #     mode="startup",
+    #     params={
+    #         "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"]),
+    #         "friction_distribution_params": (0.1, 0.6),
+    #         "operation": "abs",
+    #         "distribution": "uniform",
+    #     },
+    # )
+
+    # Domain-randomize the custom Damiao/Unitree actuator's INTERNAL friction torque (Fs/Fd),
+    # applied inside UnitreeActuator.compute() as `effort -= Fs*tanh(v/Va) + Fd*v`.
+    # NOTE: this is the motor-shaft friction of the DamiaoActuator (A1_LEGS_V1_CFG hip_knee/ankle),
+    # which is a DIFFERENT channel from the PhysX joint `friction` randomized just above
+    # (randomize_joint_friction_*) and from the foot/ground contact friction (physics_material).
+    # The DamiaoActuator does NOT read the PhysX joint friction, so its Fs/Fd were 0 (modeling gap);
+    # this term fills that gap. One value per env is drawn at reset and held for the whole episode.
+    # Ranges from PDF analysis (Fs ~= 2-3% of peak torque, Fd ~= Fs/10):
+    #   hip_knee (DM4340, peak 27 N.m): Fs in [0.3, 0.9],  Fd in [0.03, 0.09]
+    #   ankle    (DM4310, peak  7 N.m): Fs in [0.1, 0.25], Fd in [0.01, 0.025]
+    # randomize_actuator_friction_hip_knee = EventTerm(
+    #     func=mdp.randomize_actuator_friction,
+    #     mode="reset",
+    #     params={
+    #         "actuator_names": ["hip_knee"],
+    #         "static_friction_range": (0.3, 0.9),
+    #         "dynamic_friction_range": (0.03, 0.09),
+    #     },
+    # )
+    # randomize_actuator_friction_ankle = EventTerm(
+    #     func=mdp.randomize_actuator_friction,
+    #     mode="reset",
+    #     params={
+    #         "actuator_names": ["ankle"],
+    #         "static_friction_range": (0.1, 0.25),
+    #         "dynamic_friction_range": (0.01, 0.025),
+    #     },
+    # )
 
     # slight per-robot joint zero-point offset (encoder/motor miscalibration)
     joint_zero_offset = EventTerm(
@@ -329,17 +406,34 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
         self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.5)
         self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
         self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
+        # self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
+        # self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
+        # self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)
         self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
 
         # -----------------------------------------------------------------------------
         # Events
         # -----------------------------------------------------------------------------
         self.events.add_base_mass.params["asset_cfg"].body_names = "base"
+        # Base mass DR as a multiplicative factor (WBT-style minimal mass DR): base mass *= U[0.8,1.2].
+        # base nominal ~0.62kg -> sampled ~0.50..0.74kg (+-0.12kg). NOTE: this scales ONLY the light
+        # base link, so the absolute change is tiny vs the 8.45kg whole-robot mass and does NOT emulate
+        # whole-body payload variation (for that you'd add ballast or scale a heavier body). Inertia is
+        # recomputed by the same ratio (recompute_inertia default True).
+        self.events.add_base_mass.params["operation"] = "scale"
+        self.events.add_base_mass.params["mass_distribution_params"] = (0.8, 1.2)
         self.events.base_com.params["asset_cfg"].body_names = "base"
         # widen fore-aft (x) CoM randomization so the policy can't rely on a fixed forward lean to
         # balance -> forces an upright posture that is robust to the real robot's true CoM (sim2real).
         self.events.base_com.params["com_range"] = {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.05, 0.05)}
         self.events.base_external_force_torque.params["asset_cfg"].body_names = "base"
+        # Ground/contact friction + restitution DR aligned to WBT (BeyondMimic Table S2). The base
+        # EventCfg default was static/dynamic U[0.1,0.5], restitution 0 (fixed) -- too low to cover
+        # the sim2sim/sim2real deployment friction (~0.8) and gave no contact-restitution robustness.
+        # Overridden here (A1 flat only; base velocity_env_cfg untouched so rough/other tasks unchanged).
+        self.events.physics_material.params["static_friction_range"] = (0.3, 1.6)
+        self.events.physics_material.params["dynamic_friction_range"] = (0.3, 1.2)
+        self.events.physics_material.params["restitution_range"] = (0.0, 0.5)
 
         # -----------------------------------------------------------------------------
         # Terminations
@@ -384,13 +478,23 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
         # disable randomization for play
         self.observations.policy.enable_corruption = False
 
-        # remove random pushing event
+        # disable ALL domain randomization for play (keep only reset_base / reset_robot_joints,
+        # which are needed to spawn and reset the robot each episode).
+        self.events.physics_material = None          # friction / restitution randomization
+        self.events.add_base_mass = None             # random payload mass
+        self.events.base_com = None                  # random COM offset
         self.events.base_external_force_torque = None
-        self.events.push_robot = None
+        self.events.push_robot = None                # random pushes
+        self.events.randomize_actuator_gains = None  # PD kp/kd randomization
+        self.events.randomize_rotor_inertia = None   # armature randomization
+        self.events.joint_zero_offset = None         # encoder zero-point offset
 
         # fixed command range for evaluation (no curriculum growth at play time)
         self.curriculum.lin_vel_cmd_levels = None
         self.curriculum.ang_vel_cmd_levels = None
-        self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
-        self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
-        self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
+        # self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
+        # self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
+        # self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
+        self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
+        self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)

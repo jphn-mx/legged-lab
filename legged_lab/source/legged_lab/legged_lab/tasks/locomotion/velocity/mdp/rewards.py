@@ -88,6 +88,24 @@ def energy(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("r
     return torch.sum(torch.abs(qvel) * torch.abs(qfrc), dim=-1)
 
 
+def joint_torque_over_limit_l2(
+    env: ManagerBasedRLEnv, limit: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Penalize (squared) ONLY the part of the applied joint torque that exceeds ``limit`` (N*m).
+
+    Soft thermal limit: the hard ``effort_limit`` still allows brief peak torque (impacts, push-off),
+    but this term pushes the *continuous* torque back toward the motor's rated value. Below ``limit``
+    the penalty is exactly zero, so transient peaks are free while sustained high torque is punished.
+
+    ``limit`` is the per-group rated (continuous) torque -- DM-J4340 hip/knee = 9 N*m,
+    DM-J4310 ankle = 3 N*m.
+    """
+    asset: Articulation = env.scene[asset_cfg.name]
+    torque = asset.data.applied_torque[:, asset_cfg.joint_ids]
+    excess = (torque.abs() - limit).clamp(min=0.0)
+    return torch.sum(torch.square(excess), dim=-1)
+
+
 def feet_air_time(
     env: ManagerBasedRLEnv, command_name: str, sensor_cfg: SceneEntityCfg, threshold: float
 ) -> torch.Tensor:
