@@ -1,0 +1,1142 @@
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   GMR/scripts/retarget_accad_walk_to_a1.py
+	modified:   human/configs/a1_amp.yaml
+	modified:   human/configs/a1_flat.yaml
+	modified:   human/deploy_a1_amp.py
+	modified:   human/deploy_a1_flat.py
+	modified:   human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+	modified:   human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
+	modified:   legged_lab/source/legged_lab/legged_lab/assets/a1.py
+	modified:   legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+	modified:   legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	A1_legs_V2/A1_legs_V2_feet_mesh.urdf
+	AMP_for_hardware/
+	GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2 copy.json
+	MimicKit/
+	human/calib_effort_timeseries.png
+	human/calib_effort_vs_cmd.png
+	human/calib_effort_vs_dq.png
+	human/calib_motor.py
+	human/calib_replay.py
+	human/configs/a1_flat.yaml.bak
+	human/configs/a1_flat.yaml.predamiaomatch.bak
+	human/deploy_a1_flat.py.preimplicitpd.bak
+	human/deploy_a1_flat.py.prekpfix.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.prefriction.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.preimplicit.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.preimplicitpd.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.prephysics.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml.preselfcol.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml.bak
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml
+	human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml.bak
+	human/policy/policy_0604_task.onnx
+	human/policy/policy_10000.onnx
+	human/policy/policy_amp.onnx
+	human/policy/policy_amp2.onnx
+	human/policy/policy_amp?.onnx
+	human/policy/policy_amp_0528_run_good.onnx
+	human/policy/policy_amp_0529_1.onnx
+	human/policy/policy_amp_0605_good.onnx
+	human/policy/policy_amp_0612good.onnx
+	human/policy/policy_amp_forward_good_0527.onnx
+	human/policy/policy_flat.onnx
+	human/policy/policy_flat2.onnx
+	human/policy/policy_flat3.onnx
+	human/policy/policy_flat_0615good.onnx
+	human/policy/policy_flat_0616good.onnx
+	human/policy/policy_flat_0616good2.onnx
+	human/policy/policy_flat_0616test.onnx
+	human/policy/policy_flat_0617.onnx
+	human/policy/policy_flat_0618good.onnx
+	human/policy/policy_flat_0619good1.onnx
+	human/policy/policy_flat_0621.onnx
+	human/policy/policy_flat_0624_sym_net.onnx
+	human/policy/policy_flat_fr.onnx
+	human/policy/policy_flat_new.onnx
+	human/policy/policy_good_double_jump.onnx
+	human/policy/policy_jump2.onnx
+	human/policy/policy_kun_good.onnx
+	human/policy/policy_right_rad.onnx
+	human/policy/policy_single_jump.onnx
+	human/policy/policy_single_jump2.onnx
+	human/policy/policy_single_jump3(good).onnx
+	human/policy/policy_single_jump4.onnx
+	human/policy/policy_test.onnx
+	human/policy/policy_zhao3.pt
+	human/policy/policy_zhao4.pt
+	human/policy/policy_zhao5.pt
+	human/replay_csv.py
+	legged_lab/source/legged_lab/legged_lab/data/Robots/A1_V2/A1_legs_V2_feet_mesh.urdf
+	legged_lab/source/legged_lab/legged_lab/data/a1_2/
+	legged_lab/source/legged_lab/legged_lab/data/a1_3/
+	legged_lab/source/legged_lab/legged_lab/data/a1_4.zip
+	legged_lab/source/legged_lab/legged_lab/data/a1_4/
+	legged_lab/source/legged_lab/legged_lab/data/walk_forward_back/
+	legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/symmetry.py
+	legs_URDF/
+	scripts/
+	whole_body_tracking/2508.08241v4.pdf
+	whole_body_tracking/scripts/motions/
+	whole_body_tracking/scripts/replay_local_npz.py
+	whole_body_tracking/scripts/smooth_npz.py
+	whole_body_tracking/scripts/symmetrize_pkl.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/GMR/scripts/retarget_accad_walk_to_a1.py b/GMR/scripts/retarget_accad_walk_to_a1.py
+index 14cea31..fffd262 100644
+--- a/GMR/scripts/retarget_accad_walk_to_a1.py
++++ b/GMR/scripts/retarget_accad_walk_to_a1.py
+@@ -36,7 +36,7 @@ for smplx_file, subdir in files:
+         sys.executable,
+         str(HERE / "smplx_to_robot.py"),
+         "--smplx_file", smplx_file,
+-        "--robot", "unitree_g1",#"a1_legs_v2",
++        "--robot", "a1_legs_v2",
+         "--save_path", save_path,
+         "--rate_limit",
+     ]
+diff --git a/human/configs/a1_amp.yaml b/human/configs/a1_amp.yaml
+index 748352d..1732ff0 100644
+--- a/human/configs/a1_amp.yaml
++++ b/human/configs/a1_amp.yaml
+@@ -1,7 +1,8 @@
+ policy_path: "policy/policy_amp.onnx"
+ model_type: "onnx"
+ # xml_path: "model/A1-legs_V1_mjcf/A1-legs_V1.xml"
+-xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
++# xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
++xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml"
+ simulation_duration: 600.0
+ simulation_dt: 0.001
+ control_decimation: 20
+@@ -9,12 +10,17 @@ control_decimation: 20
+ #       30, 30, 30, 30, 30, 30,]
+ # kds: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
+ #       0.3, 0.3, 0.3, 0.3, 0.3, 0.3,]
+-kps: [126, 126, 126, 126, 7, 7,
+-      126, 126, 126, 126, 7, 7,]
+-
+-kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
+-      8.0, 8.0, 8.0, 8.0, 0.4, 0.4, ]
+-
++# kps: [126, 126, 126, 126, 7, 7,
++#       126, 126, 126, 126, 7, 7,]
++
++# kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
++#       8.0, 8.0, 8.0, 8.0, 0.4, 0.4, ]
++# kds: [4.83, 4.83, 4.83, 4.83, 0.27, 0.27,
++#       4.83, 4.83, 4.83, 4.83, 0.27, 0.27,]
++kps: [200, 200, 200, 200, 40, 40,
++      200, 200, 200, 200, 40, 40,]
++kds: [5.0, 5.0, 5.0, 5.0, 0.5, 0.5,
++      5.0, 5.0, 5.0, 5.0, 0.5, 0.5,]
+ default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+ 
+diff --git a/human/configs/a1_flat.yaml b/human/configs/a1_flat.yaml
+index d3f80f2..66d8673 100644
+--- a/human/configs/a1_flat.yaml
++++ b/human/configs/a1_flat.yaml
+@@ -1,22 +1,51 @@
+ # Pure-RL velocity (flat) policy — A1FlatEnvCfg sim2sim deployment
+-policy_path: "policy/policy_flat_0616good2.onnx"   # <-- replace with the trained flat/velocity policy
++policy_path: "policy/policy_right_rad.onnx"   # <-- replace with the trained flat/velocity policy
+ model_type: "onnx"
+-# xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
+-xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml"
++xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
++# xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml"
+ simulation_duration: 600.0
+ simulation_dt: 0.001
+-control_decimation: 20               # 20 * 0.001 = 0.02 s == env step_dt (decimation 4 * sim.dt 0.005)
+-
+-kps: [126, 126, 126, 126, 7, 7,
+-      126, 126, 126, 126, 7, 7,]
+-kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
+-      8.0, 8.0, 8.0, 8.0, 0.4, 0.4,]
+-default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+-                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
++control_decimation: 20              # 20 * 0.001 = 0.02 s == env step_dt (decimation 4 * sim.dt 0.005)
+ 
++# kps: [126, 126, 126, 126, 7, 7,
++#       126, 126, 126, 126, 7, 7,]
++# # kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
++# #       8.0, 8.0, 8.0, 8.0, 0.4, 0.4,]
++# kds: [4.83, 4.83, 4.83, 4.83, 0.27, 0.27,
++#       4.83, 4.83, 4.83, 4.83, 0.27, 0.27,]
++kps: [200, 200, 200, 200, 40, 40,
++      200, 200, 200, 200, 40, 40,]
++kds: [5.0, 5.0, 5.0, 5.0, 0.5, 0.5,
++      5.0, 5.0, 5.0, 5.0, 0.5, 0.5,]
++# default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
++#                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
++default_angles: [-0.2, -0.2, 0.0, 0.0, 0.0, 0.0,
++                  0.4,  0.4, -0.2, -0.2, 0.0, 0.0]
+ action_scale: 0.25
+ num_actions: 12
+ num_obs: 47          # per-frame: 3 + 3 + 3 + 12 + 12 + 12 + 2
++
++# Damiao actuator model (replicates training-side UnitreeActuator: T-N torque derate + friction).
++#   true  -> per-joint torque-speed (T-N) curve limiting + Coulomb/viscous friction
++#            (Fs*tanh(v/Va) + Fd*v) subtracted AFTER the PD torque is T-N-clipped.
++#   false -> legacy behavior: fixed torque clip(+-27 / +-7), no T-N derate, no friction.
++# Set false to one-click revert to the old behavior for A/B comparison.
++use_damiao_actuator_model: false
++# T-N curve params per motor group (IsaacLab joint order: joints 1-4 = hip/knee = DM4340,
++# joints 5-6 = ankle = DM4310). Values copied from unitree_actuators.py DamiaoActuatorCfg_*.
++#   X1: knee speed (full torque up to here) | X2: no-load speed | Y1: same-dir peak | Y2: opposite-dir peak
++damiao_tn:
++  hip_knee: {X1: 3.77,  X2: 5.50,  Y1: 27.0, Y2: 27.0}
++  ankle:    {X1: 12.57, X2: 20.94, Y1: 7.0,  Y2: 7.0}
++# Friction: MATCHED to the training Damiao actuator. A1_LEGS_V1_CFG_DAMIAO does NOT pass Fs/Fd,
++# and DamiaoActuatorCfg_DM4340/4310 don't set them either -> they inherit UnitreeActuatorCfg
++# defaults Fs=0.0, Fd=0.0 (Va=0.01). So the onnx was trained with NO motor friction, only the
++# T-N torque-speed limit. Set Fs=Fd=0 here so deploy == training (T-N only, no friction).
++damiao_friction:
++  hip_knee: {Fs: 0.0,  Fd: 0.0}
++  ankle:    {Fs: 0.0,  Fd: 0.0}
++  Va: 0.01
++
+ num_history: 5       # policy group history_length (policy input = num_obs * num_history)
+ 
+ cmd_init: [0, 0, 0.]
+@@ -26,7 +55,13 @@ cmd_scale: [1.0, 1.0, 1.0]
+ # (base_ang_vel, projected_gravity, joint_pos, joint_vel). Independent per-term lag,
+ # sampled in [min_delay_steps, max_delay_steps] once per episode. Set max=0 to disable.
+ min_delay_steps: 1
+-max_delay_steps: 4
++max_delay_steps: 1
++
++# Action/setpoint execution latency (in CONTROL steps, 1 step = control_decimation * sim_dt = 0.02 s).
++# Delays the joint-position setpoint fed to the PD loop, matching training's DelayedPDActuatorCfg
++# (min_delay/max_delay there). Lag sampled in [min, max] once per episode. Set max=0 to disable.
++action_min_delay_steps: 1
++action_max_delay_steps: 1
+ 
+ gait_period: 0.5     # GAIT_PERIOD in flat_env_cfg.py (gait_phase / feet_gait)
+ step_dt: 0.02        # env step_dt, advances the gait clock
+diff --git a/human/deploy_a1_amp.py b/human/deploy_a1_amp.py
+index c4ba159..7267ad5 100644
+--- a/human/deploy_a1_amp.py
++++ b/human/deploy_a1_amp.py
+@@ -380,12 +380,13 @@ if __name__ == "__main__":
+             tau = pd_control(
+                 target_dof_pos,
+                 d.qpos[7:],
+-                kps[lab2mj],
++                kps,
+                 np.zeros_like(kds),
+                 d.qvel[6:],
+-                kds[lab2mj],
++                kds,
+             )
+             tau = np.clip(tau, -torque_limits, torque_limits)
++            print(tau)
+             d.ctrl = tau
+ 
+             print(f"x_vel:{cmd[0]:.2f}  y_vel:{cmd[1]:.2f}  yaw:{cmd[2]:.2f}\r", end="")
+@@ -438,6 +439,12 @@ if __name__ == "__main__":
+                 # Actions are in Lab order, convert to MuJoCo order for PD target
+                 target_dof = actions * action_scale + default_angles
+                 target_dof_pos = target_dof[lab2mj]
++                joint_lower_limits = np.array([-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
++                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35])
++                joint_upper_limits= np.array([ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
++                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35])
++                target_dof_pos = np.clip(target_dof_pos, joint_lower_limits, joint_upper_limits)
++                # print(target_dof_pos)
+ 
+             draw_velocity_arrows(viewer, d.qpos[:3], d.qpos[3:7], cmd, d.qvel[:3])
+             viewer.sync()
+diff --git a/human/deploy_a1_flat.py b/human/deploy_a1_flat.py
+index af377ce..ce3bf12 100644
+--- a/human/deploy_a1_flat.py
++++ b/human/deploy_a1_flat.py
+@@ -24,6 +24,40 @@ from math_utils import pd_control, get_gravity_orientation
+ DELAYED_TERMS = ("base_ang_vel", "projected_gravity", "joint_pos", "joint_vel")
+ 
+ 
++def damiao_clip_effort(effort, joint_vel, y1, y2, x1, x2):
++    """Replicate UnitreeActuator._clip_effort (torque-speed / T-N curve limiting).
++
++    Strict port of unitree_actuators.py::UnitreeActuator._clip_effort / _compute_effort_limit:
++      - same_direction (vel*effort > 0) -> max_effort = Y1 ; else Y2
++      - |vel| < X1 -> keep max_effort (full peak torque)
++      - |vel| >= X1 -> linear derate: k = -max_effort/(X2 - X1);
++                       limit = k*(|vel| - X1) + max_effort, clipped to >= 0
++      - return clip(effort, -max_effort, +max_effort)
++    All args are per-joint numpy arrays in the SAME (MuJoCo) order as `effort`.
++    """
++    same_direction = (joint_vel * effort) > 0
++    max_effort = np.where(same_direction, y1, y2)
++    abs_vel = np.abs(joint_vel)
++    # derated limit beyond the knee speed X1 (matches _compute_effort_limit)
++    k = -max_effort / (x2 - x1)
++    derated = np.clip(k * (abs_vel - x1) + max_effort, 0.0, None)
++    max_effort = np.where(abs_vel < x1, max_effort, derated)
++    return np.clip(effort, -max_effort, max_effort)
++
++
++def damiao_apply_actuator(effort, joint_vel, tn, fric):
++    """Replicate the full UnitreeActuator.compute() torque pipeline (in MuJoCo joint order):
++      1. T-N curve clip of the PD effort   (UnitreeActuator._clip_effort)
++      2. subtract friction AFTER the clip  (UnitreeActuator.compute):
++            effort -= Fs*tanh(vel/Va) + Fd*vel
++    `tn` and `fric` are dicts of per-joint numpy arrays (Y1,Y2,X1,X2 / Fs,Fd,Va), MuJoCo order.
++    NOTE: friction is intentionally NOT re-clipped, matching the training-side ordering.
++    """
++    clipped = damiao_clip_effort(effort, joint_vel, tn["Y1"], tn["Y2"], tn["X1"], tn["X2"])
++    clipped = clipped - (fric["Fs"] * np.tanh(joint_vel / fric["Va"]) + fric["Fd"] * joint_vel)
++    return clipped
++
++
+ class ObsDelay:
+     """Per-term observation latency, matching IsaacLab's delayed_obs: an independent integer lag
+     (in control steps) is sampled in [min_delay, max_delay] once per episode and held constant."""
+@@ -135,10 +169,42 @@ if __name__ == "__main__":
+     effort_limits = np.array([27, 27, 27, 27, 27, 27, 27, 27, 7, 7, 7, 7], dtype=np.float32)
+     torque_limits = effort_limits[lab2mj]
+ 
++    # --- Damiao actuator model (T-N derate + friction), see use_damiao_actuator_model switch ---
++    use_damiao = bool(config.get("use_damiao_actuator_model", False))
++    damiao_tn = damiao_fric = None
++    if use_damiao:
++        # Build per-joint params in IsaacLab order, then map to MuJoCo order (like torque_limits).
++        # Lab order = [L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6]:
++        #   indices 0-7  -> hip/knee (joints *1-*4) = DM4340
++        #   indices 8-11 -> ankle    (joints *5-*6) = DM4310
++        hk, ak = config["damiao_tn"]["hip_knee"], config["damiao_tn"]["ankle"]
++        hkf, akf, va = (config["damiao_friction"]["hip_knee"], config["damiao_friction"]["ankle"],
++                        config["damiao_friction"]["Va"])
++
++        def _lab_group_array(hip_knee_val, ankle_val):
++            arr = np.empty(12, dtype=np.float32)
++            arr[0:8] = hip_knee_val   # hip/knee joints in Lab order
++            arr[8:12] = ankle_val     # ankle joints in Lab order
++            return arr[lab2mj]        # -> MuJoCo order
++
++        damiao_tn = {
++            "Y1": _lab_group_array(hk["Y1"], ak["Y1"]),
++            "Y2": _lab_group_array(hk["Y2"], ak["Y2"]),
++            "X1": _lab_group_array(hk["X1"], ak["X1"]),
++            "X2": _lab_group_array(hk["X2"], ak["X2"]),
++        }
++        damiao_fric = {
++            "Fs": _lab_group_array(hkf["Fs"], akf["Fs"]),
++            "Fd": _lab_group_array(hkf["Fd"], akf["Fd"]),
++            "Va": np.float32(va),
++        }
++
+     cmd = np.array(config["cmd_init"], dtype=np.float32)
+     actions = np.zeros(num_actions, dtype=np.float32)  # Lab order
+     target_dof_pos = default_angles[lab2mj].copy()
+     obs_delay = ObsDelay(DELAYED_TERMS, config["min_delay_steps"], config["max_delay_steps"])
++    # action/setpoint execution delay (single signal, in CONTROL steps) -- reuse ObsDelay with one "term"
++    action_delay = ObsDelay(("action",), config["action_min_delay_steps"], config["action_max_delay_steps"])
+ 
+     # per-term dims (must match obs_index), for history stacking
+     term_dims_map = {
+@@ -164,7 +230,7 @@ if __name__ == "__main__":
+         if not policy_path.endswith(".onnx"):
+             policy_path += ".onnx"
+         policy = ort.InferenceSession(policy_path)
+-
++    print("policy loaded",policy_path)
+     counter = 0          # sim steps
+     ctrl_steps = 0       # policy steps (advances gait clock)
+     with mujoco.viewer.launch_passive(m, d) as viewer:
+@@ -183,6 +249,7 @@ if __name__ == "__main__":
+                 counter = ctrl_steps = 0
+                 reset_requested = False
+                 obs_delay.reset()
++                action_delay.reset()
+                 obs_hist = TermGroupedHistory(term_dims, num_history)
+                 mujoco.mj_forward(m, d)
+                 viewer.sync()
+@@ -191,10 +258,19 @@ if __name__ == "__main__":
+             get_key()
+             cmd[0], cmd[1], cmd[2] = x_vel, y_vel, yaw
+ 
+-            # PD control (MuJoCo order)
+-            tau = pd_control(target_dof_pos, d.qpos[7:], kps[lab2mj],
+-                             np.zeros_like(kds), d.qvel[6:], kds[lab2mj])
+-            tau = np.clip(tau, -torque_limits, torque_limits)
++            # PD control (MuJoCo order). NOTE: yaml kps/kds are ALREADY in MuJoCo joint order
++            # (R1..R6,L1..L6 -> ankle gains at idx 4,5,10,11), same order as d.qpos[7:]/d.qvel[6:],
++            # so they are used directly WITHOUT [lab2mj] (a second permutation here was a bug that
++            # mis-mapped gains: hip-yaw R3/L3 got the ankle kp=7 and ankle-pitch R5/L5 got 126).
++            tau = pd_control(target_dof_pos, d.qpos[7:], kps,
++                             np.zeros_like(kds), d.qvel[6:], kds)
++            if use_damiao:
++                # Replicate training-side UnitreeActuator: T-N curve derate + friction (MuJoCo order)
++                tau = damiao_apply_actuator(tau, d.qvel[6:], damiao_tn, damiao_fric)
++            else:
++                # Legacy behavior: fixed torque clip (+-27 / +-7), no T-N derate, no friction
++                tau = np.clip(tau, -torque_limits, torque_limits)
++            
+             d.ctrl = tau
+ 
+             print(f"x_vel:{cmd[0]:.2f}  y_vel:{cmd[1]:.2f}  yaw:{cmd[2]:.2f}\r", end="")
+@@ -229,6 +305,16 @@ if __name__ == "__main__":
+ 
+                 # actions (Lab order) -> PD target (MuJoCo order)
+                 target_dof_pos = (actions * action_scale + default_angles)[lab2mj]
++                # delay the joint-position setpoint by a per-episode random lag IN CONTROL STEPS,
++                # matching training's DelayedPDActuatorCfg (delays the setpoint, then PD runs each sim step)
++                joint_lower_limits = np.array([-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
++                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35])
++                joint_upper_limits= np.array([ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
++                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35])
++                target_dof_pos = np.clip(target_dof_pos, joint_lower_limits, joint_upper_limits)
++                print(target_dof_pos)
++                target_dof_pos = action_delay.apply("action", target_dof_pos)
++                # target_dof_pos=default_angles[lab2mj].copy()
+                 ctrl_steps += 1
+ 
+             viewer.sync()
+diff --git a/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml b/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+index 0449d60..9faa3d9 100644
+--- a/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
++++ b/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+@@ -39,10 +39,10 @@
+   <worldbody>
+     <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+     <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+-    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" conaffinity="15" friction="1.0 0.005 0.0001"/>
++    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" conaffinity="15" friction="0.8 0.005 0.0001"/>
+     <body name="base" pos="0 0 0.65">
+       <freejoint/>
+-      <inertial pos="0 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
++      <inertial pos="0. 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
+       <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="base_mat" type="mesh" mesh="base_link" />
+       <geom pos="0 0 0.07" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="box" size="0.09 0.1 0.075" />
+       <body name="Link_R0" pos="0 -0.021 0.055">
+diff --git a/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml b/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
+index 5f744c3..1c33db7 100644
+--- a/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
++++ b/human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
+@@ -39,10 +39,11 @@
+   <worldbody>
+     <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+     <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+-    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" conaffinity="15" friction="1.0 0.005 0.0001"/>
++    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" conaffinity="15" priority="1" friction="0.8 0.005 0.0001"/>
++    <!-- <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="1" conaffinity="15" /> -->
+     <body name="base" pos="0 0 0.65">
+       <freejoint/>
+-      <inertial pos="0 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
++      <inertial pos="0.0 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
+       <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="base_mat" type="mesh" mesh="base_link" />
+       <geom pos="0 0 0.07" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="box" size="0.09 0.1 0.075" />
+       <body name="Link_R0" pos="0 -0.021 0.055">
+diff --git a/legged_lab/source/legged_lab/legged_lab/assets/a1.py b/legged_lab/source/legged_lab/legged_lab/assets/a1.py
+index 33574b8..47f5f34 100644
+--- a/legged_lab/source/legged_lab/legged_lab/assets/a1.py
++++ b/legged_lab/source/legged_lab/legged_lab/assets/a1.py
+@@ -1,10 +1,11 @@
+ """Configuration for A1-legs_V1 bipedal robot."""
+ 
+ import isaaclab.sim as sim_utils
+-from isaaclab.actuators import ImplicitActuatorCfg
++from isaaclab.actuators import ImplicitActuatorCfg,DelayedPDActuatorCfg
+ from isaaclab.assets.articulation import ArticulationCfg
+ 
+ from legged_lab import LEGGED_LAB_ROOT_DIR
++from legged_lab.assets import unitree_actuators
+ 
+ 
+ # Heuristic PD gains following the WBT paper (2508.08241v4, Supp. S1):
+@@ -18,7 +19,7 @@ GEAR_4340 = 40.0
+ GEAR_4310 = 10.0
+ 
+ NATURAL_FREQ = 10 * 2.0 * 3.1415926535  # 10Hz -> w ~= 62.83 rad/s (low value promotes compliance)
+-DAMPING_RATIO = 2.0  # zeta = 2 (overdamped, compensates for inertia underestimation)
++DAMPING_RATIO = 1.2  # zeta = 2 (overdamped, compensates for inertia underestimation)
+ 
+ ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.0320
+ ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.0018
+@@ -32,8 +33,8 @@ DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 0.45
+ A1_LEGS_V1_CFG = ArticulationCfg(
+     spawn=sim_utils.UrdfFileCfg(
+         # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1/A1-legs_V1.urdf",
+-        # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2.urdf",
+-        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_ball.urdf",
++        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2.urdf",
++        # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_ball.urdf",
+         fix_base=False,
+         joint_drive=sim_utils.UrdfFileCfg.JointDriveCfg(
+             drive_type="force",
+@@ -54,45 +55,103 @@ A1_LEGS_V1_CFG = ArticulationCfg(
+             max_depenetration_velocity=1.0,
+         ),
+         articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+-            enabled_self_collisions=True,
++            enabled_self_collisions=False,
+             solver_position_iteration_count=8,
+             solver_velocity_iteration_count=4,
+         ),
+     ),
+     init_state=ArticulationCfg.InitialStateCfg(
+         pos=(0.0, 0.0, 0.65),
++        # joint_pos={
++        #     "joint_R1": -0.22,
++        #     "joint_R2": 0.0,
++        #     "joint_R3": 0.0,
++        #     "joint_R4": 0.70,
++        #     "joint_R5": -0.48,
++        #     "joint_R6": 0.0,
++        #     "joint_L1": -0.22,
++        #     "joint_L2": 0.0,
++        #     "joint_L3": 0.0,
++        #     "joint_L4": 0.70,
++        #     "joint_L5": -0.48,
++        #     "joint_L6": 0.0,
++        # },
+         joint_pos={
+-            "joint_R1": -0.22,
++            "joint_R1": -0.2,
+             "joint_R2": 0.0,
+             "joint_R3": 0.0,
+-            "joint_R4": 0.70,
+-            "joint_R5": -0.48,
++            "joint_R4": 0.40,
++            "joint_R5": -0.2,
+             "joint_R6": 0.0,
+-            "joint_L1": -0.22,
++            "joint_L1": -0.2,
+             "joint_L2": 0.0,
+             "joint_L3": 0.0,
+-            "joint_L4": 0.70,
+-            "joint_L5": -0.48,
++            "joint_L4": 0.4,
++            "joint_L5": -0.2,
+             "joint_L6": 0.0,
+         },
+         joint_vel={".*": 0.0},
+     ),
++    # actuators={
++    #     "hip_knee": ImplicitActuatorCfg(
++    #         joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
++    #         effort_limit_sim=27.0,
++    #         velocity_limit_sim=5.5,  # DM-J4340 no-load speed: 52.5 rpm = 5.50 rad/s (was 36, unrealistic)
++    #         stiffness=STIFFNESS_4340,
++    #         damping=DAMPING_4340,
++    #         armature=ARMATURE_4340,
++    #     ),
++    #     "ankle": ImplicitActuatorCfg(
++    #         joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
++    #         effort_limit_sim=7.0,
++    #         velocity_limit_sim=20.9,  # DM-J4310 no-load speed: 200 rpm = 20.94 rad/s (was 120, unrealistic)
++    #         stiffness=STIFFNESS_4310,
++    #         damping=DAMPING_4310,
++    #         armature=ARMATURE_4310,
++    #     ),
++    # },
+     actuators={
+-        "hip_knee": ImplicitActuatorCfg(
++        "hip_knee": DelayedPDActuatorCfg(
+             joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
+             effort_limit_sim=27.0,
+-            velocity_limit_sim=36.0,
+-            stiffness=STIFFNESS_4340,
+-            damping=DAMPING_4340,
++            velocity_limit_sim=5.5,  # DM-J4340 no-load speed: 52.5 rpm = 5.50 rad/s (was 36, unrealistic)
++            stiffness=200.0,#STIFFNESS_4340,
++            damping=5.0,#DAMPING_4340,
+             armature=ARMATURE_4340,
++            min_delay=1,
++            max_delay=4,
+         ),
+-        "ankle": ImplicitActuatorCfg(
++        "ankle": DelayedPDActuatorCfg(
+             joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
+             effort_limit_sim=7.0,
+-            velocity_limit_sim=120.0,
++            velocity_limit_sim=20.9,  # DM-J4310 no-load speed: 200 rpm = 20.94 rad/s (was 120, unrealistic)
++            stiffness=40.0,#STIFFNESS_4310,
++            damping=0.5,#DAMPING_4310,
++            armature=ARMATURE_4310,
++            min_delay=1,
++            max_delay=4,
++        ),
++    },
++)
++
++
++# Variant of A1_LEGS_V1_CFG that drives the joints with the Damiao torque-speed
++# (T-N curve) + friction actuator model instead of the implicit fixed-limit PD.
++# Same robot/spawn/init_state; only the actuators dict is swapped. The original
++# A1_LEGS_V1_CFG above is left untouched.
++A1_LEGS_V1_CFG_DAMIAO = A1_LEGS_V1_CFG.replace(
++    actuators={
++        "hip_knee": unitree_actuators.DamiaoActuatorCfg_DM4340(
++            joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
++            stiffness=STIFFNESS_4340,
++            damping=DAMPING_4340,
++            # armature, Y1/X1/X2 come from DamiaoActuatorCfg_DM4340
++        ),
++        "ankle": unitree_actuators.DamiaoActuatorCfg_DM4310(
++            joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
+             stiffness=STIFFNESS_4310,
+             damping=DAMPING_4310,
+-            armature=ARMATURE_4310,
++            # armature, Y1/X1/X2 come from DamiaoActuatorCfg_DM4310
+         ),
+     },
+ )
+diff --git a/legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py b/legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py
+index efe781d..35de6ba 100644
+--- a/legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py
++++ b/legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py
+@@ -217,6 +217,50 @@ class UnitreeActuatorCfg_N5020_16(UnitreeActuatorCfg):
+     armature = 0.003609725
+ 
+ 
++@configclass
++class DamiaoActuatorCfg_DM4310(UnitreeActuatorCfg):
++    """DAMIAO DM-J4310-2EC, 24V, 10:1 gear.
++
++    Torque/speed from 达妙 product catalog (2026):
++      peak torque 7 N·m, rated torque 3 N·m,
++      no-load speed 200 rpm = 20.94 rad/s, rated speed 120 rpm = 12.57 rad/s.
++    """
++
++    X1 = 12.57  # rad/s, rated speed used as T-N knee (refine with a dyno sweep)
++    X2 = 20.94  # rad/s, no-load speed
++    Y1 = 7.0    # N·m, peak torque
++    # Y2 left at default (= Y1): catalog gives no separate reverse-direction peak
++
++    """
++    | rotor inertia | 1.8e-5 kg·m²  (motor-side, from catalog)
++    | gear ratio    | 10
++    armature = J_rotor * ratio^2 = 1.8e-5 * 10^2
++    """
++    armature = 0.0018
++
++
++@configclass
++class DamiaoActuatorCfg_DM4340(UnitreeActuatorCfg):
++    """DAMIAO DM-J4340-2EC, 24V, 40:1 gear.
++
++    Torque/speed from 达妙 product catalog (2026):
++      peak torque 27 N·m, rated torque 9 N·m,
++      no-load speed 52.5 rpm = 5.50 rad/s, rated speed 36 rpm = 3.77 rad/s.
++    """
++
++    X1 = 3.77   # rad/s, rated speed used as T-N knee (refine with a dyno sweep)
++    X2 = 5.50   # rad/s, no-load speed
++    Y1 = 27.0   # N·m, peak torque
++    # Y2 left at default (= Y1)
++
++    """
++    | rotor inertia | 2.0e-5 kg·m²  (motor-side, from catalog)
++    | gear ratio    | 40
++    armature = J_rotor * ratio^2 = 2.0e-5 * 40^2
++    """
++    armature = 0.032
++
++
+ @configclass
+ class UnitreeActuatorCfg_W4010_25(UnitreeActuatorCfg):
+     X1 = 15.3
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py
+index dc9384a..6472e20 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py
+@@ -261,6 +261,32 @@ class EventCfg:
+ 
+     reset_from_ref = EventTerm(func=mdp.reset_from_ref, mode="reset", params=MISSING)
+ 
++    # Domain-randomize the custom Damiao/Unitree actuator's INTERNAL friction torque (Fs/Fd),
++    # applied inside UnitreeActuator.compute(). NOTE: this is the motor-shaft friction, NOT the
++    # PhysX joint friction (randomize_joint_parameters) and NOT the foot/ground contact friction
++    # (physics_material). One value per env is drawn at reset and held for the whole episode.
++    # Ranges from PDF analysis (Fs ~= 2-3% of peak torque, Fd ~= Fs/10):
++    #   hip_knee (DM4340, peak 27 N.m): Fs in [0.3, 0.9],  Fd in [0.03, 0.09]
++    #   ankle    (DM4310, peak  7 N.m): Fs in [0.1, 0.25], Fd in [0.01, 0.025]
++    randomize_actuator_friction_hip_knee = EventTerm(
++        func=mdp.randomize_actuator_friction,
++        mode="reset",
++        params={
++            "actuator_names": ["hip_knee"],
++            "static_friction_range": (0.3, 0.9),
++            "dynamic_friction_range": (0.03, 0.09),
++        },
++    )
++    randomize_actuator_friction_ankle = EventTerm(
++        func=mdp.randomize_actuator_friction,
++        mode="reset",
++        params={
++            "actuator_names": ["ankle"],
++            "static_friction_range": (0.1, 0.25),
++            "dynamic_friction_range": (0.01, 0.025),
++        },
++    )
++
+     # interval
+     push_robot = EventTerm(
+         func=mdp.push_by_setting_velocity,
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py
+index 3cc0ece..9445151 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py
+@@ -36,3 +36,56 @@ def reset_from_ref(
+     dof_pos = animation_term.get_dof_pos(env_ids)[:, 0, :]
+     dof_vel = animation_term.get_dof_vel(env_ids)[:, 0, :]
+     robot.write_joint_state_to_sim(dof_pos, dof_vel, env_ids=env_ids)
++
++
++def randomize_actuator_friction(
++    env: ManagerBasedAnimationEnv,
++    env_ids: torch.Tensor | None,
++    static_friction_range: tuple[float, float],
++    dynamic_friction_range: tuple[float, float],
++    actuator_names: list[str] | None = None,
++    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
++):
++    """Domain-randomize the *internal* friction torque (Fs/Fd) of the custom UnitreeActuator.
++
++    Unlike :func:`isaaclab.envs.mdp.events.randomize_joint_parameters`, which writes the PhysX
++    joint friction coefficient, the Damiao/Unitree actuator applies its own Coulomb + viscous
++    friction inside ``UnitreeActuator.compute()``::
++
++        applied_effort -= Fs * tanh(joint_vel / Va) + Fd * joint_vel
++
++    via the per-env tensors ``_friction_static`` (Fs) and ``_friction_dynamic`` (Fd), each of
++    shape (num_envs, num_joints). PhysX-level randomization never touches these, so we sample
++    Fs/Fd here and overwrite those tensors directly. A single value per env is drawn (uniform),
++    so friction stays fixed for the whole episode when this term runs on ``startup``/``reset``.
++
++    Args:
++        static_friction_range: (low, high) for Fs [N*m].
++        dynamic_friction_range: (low, high) for Fd [N*m*s/rad].
++        actuator_names: which actuator groups to randomize. ``None`` -> every actuator group
++            that exposes ``_friction_static`` (i.e. all UnitreeActuator-derived groups).
++    """
++    robot: Articulation = env.scene[asset_cfg.name]
++
++    if env_ids is None:
++        env_ids = torch.arange(env.scene.num_envs, device=robot.device)
++
++    if actuator_names is None:
++        actuator_names = list(robot.actuators.keys())
++
++    n = env_ids.shape[0]
++    for name in actuator_names:
++        actuator = robot.actuators.get(name, None)
++        # only UnitreeActuator-derived groups carry the internal friction tensors
++        if actuator is None or not hasattr(actuator, "_friction_static"):
++            continue
++
++        fs = actuator._friction_static
++        fd = actuator._friction_dynamic
++        num_joints = fs.shape[1]
++
++        fs_new = torch.empty((n, num_joints), device=fs.device).uniform_(*static_friction_range)
++        fd_new = torch.empty((n, num_joints), device=fd.device).uniform_(*dynamic_friction_range)
++
++        fs[env_ids] = fs_new.to(fs.dtype)
++        fd[env_ids] = fd_new.to(fd.dtype)
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+index 8d8fdca..f072177 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/agents/rsl_rl_ppo_cfg.py
+@@ -4,7 +4,12 @@
+ # SPDX-License-Identifier: BSD-3-Clause
+ 
+ from isaaclab.utils import configclass
+-from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, RslRlPpoAlgorithmCfg
++from isaaclab_rl.rsl_rl import (
++    RslRlOnPolicyRunnerCfg,
++    RslRlPpoActorCriticCfg,
++    RslRlPpoAlgorithmCfg,
++    RslRlSymmetryCfg,
++)
+ 
+ 
+ @configclass
+@@ -18,15 +23,15 @@ class A1FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+     obs_groups = {"policy": ["policy"], "critic": ["critic"]}
+     policy = RslRlPpoActorCriticCfg(
+         init_noise_std=1.0,
+-        actor_hidden_dims=[256, 128, 128],
+-        critic_hidden_dims=[256, 128, 128],
++        actor_hidden_dims=[512, 256, 128],
++        critic_hidden_dims=[512, 256, 128],
+         activation="elu",
+     )
+     algorithm = RslRlPpoAlgorithmCfg(
+         value_loss_coef=1.0,
+         use_clipped_value_loss=True,
+         clip_param=0.2,
+-        entropy_coef=0.008,
++        entropy_coef=0.01,
+         num_learning_epochs=5,
+         num_mini_batches=4,
+         learning_rate=1.0e-3,
+@@ -35,6 +40,20 @@ class A1FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+         lam=0.95,
+         desired_kl=0.01,
+         max_grad_norm=1.0,
++        # Left/right (sagittal-plane) symmetry. We enable ONLY the mirror loss (a soft regularizer
++        # that penalizes the actor for not producing the mirrored action on the mirrored obs); data
++        # augmentation is left off so the on-policy statistics (advantages/returns) are not altered.
++        # mirror_loss_coeff=0.5 is a moderate start (range ~0.5-1.0); raise toward 1.0 if the gait
++        # stays asymmetric, lower if it suppresses the learned gait. The augmentation function is
++        # referenced by dotted path and resolved by rsl_rl via string_to_callable.
++        symmetry_cfg=RslRlSymmetryCfg(
++            use_data_augmentation=False,
++            use_mirror_loss=True,
++            mirror_loss_coeff=0.5,
++            data_augmentation_func=(
++                "legged_lab.tasks.locomotion.velocity.config.a1.agents.symmetry:a1_symmetry_augmentation"
++            ),
++        ),
+     )
+ 
+ 
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+index b77c907..1956b12 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+@@ -20,7 +20,7 @@ from legged_lab.tasks.locomotion.velocity.velocity_env_cfg import EventCfg, Loco
+ FEET_BODY_NAMES = ["Link_R6", "Link_L6"]
+ 
+ # Observation latency range, in control steps (1 step = decimation * sim.dt = 0.02 s here).
+-OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 3}
++OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 0}
+ 
+ # Gait clock: the robot is rewarded for stepping at this frequency at ALL times, even when the
+ # velocity command is zero (marching in place). GAIT_PERIOD is the full stride period in seconds;
+@@ -95,13 +95,13 @@ class A1RewardsCfg:
+     # -- task
+     track_lin_vel_xy_exp = RewTerm(
+         func=mdp.track_lin_vel_xy_yaw_frame_exp,
+-        weight=1.5,
++        weight=1.,
+         params={"command_name": "base_velocity", "std": 0.5},
+     )
+     track_ang_vel_z_exp = RewTerm(
+         func=mdp.track_ang_vel_z_world_exp,
+-        weight=0.75,
+-        params={"command_name": "base_velocity", "std": 0.3},
++        weight=1.,
++        params={"command_name": "base_velocity", "std": 0.5},
+     )
+ 
+     # -- base
+@@ -118,6 +118,21 @@ class A1RewardsCfg:
+         weight=-2.0e-6,
+         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
+     )
++    # Soft thermal limit: penalize ONLY the torque ABOVE each motor's rated (continuous) value, so
++    # brief peaks (impacts/push-off, up to the hard effort_limit) stay free but sustained high torque
++    # is punished. Rated: DM-J4340 hip/knee = 9 N*m, DM-J4310 ankle = 3 N*m. excess^2 can be large
++    # (hip can reach (27-9)^2=324), so the weights are small -- tune by watching the torque histogram:
++    # raise if the policy parks above rated, lower if the gait gets too weak/slow.
++    joint_torque_over_rated_hip_knee = RewTerm(
++        func=mdp.joint_torque_over_limit_l2,
++        weight=-2.0e-4,
++        params={"limit": 9.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
++    )
++    joint_torque_over_rated_ankle = RewTerm(
++        func=mdp.joint_torque_over_limit_l2,
++        weight=-2.0e-4,
++        params={"limit": 3.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"])},
++    )
+     joint_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.0e-7)
+     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.02)
+     dof_pos_limits = RewTerm(
+@@ -139,7 +154,7 @@ class A1RewardsCfg:
+     )
+     feet_slide = RewTerm(
+         func=mdp.feet_slide,
+-        weight=-1.5,
++        weight=-3.0,
+         params={
+             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
+             "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES),
+@@ -203,6 +218,11 @@ class A1RewardsCfg:
+         weight=-0.8,
+         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R2", "joint_L2"])},
+     )
++    joint_deviation_hip = RewTerm(
++        func=mdp.joint_deviation_l1,
++        weight=-0.8,
++        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R5", "joint_L5"])},
++    )
+     # joint_*3 is the hip YAW (Z-axis) joint -- the primary DOF for redirecting/turning the leg.
+     # Command-gated: a LARGE weight keeps the yaw joints centered while going straight (prevents the
+     # duck-footed / splayed "外八" stance), but the penalty switches OFF when a yaw rate is commanded
+@@ -266,8 +286,8 @@ class A1EventCfg(EventCfg):
+         mode="startup",
+         params={
+             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+-            "stiffness_distribution_params": (0.8, 1.2),
+-            "damping_distribution_params": (0.8, 1.2),
++            "stiffness_distribution_params": (0.9, 1.1),
++            "damping_distribution_params": (0.9, 1.1),
+             "operation": "scale",
+             "distribution": "uniform",
+         },
+@@ -280,12 +300,69 @@ class A1EventCfg(EventCfg):
+         mode="startup",
+         params={
+             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+-            "armature_distribution_params": (0.8, 1.2),
++            "armature_distribution_params": (0.9, 1.1),
+             "operation": "scale",
+             "distribution": "uniform",
+         },
+     )
+ 
++    # Bridge the UNMEASURED dry (Coulomb) friction with domain randomization instead of a bench test.
++    # The implicit actuators have no Fs/Fd; PhysX joint `friction` acts as a static friction torque
++    # (N*m), so we sample an absolute value per joint at startup. operation="abs" (NOT scale -- the
++    # base friction is 0, so scaling would stay 0). Ranges are conservative guesses bounded by motor
++    # size; tighten the center/width later once a bench sweep gives the real Fs.
++    #   hip/knee = DM-J4340 (40:1, peak 27 N*m) -> larger gearbox friction
++    #   ankle    = DM-J4310 (10:1, peak  7 N*m) -> smaller
++    # randomize_joint_friction_hip_knee = EventTerm(
++    #     func=mdp.randomize_joint_parameters,
++    #     mode="startup",
++    #     params={
++    #         "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"]),
++    #         "friction_distribution_params": (0.2, 1.5),
++    #         "operation": "abs",
++    #         "distribution": "uniform",
++    #     },
++    # )
++    # randomize_joint_friction_ankle = EventTerm(
++    #     func=mdp.randomize_joint_parameters,
++    #     mode="startup",
++    #     params={
++    #         "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"]),
++    #         "friction_distribution_params": (0.1, 0.6),
++    #         "operation": "abs",
++    #         "distribution": "uniform",
++    #     },
++    # )
++
++    # Domain-randomize the custom Damiao/Unitree actuator's INTERNAL friction torque (Fs/Fd),
++    # applied inside UnitreeActuator.compute() as `effort -= Fs*tanh(v/Va) + Fd*v`.
++    # NOTE: this is the motor-shaft friction of the DamiaoActuator (A1_LEGS_V1_CFG hip_knee/ankle),
++    # which is a DIFFERENT channel from the PhysX joint `friction` randomized just above
++    # (randomize_joint_friction_*) and from the foot/ground contact friction (physics_material).
++    # The DamiaoActuator does NOT read the PhysX joint friction, so its Fs/Fd were 0 (modeling gap);
++    # this term fills that gap. One value per env is drawn at reset and held for the whole episode.
++    # Ranges from PDF analysis (Fs ~= 2-3% of peak torque, Fd ~= Fs/10):
++    #   hip_knee (DM4340, peak 27 N.m): Fs in [0.3, 0.9],  Fd in [0.03, 0.09]
++    #   ankle    (DM4310, peak  7 N.m): Fs in [0.1, 0.25], Fd in [0.01, 0.025]
++    # randomize_actuator_friction_hip_knee = EventTerm(
++    #     func=mdp.randomize_actuator_friction,
++    #     mode="reset",
++    #     params={
++    #         "actuator_names": ["hip_knee"],
++    #         "static_friction_range": (0.3, 0.9),
++    #         "dynamic_friction_range": (0.03, 0.09),
++    #     },
++    # )
++    # randomize_actuator_friction_ankle = EventTerm(
++    #     func=mdp.randomize_actuator_friction,
++    #     mode="reset",
++    #     params={
++    #         "actuator_names": ["ankle"],
++    #         "static_friction_range": (0.1, 0.25),
++    #         "dynamic_friction_range": (0.01, 0.025),
++    #     },
++    # )
++
+     # slight per-robot joint zero-point offset (encoder/motor miscalibration)
+     joint_zero_offset = EventTerm(
+         func=mdp.randomize_joint_default_pos,
+@@ -329,17 +406,34 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
+         self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.5)
+         self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
+         self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
++        # self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
++        # self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
++        # self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)
+         self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
+ 
+         # -----------------------------------------------------------------------------
+         # Events
+         # -----------------------------------------------------------------------------
+         self.events.add_base_mass.params["asset_cfg"].body_names = "base"
++        # Base mass DR as a multiplicative factor (WBT-style minimal mass DR): base mass *= U[0.8,1.2].
++        # base nominal ~0.62kg -> sampled ~0.50..0.74kg (+-0.12kg). NOTE: this scales ONLY the light
++        # base link, so the absolute change is tiny vs the 8.45kg whole-robot mass and does NOT emulate
++        # whole-body payload variation (for that you'd add ballast or scale a heavier body). Inertia is
++        # recomputed by the same ratio (recompute_inertia default True).
++        self.events.add_base_mass.params["operation"] = "scale"
++        self.events.add_base_mass.params["mass_distribution_params"] = (0.8, 1.2)
+         self.events.base_com.params["asset_cfg"].body_names = "base"
+         # widen fore-aft (x) CoM randomization so the policy can't rely on a fixed forward lean to
+         # balance -> forces an upright posture that is robust to the real robot's true CoM (sim2real).
+         self.events.base_com.params["com_range"] = {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.05, 0.05)}
+         self.events.base_external_force_torque.params["asset_cfg"].body_names = "base"
++        # Ground/contact friction + restitution DR aligned to WBT (BeyondMimic Table S2). The base
++        # EventCfg default was static/dynamic U[0.1,0.5], restitution 0 (fixed) -- too low to cover
++        # the sim2sim/sim2real deployment friction (~0.8) and gave no contact-restitution robustness.
++        # Overridden here (A1 flat only; base velocity_env_cfg untouched so rough/other tasks unchanged).
++        self.events.physics_material.params["static_friction_range"] = (0.3, 1.6)
++        self.events.physics_material.params["dynamic_friction_range"] = (0.3, 1.2)
++        self.events.physics_material.params["restitution_range"] = (0.0, 0.5)
+ 
+         # -----------------------------------------------------------------------------
+         # Terminations
+@@ -384,13 +478,23 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
+         # disable randomization for play
+         self.observations.policy.enable_corruption = False
+ 
+-        # remove random pushing event
++        # disable ALL domain randomization for play (keep only reset_base / reset_robot_joints,
++        # which are needed to spawn and reset the robot each episode).
++        self.events.physics_material = None          # friction / restitution randomization
++        self.events.add_base_mass = None             # random payload mass
++        self.events.base_com = None                  # random COM offset
+         self.events.base_external_force_torque = None
+-        self.events.push_robot = None
++        self.events.push_robot = None                # random pushes
++        self.events.randomize_actuator_gains = None  # PD kp/kd randomization
++        self.events.randomize_rotor_inertia = None   # armature randomization
++        self.events.joint_zero_offset = None         # encoder zero-point offset
+ 
+         # fixed command range for evaluation (no curriculum growth at play time)
+         self.curriculum.lin_vel_cmd_levels = None
+         self.curriculum.ang_vel_cmd_levels = None
+-        self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
+-        self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
+-        self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
++        # self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
++        # self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
++        # self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
++        self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
++        self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
++        self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
+index 3c4058f..788b461 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/events.py
+@@ -48,3 +48,57 @@ def randomize_joint_default_pos(
+         default_joint_pos[env_ids[:, None], joint_ids_t] = (
+             default_joint_pos[env_ids[:, None], joint_ids_t] + offsets
+         )
++
++
++def randomize_actuator_friction(
++    env: ManagerBasedEnv,
++    env_ids: torch.Tensor | None,
++    static_friction_range: tuple[float, float],
++    dynamic_friction_range: tuple[float, float],
++    actuator_names: list[str] | None = None,
++    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
++) -> None:
++    """Domain-randomize the *internal* friction torque (Fs/Fd) of the custom UnitreeActuator.
++
++    Unlike :func:`isaaclab.envs.mdp.events.randomize_joint_parameters`, which writes the PhysX
++    joint friction coefficient, the Damiao/Unitree actuator applies its own Coulomb + viscous
++    friction inside ``UnitreeActuator.compute()``::
++
++        applied_effort -= Fs * tanh(joint_vel / Va) + Fd * joint_vel
++
++    via the per-env tensors ``_friction_static`` (Fs) and ``_friction_dynamic`` (Fd), each of
++    shape (num_envs, num_joints). PhysX-level randomization never touches these, so we sample
++    Fs/Fd here and overwrite those tensors directly. A single value per env/joint is drawn
++    (uniform), so friction stays fixed for the whole episode when this term runs on
++    ``startup``/``reset``.
++
++    Args:
++        static_friction_range: (low, high) for Fs [N*m].
++        dynamic_friction_range: (low, high) for Fd [N*m*s/rad].
++        actuator_names: which actuator groups to randomize. ``None`` -> every actuator group
++            that exposes ``_friction_static`` (i.e. all UnitreeActuator-derived groups).
++    """
++    asset: Articulation = env.scene[asset_cfg.name]
++
++    if env_ids is None:
++        env_ids = torch.arange(env.scene.num_envs, device=asset.device)
++
++    if actuator_names is None:
++        actuator_names = list(asset.actuators.keys())
++
++    n = env_ids.shape[0]
++    for name in actuator_names:
++        actuator = asset.actuators.get(name, None)
++        # only UnitreeActuator-derived groups carry the internal friction tensors
++        if actuator is None or not hasattr(actuator, "_friction_static"):
++            continue
++
++        fs = actuator._friction_static
++        fd = actuator._friction_dynamic
++        num_joints = fs.shape[1]
++
++        fs_new = torch.empty((n, num_joints), device=fs.device).uniform_(*static_friction_range)
++        fd_new = torch.empty((n, num_joints), device=fd.device).uniform_(*dynamic_friction_range)
++
++        fs[env_ids] = fs_new.to(fs.dtype)
++        fd[env_ids] = fd_new.to(fd.dtype)
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+index 720b705..937d9eb 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+@@ -88,6 +88,24 @@ def energy(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("r
+     return torch.sum(torch.abs(qvel) * torch.abs(qfrc), dim=-1)
+ 
+ 
++def joint_torque_over_limit_l2(
++    env: ManagerBasedRLEnv, limit: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
++) -> torch.Tensor:
++    """Penalize (squared) ONLY the part of the applied joint torque that exceeds ``limit`` (N*m).
++
++    Soft thermal limit: the hard ``effort_limit`` still allows brief peak torque (impacts, push-off),
++    but this term pushes the *continuous* torque back toward the motor's rated value. Below ``limit``
++    the penalty is exactly zero, so transient peaks are free while sustained high torque is punished.
++
++    ``limit`` is the per-group rated (continuous) torque -- DM-J4340 hip/knee = 9 N*m,
++    DM-J4310 ankle = 3 N*m.
++    """
++    asset: Articulation = env.scene[asset_cfg.name]
++    torque = asset.data.applied_torque[:, asset_cfg.joint_ids]
++    excess = (torque.abs() - limit).clamp(min=0.0)
++    return torch.sum(torch.square(excess), dim=-1)
++
++
+ def feet_air_time(
+     env: ManagerBasedRLEnv, command_name: str, sensor_cfg: SceneEntityCfg, threshold: float
+ ) -> torch.Tensor:
+diff --git a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+index ed8a456..b39c805 100644
+--- a/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
++++ b/legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/velocity_env_cfg.py
+@@ -136,8 +136,8 @@ class EventCfg:
+         mode="startup",
+         params={
+             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
+-            "static_friction_range": (0.1, 0.5),
+-            "dynamic_friction_range": (0.1, 0.5),
++            "static_friction_range": (0.3, 1.0),
++            "dynamic_friction_range": (0.3, 1.0),
+             "restitution_range": (0.0, 0.0),
+             "num_buckets": 64,
+         },

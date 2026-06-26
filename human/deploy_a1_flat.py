@@ -24,6 +24,40 @@ from math_utils import pd_control, get_gravity_orientation
 DELAYED_TERMS = ("base_ang_vel", "projected_gravity", "joint_pos", "joint_vel")
 
 
+def damiao_clip_effort(effort, joint_vel, y1, y2, x1, x2):
+    """Replicate UnitreeActuator._clip_effort (torque-speed / T-N curve limiting).
+
+    Strict port of unitree_actuators.py::UnitreeActuator._clip_effort / _compute_effort_limit:
+      - same_direction (vel*effort > 0) -> max_effort = Y1 ; else Y2
+      - |vel| < X1 -> keep max_effort (full peak torque)
+      - |vel| >= X1 -> linear derate: k = -max_effort/(X2 - X1);
+                       limit = k*(|vel| - X1) + max_effort, clipped to >= 0
+      - return clip(effort, -max_effort, +max_effort)
+    All args are per-joint numpy arrays in the SAME (MuJoCo) order as `effort`.
+    """
+    same_direction = (joint_vel * effort) > 0
+    max_effort = np.where(same_direction, y1, y2)
+    abs_vel = np.abs(joint_vel)
+    # derated limit beyond the knee speed X1 (matches _compute_effort_limit)
+    k = -max_effort / (x2 - x1)
+    derated = np.clip(k * (abs_vel - x1) + max_effort, 0.0, None)
+    max_effort = np.where(abs_vel < x1, max_effort, derated)
+    return np.clip(effort, -max_effort, max_effort)
+
+
+def damiao_apply_actuator(effort, joint_vel, tn, fric):
+    """Replicate the full UnitreeActuator.compute() torque pipeline (in MuJoCo joint order):
+      1. T-N curve clip of the PD effort   (UnitreeActuator._clip_effort)
+      2. subtract friction AFTER the clip  (UnitreeActuator.compute):
+            effort -= Fs*tanh(vel/Va) + Fd*vel
+    `tn` and `fric` are dicts of per-joint numpy arrays (Y1,Y2,X1,X2 / Fs,Fd,Va), MuJoCo order.
+    NOTE: friction is intentionally NOT re-clipped, matching the training-side ordering.
+    """
+    clipped = damiao_clip_effort(effort, joint_vel, tn["Y1"], tn["Y2"], tn["X1"], tn["X2"])
+    clipped = clipped - (fric["Fs"] * np.tanh(joint_vel / fric["Va"]) + fric["Fd"] * joint_vel)
+    return clipped
+
+
 class ObsDelay:
     """Per-term observation latency, matching IsaacLab's delayed_obs: an independent integer lag
     (in control steps) is sampled in [min_delay, max_delay] once per episode and held constant."""
@@ -135,10 +169,42 @@ if __name__ == "__main__":
     effort_limits = np.array([27, 27, 27, 27, 27, 27, 27, 27, 7, 7, 7, 7], dtype=np.float32)
     torque_limits = effort_limits[lab2mj]
 
+    # --- Damiao actuator model (T-N derate + friction), see use_damiao_actuator_model switch ---
+    use_damiao = bool(config.get("use_damiao_actuator_model", False))
+    damiao_tn = damiao_fric = None
+    if use_damiao:
+        # Build per-joint params in IsaacLab order, then map to MuJoCo order (like torque_limits).
+        # Lab order = [L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6]:
+        #   indices 0-7  -> hip/knee (joints *1-*4) = DM4340
+        #   indices 8-11 -> ankle    (joints *5-*6) = DM4310
+        hk, ak = config["damiao_tn"]["hip_knee"], config["damiao_tn"]["ankle"]
+        hkf, akf, va = (config["damiao_friction"]["hip_knee"], config["damiao_friction"]["ankle"],
+                        config["damiao_friction"]["Va"])
+
+        def _lab_group_array(hip_knee_val, ankle_val):
+            arr = np.empty(12, dtype=np.float32)
+            arr[0:8] = hip_knee_val   # hip/knee joints in Lab order
+            arr[8:12] = ankle_val     # ankle joints in Lab order
+            return arr[lab2mj]        # -> MuJoCo order
+
+        damiao_tn = {
+            "Y1": _lab_group_array(hk["Y1"], ak["Y1"]),
+            "Y2": _lab_group_array(hk["Y2"], ak["Y2"]),
+            "X1": _lab_group_array(hk["X1"], ak["X1"]),
+            "X2": _lab_group_array(hk["X2"], ak["X2"]),
+        }
+        damiao_fric = {
+            "Fs": _lab_group_array(hkf["Fs"], akf["Fs"]),
+            "Fd": _lab_group_array(hkf["Fd"], akf["Fd"]),
+            "Va": np.float32(va),
+        }
+
     cmd = np.array(config["cmd_init"], dtype=np.float32)
     actions = np.zeros(num_actions, dtype=np.float32)  # Lab order
     target_dof_pos = default_angles[lab2mj].copy()
     obs_delay = ObsDelay(DELAYED_TERMS, config["min_delay_steps"], config["max_delay_steps"])
+    # action/setpoint execution delay (single signal, in CONTROL steps) -- reuse ObsDelay with one "term"
+    action_delay = ObsDelay(("action",), config["action_min_delay_steps"], config["action_max_delay_steps"])
 
     # per-term dims (must match obs_index), for history stacking
     term_dims_map = {
@@ -164,7 +230,7 @@ if __name__ == "__main__":
         if not policy_path.endswith(".onnx"):
             policy_path += ".onnx"
         policy = ort.InferenceSession(policy_path)
-
+    print("policy loaded",policy_path)
     counter = 0          # sim steps
     ctrl_steps = 0       # policy steps (advances gait clock)
     with mujoco.viewer.launch_passive(m, d) as viewer:
@@ -183,6 +249,7 @@ if __name__ == "__main__":
                 counter = ctrl_steps = 0
                 reset_requested = False
                 obs_delay.reset()
+                action_delay.reset()
                 obs_hist = TermGroupedHistory(term_dims, num_history)
                 mujoco.mj_forward(m, d)
                 viewer.sync()
@@ -191,10 +258,19 @@ if __name__ == "__main__":
             get_key()
             cmd[0], cmd[1], cmd[2] = x_vel, y_vel, yaw
 
-            # PD control (MuJoCo order)
-            tau = pd_control(target_dof_pos, d.qpos[7:], kps[lab2mj],
-                             np.zeros_like(kds), d.qvel[6:], kds[lab2mj])
-            tau = np.clip(tau, -torque_limits, torque_limits)
+            # PD control (MuJoCo order). NOTE: yaml kps/kds are ALREADY in MuJoCo joint order
+            # (R1..R6,L1..L6 -> ankle gains at idx 4,5,10,11), same order as d.qpos[7:]/d.qvel[6:],
+            # so they are used directly WITHOUT [lab2mj] (a second permutation here was a bug that
+            # mis-mapped gains: hip-yaw R3/L3 got the ankle kp=7 and ankle-pitch R5/L5 got 126).
+            tau = pd_control(target_dof_pos, d.qpos[7:], kps,
+                             np.zeros_like(kds), d.qvel[6:], kds)
+            if use_damiao:
+                # Replicate training-side UnitreeActuator: T-N curve derate + friction (MuJoCo order)
+                tau = damiao_apply_actuator(tau, d.qvel[6:], damiao_tn, damiao_fric)
+            else:
+                # Legacy behavior: fixed torque clip (+-27 / +-7), no T-N derate, no friction
+                tau = np.clip(tau, -torque_limits, torque_limits)
+            
             d.ctrl = tau
 
             print(f"x_vel:{cmd[0]:.2f}  y_vel:{cmd[1]:.2f}  yaw:{cmd[2]:.2f}\r", end="")
@@ -229,6 +305,16 @@ if __name__ == "__main__":
 
                 # actions (Lab order) -> PD target (MuJoCo order)
                 target_dof_pos = (actions * action_scale + default_angles)[lab2mj]
+                # delay the joint-position setpoint by a per-episode random lag IN CONTROL STEPS,
+                # matching training's DelayedPDActuatorCfg (delays the setpoint, then PD runs each sim step)
+                joint_lower_limits = np.array([-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35])
+                joint_upper_limits= np.array([ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35])
+                target_dof_pos = np.clip(target_dof_pos, joint_lower_limits, joint_upper_limits)
+                print(target_dof_pos)
+                target_dof_pos = action_delay.apply("action", target_dof_pos)
+                # target_dof_pos=default_angles[lab2mj].copy()
                 ctrl_steps += 1
 
             viewer.sync()
