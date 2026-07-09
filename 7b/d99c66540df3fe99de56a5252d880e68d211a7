@@ -1,0 +1,151 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/ref_flat_env_cfg.py
+  s_8f02b93fbff032::t_4bd470dfc9d09b 20
+  s_8f02b93fbff032::t_81a1b30c992777 78-80,101
+  s_8f02b93fbff032::t_9883e053be1eee 123-129,137-139
+  s_8f02b93fbff032::t_d0e3ea78b1f027 1-12,14-19,21-22,24-34,49-52,54,59-60,62-64,66-69,77,104-115,117-120,144-172
+  s_8f02b93fbff032::t_252cbdfc442329 13
+  s_8f02b93fbff032::t_ae8153094713c1 35-46
+  h_3a925938c75d22 23,47-48,61,75-76,81-100,116,121-122,130-136,140-143,173-175
+  s_8f02b93fbff032::t_ec295e6139aa15 53,55-58,65,70-74
+  s_8f02b93fbff032::t_e0c15450e9705e 102-103
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2.json
+  h_3a925938c75d22 4,22,29,34,36,39,42-43,50,52-55,60,62,65,68-69,72,86,93,96,100,107,109-112,119,122,126
+  s_0549cb6a23a33b::t_296f04d6d6fb6a 9-15
+  s_8f02b93fbff032::t_297ff84b40c430 51,56,108,113
+GMR/DOC_IK_CONFIG.md
+  s_0549cb6a23a33b::t_e895dec27031d2 1-172
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_range_env_cfg.py
+  h_3a925938c75d22 1-208
+GMR/scripts/check_ankle_angle.py
+  s_a0ddf95b153e83::t_5a7d87e1f762a4 1-3,7-49
+  s_a0ddf95b153e83::t_e23cc09a40e131 4-6
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/rewards.py
+  s_8f02b93fbff032::t_21055c1c8566d4 14
+  s_f98da663ab6ecd::t_5e9b02de0602f3 110-132
+  s_8f02b93fbff032::t_806a02921c3c8d 360-407
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg.py
+  h_3a925938c75d22 126-135,157,216,376-383,387-395,443-444,504-506
+  s_8f02b93fbff032::t_48224dead7051d 384-386
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/__init__.py
+  s_8f02b93fbff032::t_2d2211c3b45008 28-47
+GMR/scripts/smplx_to_robot.py
+  s_0549cb6a23a33b::t_5eb27e6bd8ff90 89
+  s_0549cb6a23a33b::t_83fcc03845ea66 149,158,172
+  s_0549cb6a23a33b::t_52a5fdcd1f6ee8 102,108,119,128,170-171
+  s_0549cb6a23a33b::t_f0670619135adc 95
+legged_lab/source/legged_lab/legged_lab/assets/a1.py
+  s_f98da663ab6ecd::t_3ee6c6e1a2470f 118,128
+  h_3a925938c75d22 16-18,24-25,38,117,120,127
+  s_f98da663ab6ecd::t_6ccba98df82709 99
+  s_25b3547049ed33::t_bc007632d849e6 36
+  s_7615e9c8cc44cc::t_a127bb31e551fe 119,129-130
+  s_8f02b93fbff032::t_3a33730f15f916 27-30
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2_1.json
+  h_3a925938c75d22 1-129
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/__init__.py
+  h_3a925938c75d22 36-55
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/deepmimic/mdp/events.py
+  s_e1cd26c2cdba50::t_68ffeb8a64eb5c 39,78-129
+  h_3a925938c75d22 40-77
+GMR/scripts/retarget_accad_walk_to_g1.py
+  h_3a925938c75d22 1-60
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/amp_env_cfg.py
+  s_e1cd26c2cdba50::t_fc0f8aeba7be0c 264-289
+legged_lab/source/legged_lab/legged_lab/assets/unitree_actuators.py
+  s_f98da663ab6ecd::t_c93f40c62c717e 222,224-226,229-232
+  s_f98da663ab6ecd::t_7dccfc8f9f76a9 220-221,223,227-228,233-243,245,250-251,256-264
+  s_f98da663ab6ecd::t_5b8772efe38e89 244,246-249,252-255
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/mdp/rewards.py
+  h_3a925938c75d22 25-41
+GMR/assets/a1_legs_v2/A1_legs_V2_mjcf.xml
+  h_3a925938c75d22 43,81,121
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/mdp/observations.py
+  s_8f02b93fbff032::t_3a2e26b263df60 16-21,24-31,35-42
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg.py
+  h_3a925938c75d22 49-53,104,144-177,180-184,249-250,253-256,275-291,308-311
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/agents/rsl_rl_ppo_cfg.py
+  h_3a925938c75d22 72,75,144-208
+GMR/scripts/retarget_accad_walk_to_a1.py
+  h_3a925938c75d22 8,11-19,47-48,51
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2_2.json
+  s_8f02b93fbff032::t_ee2cd6a1bcaf70 1-119
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2_d.json
+  s_8f02b93fbff032::t_3e7fb3b4fba287 1-144
+GMR/general_motion_retargeting/ik_configs/smplx_to_a1_legs_v2_z.json
+  s_8f02b93fbff032::t_108eda63e6f3f0 1-144
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg_ali.py
+  s_8f02b93fbff032::t_ea9aa54096af70 1-321
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg_benji.py
+  s_8f02b93fbff032::t_25e32dd47cd673 1-504
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/velocity/config/a1/flat_env_cfg_test.py
+  s_8f02b93fbff032::t_7bea734e672f0e 1-515
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7bd99c66540df3fe99de56a5252d880e68d211a7",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_0549cb6a23a33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "902118b7-878e-4f68-b5e6-54a9e0d09a4c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_25b3547049ed33": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d665cadf-8085-4c63-b9af-f555f5024156",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_8f02b93fbff032": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5957fe8-42d9-4a84-ac29-6e8099dd096f",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_a0ddf95b153e83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "53255f49-c1e0-4873-8c0a-963bf9dc293a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_e1cd26c2cdba50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9cc39c8b-4804-4ef0-9d47-f6af9c4411fe",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_f98da663ab6ecd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37a12830-3fa3-4323-8aec-867729f32764",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
