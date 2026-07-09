@@ -132,7 +132,10 @@ python scripts/rsl_rl/train.py --task LeggedLab-Isaac-AMP-A1-Range-v0 --num_envs
 python scripts/rsl_rl/train.py --task Lab-Locomotion-Velocity-Flat-G1-v0 --num_envs 4096
 
 # Play/evaluate trained policy
-python scripts/rsl_rl/play.py --task Lab-Locomotion-Amp-A1-v0
+python scripts/rsl_rl/play.py --task LeggedLab-Isaac-AMP-A1-Range-Play-v0
+
+# Play headless with browser visualizer (for server environments without display)
+python scripts/rsl_rl/play_viser.py --task LeggedLab-Isaac-AMP-A1-Range-Play-v0 --num_envs 20 --headless --viser
 ```
 
 ### Whole-Body Tracking
