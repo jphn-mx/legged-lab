@@ -1,0 +1,31 @@
+legged_lab/scripts/rsl_rl/play_viser.py
+  s_7615e9c8cc44cc::t_26a50252d4ed98 118
+  s_7615e9c8cc44cc::t_a0b51a5f372df3 115-117
+  s_7615e9c8cc44cc::t_70514710aa1fe4 119-121
+  s_7615e9c8cc44cc::t_6917ff718c1fe1 1-114,122-279
+README.md
+  s_7615e9c8cc44cc::t_bd1e8250fcf61c 135-138
+legged_lab/scripts/rsl_rl/viser_viewer.py
+  s_7615e9c8cc44cc::t_e4db47af9c7917 1-593
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ca7c5288b206da5f57032db201fc1a85dec6993b",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
