@@ -1,0 +1,26 @@
+README.md
+  s_7615e9c8cc44cc::t_78a0d9cb0551e3 128-129
+CLAUDE.md
+  s_7615e9c8cc44cc::t_ee2897758f2272 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5b684a8b3b1541529f892f22649e40981d2f3e22",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
