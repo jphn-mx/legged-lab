@@ -1,6 +1,6 @@
 # Pure-RL velocity (flat) policy — A1FlatEnvCfg sim2sim deployment
-policy_path: "policy/policy_flat.onnx"   # <-- replace with the trained flat/velocity policy
-model_type: "onnx"
+policy_path: "policy/policy_zhao7.pt"   # <-- replace with the trained flat/velocity policy
+model_type: "jit"
 # xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
 xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml"
 simulation_duration: 600.0
@@ -61,8 +61,8 @@ max_delay_steps: 0
 # DelayedPDActuatorCfg (setpoint pushed each sim step, PD reads the lag-delayed value). Units = DEPLOY
 # physics steps. Training spec: min_delay=7, max_delay=8 @ training sim.dt=0.005 s => 35-40 ms. Here
 # sim.dt=0.001 s, so the SAME time = 35-40 deploy physics steps. Lag sampled in [min, max] once/episode.
-action_min_delay_sim_steps: 80
-action_max_delay_sim_steps: 80
+action_min_delay_sim_steps: 0
+action_max_delay_sim_steps: 0
 
 gait_period: 0.5     # GAIT_PERIOD in flat_env_cfg.py (gait_phase / feet_gait)
 step_dt: 0.02        # env step_dt, advances the gait clock
