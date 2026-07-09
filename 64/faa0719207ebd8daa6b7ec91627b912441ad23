@@ -1,0 +1,24 @@
+rl_real_py.zip
+  s_7615e9c8cc44cc::t_01f70c0a065a29 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "64faa0719207ebd8daa6b7ec91627b912441ad23",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "unknown"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
