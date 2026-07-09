@@ -15,6 +15,37 @@ import tty
 import fcntl
 import os
 
+# Sensor-derived obs terms eligible for observation latency (commands / last_action / key_body not delayed).
+# NOTE: the A1 AMP training cfg does NOT wrap obs with delayed_obs, so keep min/max_delay_steps = 0 in the
+# yaml to stay faithful; the buffers are wired only so latency can be enabled for robustness testing.
+DELAYED_TERMS = ("base_ang_vel", "root_local_rot_tan_norm", "joint_pos", "joint_vel")
+
+
+class ObsDelay:
+    """Per-term observation latency, matching IsaacLab's delayed_obs: an independent integer lag
+    (in control steps) is sampled in [min_delay, max_delay] once per episode and held constant.
+    Also reused for the single-signal action/setpoint execution delay (DelayedPDActuatorCfg)."""
+
+    def __init__(self, term_names, min_delay, max_delay):
+        self.term_names = set(term_names)
+        self.min_delay = int(min_delay)
+        self.max_delay = int(max_delay)
+        self.reset()
+
+    def reset(self):
+        self.buffers = {n: [] for n in self.term_names}
+        self.lags = {n: np.random.randint(self.min_delay, self.max_delay + 1) for n in self.term_names}
+
+    def apply(self, name, value):
+        if name not in self.term_names or self.max_delay <= 0:
+            return value
+        buf = self.buffers[name]
+        buf.append(value.copy())
+        if len(buf) > self.max_delay + 1:
+            buf.pop(0)
+        return buf[max(0, len(buf) - 1 - self.lags[name])]
+
+
 
 def normalize_policy_output(policy_output):
     if isinstance(policy_output, torch.Tensor):
@@ -266,6 +297,58 @@ def get_key():
         reset_requested = True
 
 
+# -------------------------------------------------------------------------------------------------
+# Optional Xbox / gamepad control (pygame). Absolute-stick mapping; falls back to keyboard if no
+# controller or pygame is unavailable. Axis indices follow SDL2 Xbox layout (0=LX,1=LY,3=RX); if
+# your stick maps differently, tweak AXIS_* below.
+# -------------------------------------------------------------------------------------------------
+JOY_DEADZONE = 0.12
+JOY_X_MAX = 1.0    # forward/back  <- left stick Y
+JOY_Y_MAX = 0.5    # lateral       <- left stick X
+JOY_YAW_MAX = 1.0  # turn          <- right stick X
+AXIS_LX, AXIS_LY, AXIS_RX = 0, 1, 3
+BTN_RESET, BTN_STOP = 7, 6  # Start = reset, Back = stop
+
+_joystick = None
+try:
+    import pygame
+
+    pygame.init()
+    pygame.joystick.init()
+    if pygame.joystick.get_count() > 0:
+        _joystick = pygame.joystick.Joystick(0)
+        _joystick.init()
+        print(f"[joystick] using: {_joystick.get_name()}  (left stick=move, right stick=turn, Start=reset, Back=stop)")
+    else:
+        print("[joystick] none detected -> keyboard control (w/s move, a/d turn, j/l strafe, space=stop, r=reset)")
+except Exception as e:  # pygame missing / no display / no audio device, etc.
+    print(f"[joystick] pygame unavailable ({e}) -> keyboard control")
+
+
+def _deadzone(v, dz=JOY_DEADZONE):
+    return 0.0 if abs(v) < dz else v
+
+
+def get_joystick():
+    """Poll the gamepad and set absolute x_vel/y_vel/yaw. No-op if no controller."""
+    global x_vel, y_vel, yaw, reset_requested
+    if _joystick is None:
+        return
+    pygame.event.pump()
+    n = _joystick.get_numaxes()
+    lx = _deadzone(_joystick.get_axis(AXIS_LX)) if n > AXIS_LX else 0.0
+    ly = _deadzone(_joystick.get_axis(AXIS_LY)) if n > AXIS_LY else 0.0
+    rx = _deadzone(_joystick.get_axis(AXIS_RX)) if n > AXIS_RX else 0.0
+    x_vel = round(-ly * JOY_X_MAX, 2)   # push up   -> forward (+x)
+    y_vel = round(-lx * JOY_Y_MAX, 2)   # push left -> move left (+y)
+    yaw = round(-rx * JOY_YAW_MAX, 2)   # push right-> turn right (yaw-), matches keyboard 'd'
+    nb = _joystick.get_numbuttons()
+    if nb > BTN_RESET and _joystick.get_button(BTN_RESET):
+        reset_requested = True
+    if nb > BTN_STOP and _joystick.get_button(BTN_STOP):
+        x_vel = y_vel = yaw = 0.0
+
+
 if __name__ == "__main__":
     config_file = "configs/a1_amp.yaml"
     if len(sys.argv) > 1:
@@ -302,7 +385,7 @@ if __name__ == "__main__":
     print("lab2mj =", lab2mj)
 
     # Effort limits per joint in IsaacLab order, converted to MuJoCo order
-    effort_limits = np.array([27, 27, 27, 27, 27, 27, 27, 27, 7, 7, 7, 7], dtype=np.float32)
+    effort_limits = np.array([18, 18, 18, 18, 18, 18, 18, 18, 7, 7, 7, 7], dtype=np.float32)
     torque_limits = effort_limits[lab2mj]
 
     cmd = np.array(config["cmd_init"], dtype=np.float32)
@@ -322,6 +405,15 @@ if __name__ == "__main__":
     obs_hist = TermGroupedHistory(term_dims, num_history)
     actions = np.zeros(num_actions, dtype=np.float32)
     target_dof_pos = default_angles[lab2mj].copy()
+
+    # Observation latency (sensor terms) + action/setpoint execution latency, both in CONTROL steps.
+    # Faithful to A1 AMP training: obs delay defaults to 0 (training has no delayed_obs), action delay
+    # matches the DelayedPDActuatorCfg used by A1_LEGS_V1_CFG. Missing yaml keys -> disabled (0).
+    obs_delay = ObsDelay(DELAYED_TERMS, config.get("min_delay_steps", 0), config.get("max_delay_steps", 0))
+    # Setpoint execution latency, applied EVERY PHYSICS STEP (same logic as DelayedPDActuatorCfg).
+    # Lag is in DEPLOY physics steps (sim.dt); see yaml for the conversion from the training spec.
+    action_delay = ObsDelay(("action",), config.get("action_min_delay_sim_steps", 0),
+                            config.get("action_max_delay_sim_steps", 0))
 
     print(f"xml_path = {xml_path}")
     print(f"num_actions = {num_actions}, num_obs = {num_obs}, history = {num_history}")
@@ -359,11 +451,13 @@ if __name__ == "__main__":
                 d.qacc[:] = 0.0
                 d.qacc_warmstart[:] = 0.0
                 d.xfrc_applied[:] = 0.0
-                cmd[:] = 0.0
+                # cmd[:] = 0.0
                 x_vel = y_vel = yaw = 0.0
                 actions[:] = 0.0
                 target_dof_pos = default_angles[lab2mj].copy()
                 obs_hist = TermGroupedHistory(term_dims, num_history)
+                obs_delay.reset()
+                action_delay.reset()
                 counter = 0
                 reset_requested = False
                 print("Robot state reset")
@@ -372,25 +466,38 @@ if __name__ == "__main__":
                 continue
 
             get_key()
+            get_joystick()
             cmd[0] = x_vel
             cmd[1] = y_vel
             cmd[2] = yaw
 
+            # Per-physics-step setpoint delay (matches DelayedPDActuatorCfg: the setpoint is pushed
+            # every sim step and the PD reads the lag-delayed value, then PD runs each sim step).
+            # target_dof_pos only changes once per control step, but we push it EVERY sim step --
+            # exactly like the training-side actuator delay buffer.
+            delayed_target = action_delay.apply("action", target_dof_pos)
+
             # PD control (in MuJoCo order)
             tau = pd_control(
-                target_dof_pos,
+                delayed_target,
                 d.qpos[7:],
-                kps[lab2mj],
+                kps,
                 np.zeros_like(kds),
                 d.qvel[6:],
-                kds[lab2mj],
+                kds,
             )
             tau = np.clip(tau, -torque_limits, torque_limits)
+            # print(tau)
             d.ctrl = tau
 
             print(f"x_vel:{cmd[0]:.2f}  y_vel:{cmd[1]:.2f}  yaw:{cmd[2]:.2f}\r", end="")
             mujoco.mj_step(m, d)
             counter += 1
+            # cmd = [0.7,0.0,0.]
+            # if cmd[0] < 0.5:
+            #     cmd = [0.5,0.0,0.0]
+            # else:
+            #     cmd = [0.0,0.0,0.0]
 
             if counter % control_decimation == 0:
                 # Read MuJoCo state, reorder to Lab order
@@ -406,21 +513,26 @@ if __name__ == "__main__":
 
                 # Build per-term observations following AMP order
                 term_obs_list = []
+                
                 for idx in obs_index:
                     if idx == "base_ang_vel":
-                        term_obs_list.append(omega_b)
+                        val = omega_b
                     elif idx == "root_local_rot_tan_norm":
-                        term_obs_list.append(compute_root_local_rot_tan_norm(quat_wxyz))
+                        val = compute_root_local_rot_tan_norm(quat_wxyz)
                     elif idx == "velocity_commands":
-                        term_obs_list.append(cmd * cmd_scale)
+                        val = cmd * cmd_scale
                     elif idx == "joint_pos":
-                        term_obs_list.append(qj)
+                        val = qj
                     elif idx == "joint_vel":
-                        term_obs_list.append(dqj)
+                        val = dqj
                     elif idx == "last_action":
-                        term_obs_list.append(actions.copy())
+                        val = actions.copy()
                     elif idx == "key_body_pos_b":
-                        term_obs_list.append(compute_key_body_pos_b_fk(d.qpos[7:]))
+                        val = compute_key_body_pos_b_fk(d.qpos[7:])
+                    else:
+                        continue
+                    # apply per-term observation latency (no-op for non-delayed terms / max_delay<=0)
+                    term_obs_list.append(obs_delay.apply(idx, val))
 
                 total_obs = obs_hist.update(term_obs_list)
 
@@ -438,6 +550,14 @@ if __name__ == "__main__":
                 # Actions are in Lab order, convert to MuJoCo order for PD target
                 target_dof = actions * action_scale + default_angles
                 target_dof_pos = target_dof[lab2mj]
+                # joint_lower_limits = np.array([-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                #      -1.05, -1.05, -1.0, 0.0, -0.52, -0.35])
+                # joint_upper_limits= np.array([ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                #       1.05,  0.26,  1.0, 1.92, 0.52,  0.35])
+                # target_dof_pos = np.clip(target_dof_pos, joint_lower_limits, joint_upper_limits)
+                # # NOTE: setpoint delay is applied per-physics-step in the PD loop above (action_delay),
+                # NOT here, to match DelayedPDActuatorCfg's per-sim-step buffer semantics.
+                # print(target_dof_pos)
 
             draw_velocity_arrows(viewer, d.qpos[:3], d.qpos[3:7], cmd, d.qvel[:3])
             viewer.sync()
@@ -446,3 +566,8 @@ if __name__ == "__main__":
                 time.sleep(time_until_next_step)
 
     restore_terminal()
+    if _joystick is not None:
+        try:
+            pygame.quit()
+        except Exception:
+            pass

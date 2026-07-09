@@ -112,6 +112,71 @@ fcntl.fcntl(fd, fcntl.F_SETFL, old_flags | os.O_NONBLOCK)
 x_vel = y_vel = yaw = 0.0
 reset_requested = False
 
+# ---- CSV data logging (m=start / n=stop), matching rl_real_flat _aligned_line style ----
+log_active = False
+log_file = None
+log_header = None
+log_colw = None
+log_t0 = 0.0
+log_path = None
+
+
+def _aligned_line(values, colw, header=False):
+    """定宽右对齐、逗号分隔 (表头与数据列对齐), 浮点统一 3 位小数。
+    与 rl_real_flat._aligned_line 一致: ",".join(cell.rjust(w))。"""
+    cells = []
+    for v, w in zip(values, colw):
+        s = v if header else f"{float(v):.3f}"
+        cells.append(s.rjust(w))
+    return ",".join(cells)
+
+
+def _start_log(joint_names):
+    """开始记录: 新建时间戳 CSV 并写表头 (列全部按 Lab 序)。"""
+    global log_active, log_file, log_header, log_colw, log_t0, log_path
+    _stop_log()
+    path = os.path.join(os.getcwd(), time.strftime("sim_flat_torque_%Y%m%d_%H%M%S.csv"))
+    header = (
+        ["t"]
+        + [f"target_{n}" for n in joint_names]
+        + [f"q_{n}" for n in joint_names]
+        + [f"dq_{n}" for n in joint_names]
+        + [f"tau_{n}" for n in joint_names]
+        + ["wx", "wy", "wz", "grav_x", "grav_y", "grav_z",
+           "cmd_vx", "cmd_vy", "cmd_wz", "gait_sin", "gait_cos"]
+    )
+    colw = [max(len(h), 9) for h in header]
+    f = open(path, "w", newline="")
+    f.write(_aligned_line(header, colw, header=True) + "\n")
+    f.flush()
+    log_file, log_header, log_colw = f, header, colw
+    log_t0 = time.time()
+    log_path = path
+    log_active = True
+    print(f"\n[记录] 开始 -> {path}")
+
+
+def _log_row(values):
+    """写一行数据 (values 已按表头顺序展开)。"""
+    if not log_active or log_file is None:
+        return
+    log_file.write(_aligned_line(values, log_colw) + "\n")
+    log_file.flush()
+
+
+def _stop_log():
+    """停止记录, 关闭文件, 打印路径与出图提示。"""
+    global log_active, log_file
+    was = log_active
+    if log_file is not None:
+        log_file.close()
+        log_file = None
+    log_active = False
+    if was:
+        print(f"\n[记录] 停止, 已存 CSV: {log_path}")
+        print("[记录] 出图请用离线脚本(不阻塞): python /home/woan/rl_real/plot_torque.py "
+              f"{log_path}")
+
 
 def get_key():
     global x_vel, y_vel, yaw, reset_requested
@@ -137,6 +202,10 @@ def get_key():
         x_vel = y_vel = yaw = 0.0
     elif ch == "r":
         reset_requested = True
+    elif ch == "m":
+        _start_log(LOG_JOINT_NAMES)
+    elif ch == "n":
+        _stop_log()
 
 
 if __name__ == "__main__":
@@ -160,13 +229,19 @@ if __name__ == "__main__":
     step_dt = config["step_dt"]
     model_type = config["model_type"]
     obs_index = config["obs_index"]
+    stand_still = config["stand_still"]
 
     # Lab <-> MuJoCo joint-order maps
     mj2lab = [config["obs_index_in_mj"].index(n) for n in config["obs_index_in_lab"]]
     lab2mj = [config["action_index_in_lab"].index(n) for n in config["action_index_in_mj"]]
 
+    # Lab-order joint names for CSV logging columns (obs_index_in_lab = [L1,R1,L2,R2,...])
+    global LOG_JOINT_NAMES
+    LOG_JOINT_NAMES = list(config["obs_index_in_lab"])
+
     # Effort limits (IsaacLab order) -> MuJoCo order
-    effort_limits = np.array([27, 27, 27, 27, 27, 27, 27, 27, 7, 7, 7, 7], dtype=np.float32)
+    effort_limits = np.array([18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 7, 7], dtype=np.float32)
+    # effort_limits = np.array([12, 12, 12, 12, 12, 12, 12, 12, 4, 4, 4, 4], dtype=np.float32)
     torque_limits = effort_limits[lab2mj]
 
     # --- Damiao actuator model (T-N derate + friction), see use_damiao_actuator_model switch ---
@@ -203,8 +278,11 @@ if __name__ == "__main__":
     actions = np.zeros(num_actions, dtype=np.float32)  # Lab order
     target_dof_pos = default_angles[lab2mj].copy()
     obs_delay = ObsDelay(DELAYED_TERMS, config["min_delay_steps"], config["max_delay_steps"])
-    # action/setpoint execution delay (single signal, in CONTROL steps) -- reuse ObsDelay with one "term"
-    action_delay = ObsDelay(("action",), config["action_min_delay_steps"], config["action_max_delay_steps"])
+    # Setpoint execution latency, applied EVERY PHYSICS STEP (same logic as DelayedPDActuatorCfg):
+    # the setpoint is pushed every sim step and the PD reads the lag-delayed value. Lag in DEPLOY
+    # physics steps (sim.dt); see yaml for the conversion from the training spec.
+    action_delay = ObsDelay(("action",), config.get("action_min_delay_sim_steps", 0),
+                            config.get("action_max_delay_sim_steps", 0))
 
     # per-term dims (must match obs_index), for history stacking
     term_dims_map = {
@@ -262,14 +340,20 @@ if __name__ == "__main__":
             # (R1..R6,L1..L6 -> ankle gains at idx 4,5,10,11), same order as d.qpos[7:]/d.qvel[6:],
             # so they are used directly WITHOUT [lab2mj] (a second permutation here was a bug that
             # mis-mapped gains: hip-yaw R3/L3 got the ankle kp=7 and ankle-pitch R5/L5 got 126).
-            tau = pd_control(target_dof_pos, d.qpos[7:], kps,
+            # Per-physics-step setpoint delay (matches DelayedPDActuatorCfg: the setpoint is pushed
+            # every sim step and the PD reads the lag-delayed value, then PD runs each sim step).
+            # target_dof_pos only changes once per control step, but we push it EVERY sim step.
+            delayed_target = action_delay.apply("action", target_dof_pos)
+            tau = pd_control(delayed_target, d.qpos[7:], kps,
                              np.zeros_like(kds), d.qvel[6:], kds)
+            # print(np.round(tau[mj2lab], 0))
             if use_damiao:
                 # Replicate training-side UnitreeActuator: T-N curve derate + friction (MuJoCo order)
                 tau = damiao_apply_actuator(tau, d.qvel[6:], damiao_tn, damiao_fric)
             else:
                 # Legacy behavior: fixed torque clip (+-27 / +-7), no T-N derate, no friction
                 tau = np.clip(tau, -torque_limits, torque_limits)
+            
             
             d.ctrl = tau
 
@@ -282,9 +366,19 @@ if __name__ == "__main__":
                 qj = d.qpos[7:][mj2lab] - default_angles  # joint_pos_rel (Lab order)
                 dqj = d.qvel[6:][mj2lab]                   # joint_vel (Lab order)
                 omega_b = d.qvel[3:6].copy()
+                # gait_phase: free-running clock (ctrl_steps keeps counting even when idle),
+                # but idle-frozen OUTPUT [sin0, cos0] = [0, 1] when the FULL command
+                # [vx, vy, wz] has norm < 0.1 (matches training gait_phase term).
                 phi = (ctrl_steps * step_dt) % gait_period / gait_period
                 angle = 2.0 * np.pi * phi
-
+                if stand_still:
+                    if np.linalg.norm(cmd) < 0.1:
+                        gait_phase = np.array([0.0, 1.0], dtype=np.float32)
+                    else:
+                        gait_phase = np.array([np.sin(angle), np.cos(angle)], dtype=np.float32)
+                else:
+                    gait_phase = np.array([np.sin(angle), np.cos(angle)], dtype=np.float32)
+                # print(gait_phase)
                 terms = {
                     "base_ang_vel": omega_b,
                     "projected_gravity": get_gravity_orientation(quat_wxyz),
@@ -292,8 +386,8 @@ if __name__ == "__main__":
                     "joint_pos": qj,
                     "joint_vel": dqj,
                     "last_action": actions.copy(),
-                    "gait_phase": np.array([np.sin(angle), np.cos(angle)], dtype=np.float32),
-                }                
+                    "gait_phase": gait_phase,
+                }           
                 term_obs_list = [obs_delay.apply(name, terms[name]) for name in obs_index]
                 total_obs = obs_hist.update(term_obs_list).astype(np.float32)
                 obs_tensor = torch.from_numpy(total_obs).unsqueeze(0)
@@ -305,17 +399,32 @@ if __name__ == "__main__":
 
                 # actions (Lab order) -> PD target (MuJoCo order)
                 target_dof_pos = (actions * action_scale + default_angles)[lab2mj]
-                # delay the joint-position setpoint by a per-episode random lag IN CONTROL STEPS,
-                # matching training's DelayedPDActuatorCfg (delays the setpoint, then PD runs each sim step)
                 joint_lower_limits = np.array([-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
                      -1.05, -1.05, -1.0, 0.0, -0.52, -0.35])
                 joint_upper_limits= np.array([ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
                       1.05,  0.26,  1.0, 1.92, 0.52,  0.35])
                 target_dof_pos = np.clip(target_dof_pos, joint_lower_limits, joint_upper_limits)
-                print(target_dof_pos)
-                target_dof_pos = action_delay.apply("action", target_dof_pos)
+                # NOTE: setpoint delay is applied per-physics-step in the PD loop above (action_delay),
+                # NOT here, to match DelayedPDActuatorCfg's per-sim-step buffer semantics.
                 # target_dof_pos=default_angles[lab2mj].copy()
                 ctrl_steps += 1
+
+                # ---- CSV data logging (50Hz control step); all columns in Lab order ----
+                if log_active:
+                    grav = get_gravity_orientation(quat_wxyz)
+                    row = ([time.time() - log_t0]
+                           + list(target_dof_pos[mj2lab])   # target_<j>, MuJoCo->Lab
+                           + list(d.qpos[7:][mj2lab])        # q_<j>
+                           + list(d.qvel[6:][mj2lab])        # dq_<j>
+                           + list(tau[mj2lab])               # tau_<j> = applied effort
+                           + list(omega_b)                   # wx,wy,wz (raw)
+                           + list(grav)                      # grav_*
+                           + [cmd[0], cmd[1], cmd[2]]        # cmd_* (raw)
+                           + list(gait_phase))               # gait_sin, gait_cos
+                    _log_row(row)
+                
+
+                
 
             viewer.sync()
             time_until_next_step = m.opt.timestep - (time.time() - step_start)
@@ -324,3 +433,5 @@ if __name__ == "__main__":
 
     termios.tcsetattr(fd, termios.TCSADRAIN, old_term)
     fcntl.fcntl(fd, fcntl.F_SETFL, old_flags)
+    if log_active:
+        _stop_log()

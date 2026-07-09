@@ -1,22 +1,51 @@
 # Pure-RL velocity (flat) policy — A1FlatEnvCfg sim2sim deployment
-policy_path: "policy/policy_flat_0616good2.onnx"   # <-- replace with the trained flat/velocity policy
+policy_path: "policy/policy_flat.onnx"   # <-- replace with the trained flat/velocity policy
 model_type: "onnx"
 # xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml"
-xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml"
+xml_path: "model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_feet_mesh.xml"
 simulation_duration: 600.0
 simulation_dt: 0.001
-control_decimation: 20               # 20 * 0.001 = 0.02 s == env step_dt (decimation 4 * sim.dt 0.005)
+control_decimation: 20              # 20 * 0.001 = 0.02 s == env step_dt (decimation 4 * sim.dt 0.005)
 
-kps: [126, 126, 126, 126, 7, 7,
-      126, 126, 126, 126, 7, 7,]
-kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
-      8.0, 8.0, 8.0, 8.0, 0.4, 0.4,]
-default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
-                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
-
+# kps: [126, 126, 126, 126, 7, 7,
+#       126, 126, 126, 126, 7, 7,]
+# # kds: [8.0, 8.0, 8.0, 8.0, 0.4, 0.4,
+# #       8.0, 8.0, 8.0, 8.0, 0.4, 0.4,]
+# kds: [4.83, 4.83, 4.83, 4.83, 0.27, 0.27,
+#       4.83, 4.83, 4.83, 4.83, 0.27, 0.27,]
+kps: [200, 200, 200, 200, 200, 40,
+      200, 200, 200, 200, 200, 40,]
+kds: [5.0, 5.0, 5.0, 5.0, 5.0, 0.5,
+      5.0, 5.0, 5.0, 5.0, 5.0, 0.5,]
+# default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+#                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+default_angles: [-0.2, -0.2, 0.0, 0.0, 0.0, 0.0,
+                  0.4,  0.4, -0.2, -0.2, 0.0, 0.0]
 action_scale: 0.25
 num_actions: 12
 num_obs: 47          # per-frame: 3 + 3 + 3 + 12 + 12 + 12 + 2
+
+# Damiao actuator model (replicates training-side UnitreeActuator: T-N torque derate + friction).
+#   true  -> per-joint torque-speed (T-N) curve limiting + Coulomb/viscous friction
+#            (Fs*tanh(v/Va) + Fd*v) subtracted AFTER the PD torque is T-N-clipped.
+#   false -> legacy behavior: fixed torque clip(+-27 / +-7), no T-N derate, no friction.
+# Set false to one-click revert to the old behavior for A/B comparison.
+use_damiao_actuator_model: false
+# T-N curve params per motor group (IsaacLab joint order: joints 1-4 = hip/knee = DM4340,
+# joints 5-6 = ankle = DM4310). Values copied from unitree_actuators.py DamiaoActuatorCfg_*.
+#   X1: knee speed (full torque up to here) | X2: no-load speed | Y1: same-dir peak | Y2: opposite-dir peak
+damiao_tn:
+  hip_knee: {X1: 3.77,  X2: 5.50,  Y1: 18.0, Y2: 18.0}   # DM4340 Y1=18 (24V dyno-measured, was 27 catalog)
+  ankle:    {X1: 12.57, X2: 20.94, Y1: 7.0,  Y2: 7.0}    # DM4310 confirmed by 24V dyno
+# Friction: MATCHED to the training Damiao actuator. A1_LEGS_V1_CFG_DAMIAO does NOT pass Fs/Fd,
+# and DamiaoActuatorCfg_DM4340/4310 don't set them either -> they inherit UnitreeActuatorCfg
+# defaults Fs=0.0, Fd=0.0 (Va=0.01). So the onnx was trained with NO motor friction, only the
+# T-N torque-speed limit. Set Fs=Fd=0 here so deploy == training (T-N only, no friction).
+damiao_friction:
+  hip_knee: {Fs: 0.0,  Fd: 0.0}
+  ankle:    {Fs: 0.0,  Fd: 0.0}
+  Va: 0.01
+
 num_history: 5       # policy group history_length (policy input = num_obs * num_history)
 
 cmd_init: [0, 0, 0.]
@@ -25,12 +54,19 @@ cmd_scale: [1.0, 1.0, 1.0]
 # Observation latency emulation (control steps), applied to sensor terms only
 # (base_ang_vel, projected_gravity, joint_pos, joint_vel). Independent per-term lag,
 # sampled in [min_delay_steps, max_delay_steps] once per episode. Set max=0 to disable.
-min_delay_steps: 1
-max_delay_steps: 4
+min_delay_steps: 0
+max_delay_steps: 0
+
+# Action/setpoint execution latency, applied EVERY PHYSICS STEP (sim.dt), same logic as training's
+# DelayedPDActuatorCfg (setpoint pushed each sim step, PD reads the lag-delayed value). Units = DEPLOY
+# physics steps. Training spec: min_delay=7, max_delay=8 @ training sim.dt=0.005 s => 35-40 ms. Here
+# sim.dt=0.001 s, so the SAME time = 35-40 deploy physics steps. Lag sampled in [min, max] once/episode.
+action_min_delay_sim_steps: 80
+action_max_delay_sim_steps: 80
 
 gait_period: 0.5     # GAIT_PERIOD in flat_env_cfg.py (gait_phase / feet_gait)
 step_dt: 0.02        # env step_dt, advances the gait clock
-
+stand_still: false
 # MuJoCo joint order (from XML): R1,R2,R3,R4,R5,R6,L1,L2,L3,L4,L5,L6
 # Isaac Lab joint order:          L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
 obs_index_in_lab: ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
