@@ -1,0 +1,89 @@
+human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf_ball.xml
+  h_3a925938c75d22 42-43,46
+human/deploy_a1_amp.py
+  s_f98da663ab6ecd::t_2006435dc173cd 519,521,523,525,527,529,531-535
+  s_f98da663ab6ecd::t_56c9cd9567cef1 559
+  s_f98da663ab6ecd::t_022ff9f87e3fbd 18-48
+  s_8f02b93fbff032::t_9d3c41a88a37f5 300-349
+  s_8f02b93fbff032::t_8340ef96daaddb 569-573
+  s_f98da663ab6ecd::t_a79596b758498a 409-412,417
+  s_8f02b93fbff032::t_2346203c0e3ee8 469
+  h_3a925938c75d22 388,454,490,496-500,516,553-558,560
+  s_f98da663ab6ecd::t_89ed59e01c759f 413-416
+  s_f98da663ab6ecd::t_c89a51bd713ba4 459-460
+  s_f98da663ab6ecd::t_5979cc6ae1c713 474-479,482
+  s_8f02b93fbff032::t_004da1e2e2a024 350-351
+  s_f98da663ab6ecd::t_28d883103c05e8 484,487
+human/model/A1_legs_V2_mjcf/A1_legs_V2_mjcf.xml
+  h_3a925938c75d22 42,45
+human/deploy_a1_flat.py
+  s_fdb215d039141f::t_19c578fe23520f 436-437
+  s_8f02b93fbff032::t_3bdb352ab6987b 369-371,375,379-380,389-390
+  s_fdb215d039141f::t_c5dfe96a452047 115-179,205-208
+  s_f98da663ab6ecd::t_e32a103eb6810b 343-347
+  h_3a925938c75d22 232,243-244,349,357,374,376-378,381,425-427
+  s_f98da663ab6ecd::t_76a6203c8484c9 407-408
+  s_f98da663ab6ecd::t_d0001a61a35e23 281-285
+  s_fdb215d039141f::t_193a138341d4d8 412-424
+  s_fdb215d039141f::t_34db663c5cf2d7 238-240
+  s_fdb215d039141f::t_833060b50540e7 241
+  s_f98da663ab6ecd::t_79327dc800c42f 428
+human/configs/a1_amp.yaml
+  s_f98da663ab6ecd::t_48f1d3a2218d92 43-44
+  h_3a925938c75d22 1,4-5,13-14,16-27,47-48
+  s_f98da663ab6ecd::t_7e552154c7d782 45-46
+  s_f98da663ab6ecd::t_5a81c4db1482bf 36-42
+  s_f98da663ab6ecd::t_3e30de87e7e1a5 15,49
+human/configs/a1_flat.yaml
+  s_e1cd26c2cdba50::t_f78b94a34e3324 27-32,34-37,44,48
+  s_f98da663ab6ecd::t_23e071d55fd96f 60-63
+  s_f98da663ab6ecd::t_6f875c7a39df54 38-39
+  s_e1cd26c2cdba50::t_8bba3aec76b07d 40-43,45-46
+  h_3a925938c75d22 2,5,8,10-23,33,47,57-58,64-65,69
+  s_f98da663ab6ecd::t_33e07b173a3254 59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9f7d6cb96b48584547e5ae9d6c59a3922aab879f",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_8f02b93fbff032": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5957fe8-42d9-4a84-ac29-6e8099dd096f",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_e1cd26c2cdba50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9cc39c8b-4804-4ef0-9d47-f6af9c4411fe",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_f98da663ab6ecd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37a12830-3fa3-4323-8aec-867729f32764",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    },
+    "s_fdb215d039141f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7e531bf-b421-4898-8556-c92c60c79f41",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
