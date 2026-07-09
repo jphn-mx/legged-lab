@@ -162,7 +162,7 @@ class A1RewardsCfg:
     )
     feet_clearance = RewTerm(
         func=mdp.feet_clearance_swing,
-        weight=1.5,
+        weight=0.5,
         params={
             "std": 0.25,
             "target_height": 0.15,
@@ -213,7 +213,7 @@ class A1RewardsCfg:
         weight=-0.1,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_L1"])},
     )
-    joint_deviation_hip1 = RewTerm(
+    joint_deviation_hip = RewTerm(
         func=mdp.joint_deviation_l1,
         weight=-0.8,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R2", "joint_L2"])},
@@ -373,26 +373,6 @@ class A1EventCfg(EventCfg):
         },
     )
 
-    # reset: randomize initial joint pose each episode (scale default pos by U[0.5,1.5]).
-    # Present in the working `hip1` run (was defined in the base EventCfg at that time).
-    reset_robot_joints = EventTerm(
-        func=mdp.reset_joints_by_scale,
-        mode="reset",
-        params={
-            "position_range": (0.5, 1.5),
-            "velocity_range": (0.0, 0.0),
-        },
-    )
-
-    # interval: random horizontal push every 10-15 s (robustness to disturbances).
-    # Present in the working `hip1` run (was defined in the base EventCfg at that time).
-    push_robot = EventTerm(
-        func=mdp.push_by_setting_velocity,
-        mode="interval",
-        interval_range_s=(10.0, 15.0),
-        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
-    )
-
 
 @configclass
 class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
@@ -441,7 +421,7 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
         # whole-body payload variation (for that you'd add ballast or scale a heavier body). Inertia is
         # recomputed by the same ratio (recompute_inertia default True).
         self.events.add_base_mass.params["operation"] = "add"#"scale"
-        self.events.add_base_mass.params["mass_distribution_params"] = (0.0,10.0)#(0.8, 1.2)
+        self.events.add_base_mass.params["mass_distribution_params"] = (0,12)#(0.8, 1.2)
         self.events.base_com.params["asset_cfg"].body_names = "base"
         # widen fore-aft (x) CoM randomization so the policy can't rely on a fixed forward lean to
         # balance -> forces an upright posture that is robust to the real robot's true CoM (sim2real).
@@ -497,13 +477,12 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
 
         # disable randomization for play
         self.observations.policy.enable_corruption = False
+        
 
         # disable ALL domain randomization for play (keep only reset_base / reset_robot_joints,
         # which are needed to spawn and reset the robot each episode).
         self.events.physics_material = None          # friction / restitution randomization
-        self.events.add_base_mass.params["operation"] = "add"#"scale"
-        self.events.add_base_mass.params["mass_distribution_params"] = (0.0,10.0)#(0.8, 1.2)
-        self.events.base_com.params["asset_cfg"].body_names = "base"             # random payload mass
+        self.events.add_base_mass = None             # random payload mass
         self.events.base_com = None                  # random COM offset
         self.events.base_external_force_torque = None
         self.events.push_robot = None                # random pushes
@@ -514,6 +493,9 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
         # fixed command range for evaluation (no curriculum growth at play time)
         self.curriculum.lin_vel_cmd_levels = None
         self.curriculum.ang_vel_cmd_levels = None
+        self.events.add_base_mass.params["operation"] = "add"#"scale"
+        self.events.add_base_mass.params["mass_distribution_params"] = (0,12)#(0.8, 1.2)
+        self.events.base_com.params["asset_cfg"].body_names = "base"
         # self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
         # self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
         # self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)

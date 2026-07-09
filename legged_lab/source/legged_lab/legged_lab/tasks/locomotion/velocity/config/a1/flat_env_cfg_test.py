@@ -27,6 +27,9 @@ OBS_DELAY_STEPS = {"min_delay_steps": 0, "max_delay_steps": 0}
 # GAIT_OFFSETS places the two feet in anti-phase. Shared by the phase observation and feet_gait reward.
 GAIT_PERIOD = 0.5
 GAIT_OFFSETS = [0.0, 0.5]
+# Full-command norm below which the env is treated as idle: the gait_phase observation is frozen
+# to [0, 1] (phi = 0) so the policy gets an explicit "stand still" signal.
+IDLE_CMD_THRESHOLD = 0.1
 
 
 def _delayed(func, **term_kwargs):
@@ -54,8 +57,12 @@ class A1ObservationsCfg:
         joint_pos = _delayed(mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         joint_vel = _delayed(mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5))
         actions = ObsTerm(func=mdp.last_action)
-        # gait clock (sin/cos): an exact internal signal, not delayed/corrupted
-        gait_phase = ObsTerm(func=mdp.gait_phase, params={"period": GAIT_PERIOD})
+        # gait clock (sin/cos): exact internal signal, not delayed/corrupted. Frozen to [0,1] when
+        # idle (|cmd| < IDLE_CMD_THRESHOLD) so the policy gets an explicit "stand still" signal.
+        gait_phase = ObsTerm(
+            func=mdp.gait_phase,
+            params={"period": GAIT_PERIOD, "command_name": "base_velocity", "command_threshold": IDLE_CMD_THRESHOLD},
+        )
 
         def __post_init__(self):
             self.history_length = 5
@@ -74,7 +81,10 @@ class A1ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel)
         joint_vel = ObsTerm(func=mdp.joint_vel_rel)
         actions = ObsTerm(func=mdp.last_action)
-        gait_phase = ObsTerm(func=mdp.gait_phase, params={"period": GAIT_PERIOD})
+        gait_phase = ObsTerm(
+            func=mdp.gait_phase,
+            params={"period": GAIT_PERIOD, "command_name": "base_velocity", "command_threshold": IDLE_CMD_THRESHOLD},
+        )
 
         def __post_init__(self):
             self.history_length = 5
@@ -123,18 +133,22 @@ class A1RewardsCfg:
     # is punished. Rated: DM-J4340 hip/knee = 9 N*m, DM-J4310 ankle = 3 N*m. excess^2 can be large
     # (hip can reach (27-9)^2=324), so the weights are small -- tune by watching the torque histogram:
     # raise if the policy parks above rated, lower if the gait gets too weak/slow.
-    # joint_torque_over_rated_hip_knee = RewTerm(
-    #     func=mdp.joint_torque_over_limit_l2,
-    #     weight=-2.0e-4,
-    #     params={"limit": 9.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
-    # )
-    # joint_torque_over_rated_ankle = RewTerm(
-    #     func=mdp.joint_torque_over_limit_l2,
-    #     weight=-2.0e-4,
-    #     params={"limit": 3.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"])},
-    # )
+    # Penalize the DESIRED (pre-clip) torque above each motor's rated value. Uses computed_torque, so
+    # it fires when the policy DEMANDS more than rated (applied_torque is already clipped -> would be
+    # useless here). Teaches the policy to stay within deliverable torque. Rated: hip/knee=9, ankle=3.
+    # weights small (excess^2 is large); tune by watching the torque histogram.
+    joint_computed_torque_over_rated_hip_knee = RewTerm(
+        func=mdp.joint_computed_torque_over_limit_l2,
+        weight=-5.0e-3,
+        params={"limit": 13.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
+    )
+    joint_computed_torque_over_rated_ankle = RewTerm(
+        func=mdp.joint_computed_torque_over_limit_l2,
+        weight=-5.0e-3,
+        params={"limit": 6.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"])},
+    )
     joint_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.0e-7)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.02)
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
     dof_pos_limits = RewTerm(
         func=mdp.joint_pos_limits,
         weight=-1.0,
@@ -146,15 +160,15 @@ class A1RewardsCfg:
         func=mdp.feet_air_time_positive_biped,
         weight=3.0,
         params={
-            # None => reward stepping even at zero command, consistent with the always-on gait
-            "command_name": None,
+            # gated by command => reward stepping only when commanded (no reward when idle)
+            "command_name": "base_velocity",
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
             "threshold": 0.4,
         },
     )
     feet_slide = RewTerm(
         func=mdp.feet_slide,
-        weight=-2.0,
+        weight=-3.0,
         params={
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES),
             "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES),
@@ -174,7 +188,7 @@ class A1RewardsCfg:
     # components of gravity projected into each foot frame -> 0 when the sole is level.
     feet_flat_orientation = RewTerm(
         func=mdp.feet_flat_orientation_l2,
-        weight=-1.0,
+        weight=-3.0,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES)},
     )
     # penalize uneven swing height between the two legs (one foot lifts high, the other drags).
@@ -182,25 +196,25 @@ class A1RewardsCfg:
     # weight small enough that even clumsy/asymmetric early lifting stays net-positive against the
     # feet_clearance (+1.5) / feet_air_time (+1.0) rewards, otherwise the policy collapses to "don't
     # lift" to avoid the penalty. Only raise it once a stepping gait has emerged.
-    feet_swing_height_symmetry = RewTerm(
-        func=mdp.feet_swing_height_symmetry,
-        weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-2 to refine symmetry
-        params={
-            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES, preserve_order=True),
-            "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES, preserve_order=True),
-        },
-    )
+    # feet_swing_height_symmetry = RewTerm(
+    #     func=mdp.feet_swing_height_symmetry,
+    #     weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-2 to refine symmetry
+    #     params={
+    #         "sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES, preserve_order=True),
+    #         "asset_cfg": SceneEntityCfg("robot", body_names=FEET_BODY_NAMES, preserve_order=True),
+    #     },
+    # )
 
     # Left/right step-timing symmetry: penalize the variance (i.e. the difference, for 2 feet) of the
     # two feet's last air-time AND last contact-time, so both legs swing and stand for equal durations.
     # This is a temporal symmetry (correct for an anti-phase gait) -- it does NOT fight the alternation
     # the way an instantaneous |q_L - q_R| posture penalty would. Same caveat as the height symmetry:
     # its minimum is "both feet motionless", so keep the weight gentle. Raise once the gait is stable.
-    feet_air_time_symmetry = RewTerm(
-        func=mdp.air_time_variance_penalty,
-        weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-0.5 to refine symmetry
-        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES)},
-    )
+    # feet_air_time_symmetry = RewTerm(
+    #     func=mdp.air_time_variance_penalty,
+    #     weight=0.0,  # DISABLED until a real stepping gait emerges; then bump to ~-0.5 to refine symmetry
+    #     params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=FEET_BODY_NAMES)},
+    # )
 
     # -- posture
     # joint_*1 is the hip PITCH (Y-axis), the main leg-swing joint. With the torso staying level, the
@@ -213,14 +227,14 @@ class A1RewardsCfg:
         weight=-0.1,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_L1"])},
     )
-    joint_deviation_hip1 = RewTerm(
-        func=mdp.joint_deviation_l1,
-        weight=-0.8,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R2", "joint_L2"])},
-    )
     joint_deviation_hip = RewTerm(
         func=mdp.joint_deviation_l1,
-        weight=-0.8,
+        weight=-1.5,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R2", "joint_L2"])},
+    )
+    joint_deviation_roll = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-1.0,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R5", "joint_L5"])},
     )
     # joint_*3 is the hip YAW (Z-axis) joint -- the primary DOF for redirecting/turning the leg.
@@ -239,15 +253,15 @@ class A1RewardsCfg:
     # joint_*6 is the ankle ROLL (X-axis) joint -- keep it near default so the foot does not invert/
     # evert (roll side-to-side). Command-gated like the yaw term: penalty off while turning so it
     # leaves room to adjust the foot during a turn, on (and re-centering) while going straight.
-    joint_deviation_ankle_roll = RewTerm(
-        func=mdp.joint_deviation_l1_straight,
-        weight=-1.0,
-        params={
-            "command_name": "base_velocity",
-            "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R6", "joint_L6"]),
-            "ang_vel_threshold": 1.0,
-        },
-    )
+    # joint_deviation_ankle_roll = RewTerm(
+    #     func=mdp.joint_deviation_l1_straight,
+    #     weight=-1.0,
+    #     params={
+    #         "command_name": "base_velocity",
+    #         "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R6", "joint_L6"]),
+    #         "ang_vel_threshold": 1.0,
+    #     },
+    # )
 
     # NOTE: stand_still is intentionally disabled. It penalizes joint deviation when the command is
     # ~0, which directly conflicts with the requirement to keep stepping (marching in place) at cmd 0.
@@ -373,26 +387,6 @@ class A1EventCfg(EventCfg):
         },
     )
 
-    # reset: randomize initial joint pose each episode (scale default pos by U[0.5,1.5]).
-    # Present in the working `hip1` run (was defined in the base EventCfg at that time).
-    reset_robot_joints = EventTerm(
-        func=mdp.reset_joints_by_scale,
-        mode="reset",
-        params={
-            "position_range": (0.5, 1.5),
-            "velocity_range": (0.0, 0.0),
-        },
-    )
-
-    # interval: random horizontal push every 10-15 s (robustness to disturbances).
-    # Present in the working `hip1` run (was defined in the base EventCfg at that time).
-    push_robot = EventTerm(
-        func=mdp.push_by_setting_velocity,
-        mode="interval",
-        interval_range_s=(10.0, 15.0),
-        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
-    )
-
 
 @configclass
 class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
@@ -426,6 +420,7 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
         self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.5)
         self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
         self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
+        self.commands.base_velocity.rel_standing_envs = 0.05
         # self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
         # self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
         # self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)
@@ -440,8 +435,8 @@ class A1FlatEnvCfg(LocomotionVelocityEnvCfg):
         # base link, so the absolute change is tiny vs the 8.45kg whole-robot mass and does NOT emulate
         # whole-body payload variation (for that you'd add ballast or scale a heavier body). Inertia is
         # recomputed by the same ratio (recompute_inertia default True).
-        self.events.add_base_mass.params["operation"] = "add"#"scale"
-        self.events.add_base_mass.params["mass_distribution_params"] = (0.0,10.0)#(0.8, 1.2)
+        self.events.add_base_mass.params["operation"] = "scale"
+        self.events.add_base_mass.params["mass_distribution_params"] = (0.8, 1.2)
         self.events.base_com.params["asset_cfg"].body_names = "base"
         # widen fore-aft (x) CoM randomization so the policy can't rely on a fixed forward lean to
         # balance -> forces an upright posture that is robust to the real robot's true CoM (sim2real).
@@ -501,9 +496,7 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
         # disable ALL domain randomization for play (keep only reset_base / reset_robot_joints,
         # which are needed to spawn and reset the robot each episode).
         self.events.physics_material = None          # friction / restitution randomization
-        self.events.add_base_mass.params["operation"] = "add"#"scale"
-        self.events.add_base_mass.params["mass_distribution_params"] = (0.0,10.0)#(0.8, 1.2)
-        self.events.base_com.params["asset_cfg"].body_names = "base"             # random payload mass
+        self.events.add_base_mass = None             # random payload mass
         self.events.base_com = None                  # random COM offset
         self.events.base_external_force_torque = None
         self.events.push_robot = None                # random pushes
@@ -514,9 +507,9 @@ class A1FlatEnvCfg_PLAY(A1FlatEnvCfg):
         # fixed command range for evaluation (no curriculum growth at play time)
         self.curriculum.lin_vel_cmd_levels = None
         self.curriculum.ang_vel_cmd_levels = None
-        # self.commands.base_velocity.ranges.lin_vel_x = (0.0, 1.0)
-        # self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
-        # self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
-        self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
-        self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
-        self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)
+        self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.5)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
+        self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
+        # self.commands.base_velocity.ranges.lin_vel_x = (-0., 0.)
+        # self.commands.base_velocity.ranges.lin_vel_y = (-0., 0.)
+        # self.commands.base_velocity.ranges.ang_vel_z = (-0., 0.)

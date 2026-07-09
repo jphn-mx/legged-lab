@@ -13,17 +13,33 @@ if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv
 
 
-def gait_phase(env: ManagerBasedEnv, period: float) -> torch.Tensor:
+def gait_phase(
+    env: ManagerBasedEnv,
+    period: float,
+    command_name: str | None = None,
+    command_threshold: float = 0.1,
+) -> torch.Tensor:
     """Periodic gait-clock observation: ``[sin(2*pi*phi), cos(2*pi*phi)]``.
 
-    The phase ``phi = (t % period) / period`` advances continuously with episode time and is
-    independent of the velocity command, so the policy always has a clock to step to (even when the
-    command is zero). Use the **same** ``period`` here and in :func:`mdp.feet_gait` so the commanded
-    stance/swing pattern matches what the policy observes.
+    The phase ``phi = (t % period) / period`` advances continuously with episode time. Use the
+    **same** ``period`` here and in :func:`mdp.feet_gait` so the commanded stance/swing pattern
+    matches what the policy observes.
+
+    If ``command_name`` is given, the clock is **frozen to phi = 0** (output ``[0, 1]``) whenever the
+    full velocity command norm is below ``command_threshold`` -- an explicit "stand still" signal when
+    idle. The underlying clock keeps running, so when a command resumes the output jumps to the
+    current free-running phase. Leave ``command_name`` as ``None`` for a free-running clock.
     """
     phi = (env.episode_length_buf * env.step_dt) % period / period  # [N] in [0, 1)
     angle = 2.0 * math.pi * phi
-    return torch.stack([torch.sin(angle), torch.cos(angle)], dim=-1)  # [N, 2]
+    out = torch.stack([torch.sin(angle), torch.cos(angle)], dim=-1)  # [N, 2]
+    if command_name is not None:
+        cmd_norm = torch.norm(env.command_manager.get_command(command_name), dim=1)
+        moving = (cmd_norm >= command_threshold).unsqueeze(-1)
+        idle = torch.zeros_like(out)
+        idle[:, 1] = 1.0  # phi = 0 -> [sin, cos] = [0, 1]
+        out = torch.where(moving, out, idle)
+    return out
 
 
 class delayed_obs(ManagerTermBase):

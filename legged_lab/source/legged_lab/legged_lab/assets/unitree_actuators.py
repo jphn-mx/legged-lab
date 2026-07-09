@@ -218,6 +218,51 @@ class UnitreeActuatorCfg_N5020_16(UnitreeActuatorCfg):
 
 
 @configclass
+class DamiaoActuatorCfg_DM4310(UnitreeActuatorCfg):
+    """DAMIAO DM-J4310-2EC V1.1, 24V, 10:1 gear.
+
+    Catalog (2026): peak torque 7 N·m, rated 3 N·m, no-load 200 rpm = 20.94 rad/s,
+    rated speed 120 rpm = 12.57 rad/s. CONFIRMED by the official 24V TN curve (120 rpm test):
+    torque tops out ~7 N·m, speed holds 120 rpm until ~6.5 N·m, torque constant ~0.98 Nm/A.
+    """
+
+    X1 = 12.57  # rad/s, rated speed = T-N knee (TN curve: holds 120 rpm to ~6.5 N·m, confirmed)
+    X2 = 20.94  # rad/s, no-load speed (catalog; 120 rpm test can't read it but does not contradict)
+    Y1 = 7.0    # N·m, peak torque (TN curve confirms: curves end ~7-7.3 N·m)
+    # Y2 left at default (= Y1): no separate reverse-direction peak measured
+
+    """
+    | rotor inertia | 1.8e-5 kg·m²  (motor-side, from catalog)
+    | gear ratio    | 10
+    armature = J_rotor * ratio^2 = 1.8e-5 * 10^2
+    """
+    armature = 0.0018
+
+
+@configclass
+class DamiaoActuatorCfg_DM4340(UnitreeActuatorCfg):
+    """DAMIAO DM-J4340-2EC V1.1, 24V, 40:1 gear.
+
+    Catalog (2026): rated torque 9 N·m, no-load 52.5 rpm = 5.50 rad/s, rated speed 36 rpm = 3.77 rad/s.
+    Y1 from the official 24V TN curve (36 rpm test), NOT the catalog "peak 27 N·m": the measured
+    torque at 24V tops out around 18 N·m (speed sags past ~12-13 N·m; curves end ~18 N·m), so 27 is
+    only reachable at higher voltage / instantaneously. Using the dyno value keeps sim2real honest.
+    """
+
+    X1 = 3.77   # rad/s, rated speed used as T-N knee (TN curve: speed holds to ~12-13 N·m @ 36 rpm)
+    X2 = 5.50   # rad/s, no-load speed (TN curve extrapolates torque->0 near ~52 rpm, matches catalog)
+    Y1 = 18.0   # N·m, measured 24V peak (was 27 catalog; dyno tops out ~18)
+    # Y2 left at default (= Y1): no reverse-direction peak measured
+
+    """
+    | rotor inertia | 2.0e-5 kg·m²  (motor-side, from catalog)
+    | gear ratio    | 40
+    armature = J_rotor * ratio^2 = 2.0e-5 * 40^2
+    """
+    armature = 0.032
+
+
+@configclass
 class UnitreeActuatorCfg_W4010_25(UnitreeActuatorCfg):
     X1 = 15.3
     X2 = 24.76

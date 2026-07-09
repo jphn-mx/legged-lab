@@ -5,7 +5,7 @@ import sys
 
 HERE = pathlib.Path(__file__).parent
 ACCAD_ROOT = HERE / ".." / "motion_data" / "ACCAD"
-TGT_ROOT = HERE / ".." / "motion_data" / "ACCAD_a1_v2_feet_gmr2_cal"
+TGT_ROOT = HERE / ".." / "motion_data" / "ACCAD_g1_v2_feet_gmr2"
 
 walk_dirs = [
     # "Female1Walking_c3d",
@@ -17,6 +17,7 @@ walk_dirs = [
     # "MartialArtsWalksTurns_c3d",
     # "s011"
     "b3"
+
 ]
 
 files = []
@@ -44,8 +45,8 @@ for smplx_file, subdir in files:
         sys.executable,
         str(HERE / "smplx_to_robot.py"),
         "--smplx_file", smplx_file,
-        # "--robot", "unitree_g1",
-        "--robot", "a1_legs_v2",
+        "--robot", "unitree_g1",
+        # "--robot", "a1_legs_v2",
         "--save_path", save_path,
         "--rate_limit",
         "--loop"

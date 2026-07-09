@@ -86,26 +86,26 @@ if __name__ == "__main__":
         src_human="smplx",
         tgt_robot=args.robot,
     )
-    
+
     robot_motion_viewer = RobotMotionViewer(robot_type=args.robot,
                                             motion_fps=aligned_fps,
                                             transparent_robot=0,
                                             record_video=args.record_video,
                                             video_path=f"videos/{args.robot}_{args.smplx_file.split('/')[-1].split('.')[0]}.mp4",)
-    
+
 
     curr_frame = 0
     # FPS measurement variables
     fps_counter = 0
     fps_start_time = time.time()
     fps_display_interval = 2.0  # Display FPS every 2 seconds
-    
+
     if args.save_path is not None:
         save_dir = os.path.dirname(args.save_path)
         if save_dir:  # Only create directory if it's not empty
             os.makedirs(save_dir, exist_ok=True)
         qpos_list = []
-    
+
     # Start the viewer
     i = 0
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
             i += 1
             if i >= len(smplx_data_frames):
                 break
-        
+
         # FPS measurement
         fps_counter += 1
         current_time = time.time()
@@ -125,7 +125,7 @@ if __name__ == "__main__":
             print(f"Actual rendering FPS: {actual_fps:.2f}")
             fps_counter = 0
             fps_start_time = current_time
-        
+
         # Update task targets.
         smplx_data = smplx_data_frames[i]
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         )
         if args.save_path is not None:
             qpos_list.append(qpos)
-            
+
     if args.save_path is not None:
         import pickle
         root_pos = np.array([qpos[:3] for qpos in qpos_list])
@@ -155,7 +155,7 @@ if __name__ == "__main__":
         dof_pos = np.array([qpos[7:] for qpos in qpos_list])
         local_body_pos = None
         body_names = None
-        
+
         motion_data = {
             "fps": aligned_fps,
             "root_pos": root_pos,
@@ -167,7 +167,7 @@ if __name__ == "__main__":
         with open(args.save_path, "wb") as f:
             pickle.dump(motion_data, f)
         print(f"Saved to {args.save_path}")
-            
-      
-    
+
+
+
     robot_motion_viewer.close()

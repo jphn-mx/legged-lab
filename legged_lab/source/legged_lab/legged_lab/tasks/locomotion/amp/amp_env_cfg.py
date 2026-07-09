@@ -261,6 +261,32 @@ class EventCfg:
 
     reset_from_ref = EventTerm(func=mdp.reset_from_ref, mode="reset", params=MISSING)
 
+    # Domain-randomize the custom Damiao/Unitree actuator's INTERNAL friction torque (Fs/Fd),
+    # applied inside UnitreeActuator.compute(). NOTE: this is the motor-shaft friction, NOT the
+    # PhysX joint friction (randomize_joint_parameters) and NOT the foot/ground contact friction
+    # (physics_material). One value per env is drawn at reset and held for the whole episode.
+    # Ranges from PDF analysis (Fs ~= 2-3% of peak torque, Fd ~= Fs/10):
+    #   hip_knee (DM4340, peak 27 N.m): Fs in [0.3, 0.9],  Fd in [0.03, 0.09]
+    #   ankle    (DM4310, peak  7 N.m): Fs in [0.1, 0.25], Fd in [0.01, 0.025]
+    randomize_actuator_friction_hip_knee = EventTerm(
+        func=mdp.randomize_actuator_friction,
+        mode="reset",
+        params={
+            "actuator_names": ["hip_knee"],
+            "static_friction_range": (0.3, 0.9),
+            "dynamic_friction_range": (0.03, 0.09),
+        },
+    )
+    randomize_actuator_friction_ankle = EventTerm(
+        func=mdp.randomize_actuator_friction,
+        mode="reset",
+        params={
+            "actuator_names": ["ankle"],
+            "static_friction_range": (0.1, 0.25),
+            "dynamic_friction_range": (0.01, 0.025),
+        },
+    )
+
     # interval
     push_robot = EventTerm(
         func=mdp.push_by_setting_velocity,

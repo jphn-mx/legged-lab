@@ -11,6 +11,7 @@ specify the reward function and its parameters.
 
 from __future__ import annotations
 
+import math
 import torch
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
@@ -102,6 +103,29 @@ def joint_torque_over_limit_l2(
     """
     asset: Articulation = env.scene[asset_cfg.name]
     torque = asset.data.applied_torque[:, asset_cfg.joint_ids]
+    excess = (torque.abs() - limit).clamp(min=0.0)
+    return torch.sum(torch.square(excess), dim=-1)
+
+
+def joint_computed_torque_over_limit_l2(
+    env: ManagerBasedRLEnv, limit: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Penalize (squared) the part of the DESIRED (pre-clip) joint torque that exceeds ``limit`` (N*m).
+
+    Uses ``computed_torque`` (the raw PD output BEFORE the actuator clips it), NOT ``applied_torque``.
+    ``applied_torque`` is already clamped to the actuator limit (T-N Y1 / effort_limit), so it can
+    never exceed it and a penalty on it would be identically zero. ``computed_torque`` still shows
+    how much the policy *asked for*, so this term teaches the policy not to demand torque the motor
+    cannot deliver (it saturates / gets clipped on the real robot).
+
+    Per-joint hinge: below ``limit`` the penalty is zero. ``limit`` is the per-group threshold
+    (e.g. rated torque: DM-J4340 hip/knee = 9 N*m, DM-J4310 ankle = 3 N*m).
+
+    NOTE: meaningful for EXPLICIT actuators (DelayedPD / Unitree-Damiao), which populate
+    ``computed_torque`` from the PD model. For implicit actuators it may equal applied_torque.
+    """
+    asset: Articulation = env.scene[asset_cfg.name]
+    torque = asset.data.computed_torque[:, asset_cfg.joint_ids]
     excess = (torque.abs() - limit).clamp(min=0.0)
     return torch.sum(torch.square(excess), dim=-1)
 
@@ -333,3 +357,51 @@ def joint_deviation_l1_straight(
     deviation = torch.sum(torch.abs(angle), dim=1)
     yaw_cmd = torch.abs(env.command_manager.get_command(command_name)[:, 2])
     return deviation * (yaw_cmd < ang_vel_threshold)
+
+
+def joint_pos_reference_tracking(
+    env: ManagerBasedRLEnv,
+    period: float,
+    reference: list[dict],
+    std: float = 0.25,
+    command_name: str | None = None,
+    command_threshold: float = 0.1,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Reward tracking a phase-parameterized sinusoidal reference trajectory.
+
+    Each entry in ``reference`` is a dict with keys:
+        joint_names (list[str]): joint name patterns (resolved via asset_cfg at first call)
+        leg_phase_offset (float): 0.0 for left leg, 0.5 for right leg
+        amplitude (float): peak deviation from default [rad]
+        phase_offset (float): within-joint phase shift [rad], e.g. -pi/3 for knee
+
+    The reference for joint j at global phase phi::
+
+        q_ref = q_default + amplitude * sin(2*pi*(phi + leg_phase_offset) + phase_offset)
+
+    When ``command_name`` is given, zeroes the reward when |cmd| < command_threshold
+    (stand-still handled by other terms).
+    """
+    asset: Articulation = env.scene[asset_cfg.name]
+    phi = (env.episode_length_buf * env.step_dt) % period / period  # [N]
+    q = asset.data.joint_pos  # [N, J]
+    q_default = asset.data.default_joint_pos  # [N, J]
+
+    error = torch.zeros(env.num_envs, device=env.device)
+    for entry in reference:
+        joint_ids, _ = asset.find_joints(entry["joint_names"])
+        if len(joint_ids) == 0:
+            continue
+        leg_phi = (phi + entry["leg_phase_offset"]) % 1.0  # [N]
+        angle = 2.0 * math.pi * leg_phi + entry.get("phase_offset", 0.0)
+        q_ref = q_default[:, joint_ids] + entry["amplitude"] * torch.sin(angle).unsqueeze(-1)
+        error += torch.sum(torch.square(q[:, joint_ids] - q_ref), dim=-1)
+
+    reward = torch.exp(-error / std**2)
+
+    if command_name is not None:
+        cmd_norm = torch.norm(env.command_manager.get_command(command_name), dim=1)
+        reward = reward * (cmd_norm >= command_threshold)
+
+    return reward

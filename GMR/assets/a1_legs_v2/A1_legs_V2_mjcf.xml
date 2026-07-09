@@ -40,6 +40,7 @@
     <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
     <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
     <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="1" conaffinity='15'/>
+    <body name="torso" pos="0.0 0 0.3"/>
     <body name="base" pos="0 0 0">
       <freejoint/>
       <inertial pos="0 0 0.0074869" mass="0.6188619" diaginertia="0.0013749 0.0014718 0.0025168"/>
@@ -77,6 +78,7 @@
                     <inertial pos="0.0523825 0.0000146 -0.0056262" mass="0.3002968" fullinertia="0.0001474 0.0007728 0.0009173 0 -0.0000001 0"/>
                     <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_R6_mat" type="mesh" mesh="Link_R6" />
                     <geom pos="0.05 0 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="box" size="0.1 0.04 0.01" />
+                    <body name="right_toe_link" pos="0.1 0 0.05"/>
                   </body>
                 </body>
               </body>
@@ -116,6 +118,7 @@
                     <inertial pos="0.0522817 -0.000739 -0.0056262" mass="0.3002968" fullinertia="0.0001474 0.0007728 0.0009173 0 -0.0000001 0"/>
                     <geom pos="0 0 0" group="1" contype="0" conaffinity="0" material="Link_L6_mat" type="mesh" mesh="Link_L6" />
                     <geom pos="0.05 0 -0.0035" rgba="0.9373 0.2667 0.2667 1" group="3" contype="1" conaffinity="1" type="box" size="0.1 0.04 0.01" />
+                    <body name="left_toe_link" pos="0.1 0 0.05"/>
                   </body>
                 </body>
               </body>

@@ -13,28 +13,29 @@ from legged_lab.assets import unitree_actuators
 # Motors (Damiao DM-J series, rotor inertia from datasheet):
 #   DM-J4340  hip/knee (joint 1-4, peak torque 27 N.m): g=40, J_rotor=2.0e-5
 #   DM-J4310  ankle    (joint 5-6, peak torque  7 N.m): g=10, J_rotor=1.8e-5
-ROTOR_INERTIA_4340 = 2.00e-5
-ROTOR_INERTIA_4310 = 1.80e-5
-GEAR_4340 = 40.0
+ROTOR_INERTIA_4340 = 2.193e-5
+ROTOR_INERTIA_4310 = 2.193e-5
+GEAR_4340 = 48.19
 GEAR_4310 = 10.0
 
 NATURAL_FREQ = 10 * 2.0 * 3.1415926535  # 10Hz -> w ~= 62.83 rad/s (low value promotes compliance)
 DAMPING_RATIO = 1.2  # zeta = 2 (overdamped, compensates for inertia underestimation)
 
-ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.0320
-ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.0018
+ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.05092751
+ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.002193
 
-STIFFNESS_4340 = ARMATURE_4340 * NATURAL_FREQ**2  # ~= 126
-STIFFNESS_4310 = ARMATURE_4310 * NATURAL_FREQ**2  # ~= 7.1
-DAMPING_4340 = 2.0 * DAMPING_RATIO * ARMATURE_4340 * NATURAL_FREQ  # ~= 8.0
-DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 0.45
+STIFFNESS_4340 = ARMATURE_4340 * NATURAL_FREQ**2  # ~= 
+STIFFNESS_4310 = ARMATURE_4310 * NATURAL_FREQ**2  # ~= 
+DAMPING_4340 = 2.0 * DAMPING_RATIO * ARMATURE_4340 * NATURAL_FREQ  # ~= 
+DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 
 
 
 A1_LEGS_V1_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
         # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1/A1-legs_V1.urdf",
-        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2.urdf",
+        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_new_feet.urdf",
         # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_ball.urdf",
+        replace_cylinders_with_capsules=False,
         fix_base=False,
         joint_drive=sim_utils.UrdfFileCfg.JointDriveCfg(
             drive_type="force",
@@ -95,7 +96,7 @@ A1_LEGS_V1_CFG = ArticulationCfg(
     # actuators={
     #     "hip_knee": ImplicitActuatorCfg(
     #         joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
-    #         effort_limit_sim=27.0,
+    #         effort_limit_sim=18.0,  # DM-J4340 24V dyno-measured peak (was 27 catalog)
     #         velocity_limit_sim=5.5,  # DM-J4340 no-load speed: 52.5 rpm = 5.50 rad/s (was 36, unrealistic)
     #         stiffness=STIFFNESS_4340,
     #         damping=DAMPING_4340,
@@ -113,20 +114,20 @@ A1_LEGS_V1_CFG = ArticulationCfg(
     actuators={
         "hip_knee": DelayedPDActuatorCfg(
             joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
-            effort_limit_sim=27.0,
-            velocity_limit_sim=5.5,  # DM-J4340 no-load speed: 52.5 rpm = 5.50 rad/s (was 36, unrealistic)
-            stiffness=200.0,#STIFFNESS_4340,
-            damping=5.0,#DAMPING_4340,
+            effort_limit_sim=28.0,  
+            velocity_limit_sim=5.5,  # HARD PhysX velocity brake -> fights gravity/impacts, breaks training
+            stiffness=200.0,
+            damping=5.0,
             armature=ARMATURE_4340,
             min_delay=1,
             max_delay=4,
         ),
         "ankle": DelayedPDActuatorCfg(
             joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
-            effort_limit_sim=7.0,
-            velocity_limit_sim=20.9,  # DM-J4310 no-load speed: 200 rpm = 20.94 rad/s (was 120, unrealistic)
-            stiffness=40.0,#STIFFNESS_4310,
-            damping=0.5,#DAMPING_4310,
+            effort_limit_sim=5.8,
+            velocity_limit_sim=20.9,  # HARD PhysX velocity brake -> fights gravity/impacts, breaks training
+            stiffness=40.0,
+            damping=0.5,
             armature=ARMATURE_4310,
             min_delay=1,
             max_delay=4,
@@ -135,23 +136,3 @@ A1_LEGS_V1_CFG = ArticulationCfg(
 )
 
 
-# Variant of A1_LEGS_V1_CFG that drives the joints with the Damiao torque-speed
-# (T-N curve) + friction actuator model instead of the implicit fixed-limit PD.
-# Same robot/spawn/init_state; only the actuators dict is swapped. The original
-# A1_LEGS_V1_CFG above is left untouched.
-A1_LEGS_V1_CFG_DAMIAO = A1_LEGS_V1_CFG.replace(
-    actuators={
-        "hip_knee": unitree_actuators.DamiaoActuatorCfg_DM4340(
-            joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
-            stiffness=STIFFNESS_4340,
-            damping=DAMPING_4340,
-            # armature, Y1/X1/X2 come from DamiaoActuatorCfg_DM4340
-        ),
-        "ankle": unitree_actuators.DamiaoActuatorCfg_DM4310(
-            joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
-            stiffness=STIFFNESS_4310,
-            damping=DAMPING_4310,
-            # armature, Y1/X1/X2 come from DamiaoActuatorCfg_DM4310
-        ),
-    },
-)
