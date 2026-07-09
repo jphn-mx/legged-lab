@@ -25,7 +25,7 @@ This repository integrates multiple modules for training, retargeting, and deplo
 
 ## Supported Robots
 
-- **Unitree A1-legs-V1** — custom 12-DOF bipedal configuration
+- **A1-legs** — custom 12-DOF bipedal configuration
 - **Unitree G1** — 29-DOF humanoid
 - **Unitree Go2** — quadruped
 - Multiple humanoids via GMR (Booster T1/K1, Fourier N1, ENGINEAI PM01, etc.)
