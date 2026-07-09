@@ -125,8 +125,8 @@ pip install mujoco onnxruntime scipy
 ```bash
 cd legged_lab
 
-# Train AMP locomotion policy (A1 bipedal)
-python scripts/rsl_rl/train.py --task Lab-Locomotion-Amp-A1-v0 --num_envs 4096
+# Train AMP locomotion policy (A1 bipedal) — recommended: Range variant performs better
+python scripts/rsl_rl/train.py --task LeggedLab-Isaac-AMP-A1-Range-v0 --num_envs 4096
 
 # Train velocity tracking (G1 humanoid)
 python scripts/rsl_rl/train.py --task Lab-Locomotion-Velocity-Flat-G1-v0 --num_envs 4096

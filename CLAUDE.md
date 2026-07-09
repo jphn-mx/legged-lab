@@ -74,7 +74,7 @@ Config files for retargeting: `legged_lab/scripts/tools/retarget/config/{a1_12do
 ```bash
 # Training (requires Isaac Sim + Isaac Lab)
 cd legged_lab
-python scripts/rsl_rl/train.py --task LeggedLab-Isaac-AMP-A1-v0 --num_envs 4096
+python scripts/rsl_rl/train.py --task LeggedLab-Isaac-AMP-A1-Range-v0 --num_envs 4096  # recommended; better performance than AMP-A1-v0
 python scripts/rsl_rl/play.py --task LeggedLab-Isaac-AMP-A1-Play-v0
 
 # Whole-body tracking training
