@@ -30,7 +30,7 @@ class A1AmpRewards:
         func=mdp.track_lin_vel_xy_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.36)}
     )
     track_ang_vel_z_exp = RewTerm(
-        func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
 
     # -- penalties
@@ -46,16 +46,21 @@ class A1AmpRewards:
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*_R[5-6]", ".*_L[5-6]"])},
     )
 
-    # joint_deviation_hip = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-0.0,
-    #     params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_L1"])},
-    # )
+    joint_deviation_hip = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R1", "joint_L1"])},
+    )
 
     joint_deviation_yaw = RewTerm(
         func=mdp.joint_deviation_l1,
         weight=-0.8,
         params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R3", "joint_L3"])},
+    )
+    joint_deviation_ankle = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-2.0,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R5", "joint_L5"])},
     )
 
     # feet_air_time = RewTerm(
@@ -67,9 +72,21 @@ class A1AmpRewards:
     #         "threshold": 0.4,
     #     },
     # )
+    
+    # joint_torque_over_rated_hip_knee = RewTerm(
+    #     func=mdp.joint_torque_over_limit_l2,
+    #     weight=-5.0e-4,
+    #     params={"limit": 9.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[1-4]", "joint_L[1-4]"])},
+    # )
+    # joint_torque_over_rated_ankle = RewTerm(
+    #     func=mdp.joint_torque_over_limit_l2,
+    #     weight=-5.0e-3,
+    #     params={"limit": 3.0, "asset_cfg": SceneEntityCfg("robot", joint_names=["joint_R[5-6]", "joint_L[5-6]"])},
+    # )
+    
     # feet_slide = RewTerm(
     #     func=mdp.feet_slide,
-    #     weight=-0.125,
+    #     weight=-0.15,
     #     params={
     #         "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
     #         "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
@@ -78,12 +95,29 @@ class A1AmpRewards:
 
     stand_still = RewTerm(
         func=mdp.stand_still_joint_deviation_l1,
-        weight=-0.5,
+        weight=-1.0,
         params={"command_name": "base_velocity"},
     )
 
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-20.0)
 
+    feet_flat = RewTerm(
+        func=mdp.feet_orientation_l2,
+        weight=-1.0,
+        params={
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
+            "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
+        }
+    )
+
+    feet_roll = RewTerm(
+        func=mdp.feet_roll_l2,
+        weight=-2.0,
+        params={
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
+            "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
+        }
+    )
 
 @configclass
 class A1AmpEnvCfg(LocomotionAmpEnvCfg):
@@ -101,7 +135,7 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
         # motion data
         # ------------------------------------------------------
         self.motion_data.motion_dataset.motion_data_dir = os.path.join(
-            LEGGED_LAB_ROOT_DIR, "data", "a1_cal"
+            LEGGED_LAB_ROOT_DIR, "data", "a1_6"
         )
         # Gait distribution for command range vx in [-0.8, 1.5].
         # Policy: ALL weights = 1.0 (uniform sampling). Distribution is shaped by the NUMBER
@@ -141,47 +175,35 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
             # forward: walk -> run (7).  B3 kept at 2.0 as a SPECIAL CASE: it is the only
             # clean steady-walk clip in a1_4, so its gait can't be reinforced by adding more
             # clips (count method fails for an under-supplied category) — weight compensates.
-            # "B1_-_stand_to_walk": 1.0,
-            # "B3_-_walk1": 2.0,
-            # "B2_-_walk_to_stand": 1.0,
-            # "C1_-_stand_to_run": 1.0,
-            # "C5_-_walk_to_run": 1.0,
-            # "C4_-_Run_to_walk1": 1.0,
-            # "C3_-_run": 1.0,
-            # # backward walk (5) — peaks reach -0.8~-0.9; C8 run-back dropped to keep style pure walk
-            # "B5_-__Walk_backwards": 1.0,
-            # "B5_-_walk_backwards": 1.0,
-            # "B4_-_Stand_to_Walk_backwards": 1.0,
-            # "B4_-_stand_to_walk_back": 1.0,
-            # "B6_-_walk_backwards_to_stand": 1.0,
-            # # turns ~0.5 (5)
-            # "B9_-__Walk_turn_left_90": 1.0,
-            # "B13_-__Walk_turn_right_90": 1.0,
-            # "B11_-__Walk_turn_left_135": 1.0,
-            # "B15_-__Walk_turn_around": 1.0,
-            # "B16_-_walk_turn_change_direction": 1.0,
-            # # high-speed run-turns (4): forward vx ~1.1-1.6, best available fill for the
-            # # starved 1.0-1.5 band (dataset is walk-heavy, the jog band is otherwise empty);
-            # # they also add high-speed turning gait (walk-turns above are only ~0.5).
-            # "C11_-__run_turn_left_(90)": 1.0,
-            # "C12_-_run_turn_left_45": 1.0,
-            # "C14_-_run_turn_right_90": 1.0,
-            # "C16_-_run_turn_right_135": 1.0,
-            # # side step ~0.4 vy (2)
-            # "B22_-_side_step_left": 1.0,
-            # "B23_-_side_step_right": 1.0,
-
-            # --- straight walk (~0.5) ---
-            "B3_-_walk1": 3.0,
-            # --- continuous walk turns (L/R, various angles) ---
-            "B10_-_walk_turn_left_(45)": 1.0,
+            "B1_-_stand_to_walk": 1.0,
+            "B3_-_walk1": 2.0,
+            "B2_-_walk_to_stand": 1.0,
+            "C1_-_stand_to_run": 1.0,
+            "C5_-_walk_to_run": 1.0,
+            "C4_-_Run_to_walk1": 1.0,
+            "C3_-_run": 1.0,
+            # backward walk (5) — peaks reach -0.8~-0.9; C8 run-back dropped to keep style pure walk
+            "B5_-__Walk_backwards": 1.0,
+            "B5_-_walk_backwards": 1.0,
+            "B4_-_Stand_to_Walk_backwards": 1.0,
+            "B4_-_stand_to_walk_back": 1.0,
+            "B6_-_walk_backwards_to_stand": 1.0,
+            # turns ~0.5 (5)
             "B9_-__Walk_turn_left_90": 1.0,
-            "B11_-__Walk_turn_left_135": 1.0,
             "B13_-__Walk_turn_right_90": 1.0,
-            "B14_-_walk_turn_right_(135)": 1.0,
-            "B15_-_walk_turn_around_(same_direction)": 1.0,
-
-
+            "B11_-__Walk_turn_left_135": 1.0,
+            "B15_-__Walk_turn_around": 1.0,
+            "B16_-_walk_turn_change_direction": 1.0,
+            # high-speed run-turns (4): forward vx ~1.1-1.6, best available fill for the
+            # starved 1.0-1.5 band (dataset is walk-heavy, the jog band is otherwise empty);
+            # they also add high-speed turning gait (walk-turns above are only ~0.5).
+            "C11_-__run_turn_left_(90)": 1.0,
+            "C12_-_run_turn_left_45": 1.0,
+            "C14_-_run_turn_right_90": 1.0,
+            "C16_-_run_turn_right_135": 1.0,
+            # side step ~0.4 vy (2)
+            "B22_-_side_step_left": 1.0,
+            "B23_-_side_step_right": 1.0,
         }
         # self.motion_data.motion_dataset.motion_data_dir = os.path.join(
         #     LEGGED_LAB_ROOT_DIR, "data", "MotionData", "a1_12dof", "amp", "walk1_subject5"
@@ -246,14 +268,10 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
         # [DIAG TEST] Narrowed cmd range to match demo coverage — checking whether
         # style-reward collapse is caused by commanding off-manifold motions.
         # Original (full range) kept below for easy revert.
-        self.commands.base_velocity.ranges.lin_vel_x = (0.5, 0.8)
-        self.commands.base_velocity.ranges.lin_vel_y = (-0.3, 0.3)
+        self.commands.base_velocity.ranges.lin_vel_x = (0.0, 0.8)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0.4, 0.4)
         self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
         self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
-
-        self.commands.base_velocity.rel_standing_envs = 0.05
-        self.events.reset_from_ref.func = mdp.reset_from_ref_or_default
-        self.events.reset_from_ref.params = {"animation": "animation", "height_offset": 0.1, "ref_ratio": 0.8}
         # self.commands.base_velocity.ranges.lin_vel_x = (-0.8, 1.8)
         # self.commands.base_velocity.ranges.lin_vel_y = (-0.8, 0.8)
         # self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
@@ -272,23 +290,23 @@ class A1AmpEnvCfg(LocomotionAmpEnvCfg):
         # unchanged, task can't keep up), that range is a DATA GAP — add demo motions via
         # GMR rather than tuning. Optionally add a style-reward floor gate inside
         # velocity/mdp/curriculums.py to stop expanding into gaps automatically.
-        self.curriculum.lin_vel_cmd_levels = None #CurrTerm(
-        #     func=vel_curr.lin_vel_cmd_levels,
-        #     params={
-        #         "reward_term_name": "track_lin_vel_xy_exp",
-        #         "lin_vel_x_limit": [-0.8, 1.5],
-        #         "lin_vel_y_limit": [-0.5, 0.5],
-        #         "reward_threshold_ratio": 0.7,
-        #     },
-        # )
-        self.curriculum.ang_vel_cmd_levels = None # CurrTerm(
-        #     func=vel_curr.ang_vel_cmd_levels,
-        #     params={
-        #         "reward_term_name": "track_ang_vel_z_exp",
-        #         "ang_vel_z_limit": [-1.0, 1.0],
-        #         "reward_threshold_ratio": 0.5,
-        #     },
-        # )
+        self.curriculum.lin_vel_cmd_levels = CurrTerm(
+            func=vel_curr.lin_vel_cmd_levels,
+            params={
+                "reward_term_name": "track_lin_vel_xy_exp",
+                "lin_vel_x_limit": [-0.8, 1.5],
+                "lin_vel_y_limit": [-0.5, 0.5],
+                "reward_threshold_ratio": 0.7,
+            },
+        )
+        self.curriculum.ang_vel_cmd_levels = CurrTerm(
+            func=vel_curr.ang_vel_cmd_levels,
+            params={
+                "reward_term_name": "track_ang_vel_z_exp",
+                "ang_vel_z_limit": [-1.0, 1.0],
+                "reward_threshold_ratio": 0.5,
+            },
+        )
 
         # ------------------------------------------------------
         # terminations
@@ -305,9 +323,9 @@ class A1AmpEnvCfg_PLAY(A1AmpEnvCfg):
         self.scene.num_envs = 1
         self.scene.env_spacing = 2.5
 
-        self.commands.base_velocity.ranges.lin_vel_x = (0.5, 0.8)
-        self.commands.base_velocity.ranges.lin_vel_y = (-0.0, 0.0)
-        self.commands.base_velocity.ranges.ang_vel_z = (-0.6, 0.6)
-        self.commands.base_velocity.ranges.heading = (-math.pi, math.pi)
+        self.commands.base_velocity.ranges.lin_vel_x = (-0.5, 1.5)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0.5, 0.5)
+        self.commands.base_velocity.ranges.ang_vel_z = (-1.0, 1.0)
+        self.commands.base_velocity.ranges.heading = (0.0, 0.0)
 
         self.events.reset_from_ref = None

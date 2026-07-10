@@ -74,30 +74,3 @@ def stand_still_joint_deviation_l1(
     command = env.command_manager.get_command(command_name)
     # Penalize motion when command is nearly zero.
     return mdp.joint_deviation_l1(env, asset_cfg) * (torch.norm(command[:, :2], dim=1) < command_threshold)
-
-def feet_roll_l2(
-    env: ManagerBasedRLEnv, sensor_cfg: SceneEntityCfg, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-) -> torch.Tensor:
-    """Penalize only foot *roll* (lateral tilt) when in contact, leaving pitch free.
-
-    Same projected-gravity idea as :func:`feet_orientation_l2`, but penalizes only the foot-frame
-    y-component instead of x and y. For the A1 foot link the local axes are x=forward, y=lateral,
-    z=sole-normal, with all link frames axis-aligned (joint_R5/L5 pitch about y, joint_R6/L6 roll
-    about x). The projected-gravity y-component therefore isolates roll, so the heel-toe pitch roll
-    of a natural gait is not penalized. Use a negative weight.
-    """
-    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
-    asset: RigidObject = env.scene[asset_cfg.name]
-
-    in_contact = contact_sensor.data.net_forces_w_history[:, :, sensor_cfg.body_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
-    # shape: (N, M)
-
-    num_feet = len(sensor_cfg.body_ids)
-
-    feet_quat = asset.data.body_quat_w[:, sensor_cfg.body_ids, :]  # shape: (N, M, 4)
-    feet_proj_g = math_utils.quat_apply_inverse(
-        feet_quat, asset.data.GRAVITY_VEC_W.unsqueeze(1).expand(-1, num_feet, -1)  # shape: (N, M, 3)
-    )
-    feet_roll_square = torch.square(feet_proj_g[:, :, 1])  # y-component = roll (lateral tilt)  shape: (N, M)
-
-    return torch.sum(feet_roll_square * in_contact, dim=-1)  # shape: (N, )
