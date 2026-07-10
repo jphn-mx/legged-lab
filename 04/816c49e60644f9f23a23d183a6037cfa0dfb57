@@ -1,0 +1,42 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/__init__.py
+  s_7615e9c8cc44cc::t_d53e0df3a055b6 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg.py
+  s_7615e9c8cc44cc::t_13c00f9014e407 1-321
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg_ali.py
+  s_7615e9c8cc44cc::t_1758fbb431958e 1-321
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg_ori.py
+  s_7615e9c8cc44cc::t_4f0700ce5f4654 1-331
+"legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_fixed_env_cfg copy.py"
+  s_7615e9c8cc44cc::t_48325bd8623dea 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_fixed_env_cfg.py
+  s_7615e9c8cc44cc::t_40c698d1dfa31f 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_range_env_cfg.py
+  s_7615e9c8cc44cc::t_895b8c1df83019 1-127
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_range_env_cfg_back_side.py
+  s_7615e9c8cc44cc::t_f95a14bc1affcd 1-109
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/agents/__init__.py
+  s_7615e9c8cc44cc::t_c65d638c727619 1
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/agents/rsl_rl_ppo_cfg.py
+  s_7615e9c8cc44cc::t_f8a004b0a6c1dc 1-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "04816c49e60644f9f23a23d183a6037cfa0dfb57",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "unknown"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
