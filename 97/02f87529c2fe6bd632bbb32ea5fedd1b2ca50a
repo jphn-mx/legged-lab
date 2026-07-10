@@ -1,0 +1,50 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-321
+"legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_fixed_env_cfg copy.py"
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_range_env_cfg_back_side.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-109
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/agents/rsl_rl_ppo_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-283
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg_ori.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-331
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_range_env_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 11-19,23-28,31-108,112-114,116,134-168,179-185
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/__init__.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_env_cfg_ali.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-321
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_range_env_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-127
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/agents/__init__.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/agents/rsl_rl_ppo_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 72,75-76,86,208
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/__init__.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 28,32-33,55
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 33,38-39,42,49-53,72,81,104,141-177,180-184,249-250,253,255-256,275-291,308-311
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_ali/a1_amp_fixed_env_cfg.py
+  s_7615e9c8cc44cc::t_b968b17da230e5 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "9702f87529c2fe6bd632bbb32ea5fedd1b2ca50a",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
