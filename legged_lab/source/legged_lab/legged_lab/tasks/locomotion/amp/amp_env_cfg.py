@@ -268,24 +268,24 @@ class EventCfg:
     # Ranges from PDF analysis (Fs ~= 2-3% of peak torque, Fd ~= Fs/10):
     #   hip_knee (DM4340, peak 27 N.m): Fs in [0.3, 0.9],  Fd in [0.03, 0.09]
     #   ankle    (DM4310, peak  7 N.m): Fs in [0.1, 0.25], Fd in [0.01, 0.025]
-    randomize_actuator_friction_hip_knee = EventTerm(
-        func=mdp.randomize_actuator_friction,
-        mode="reset",
-        params={
-            "actuator_names": ["hip_knee"],
-            "static_friction_range": (0.3, 0.9),
-            "dynamic_friction_range": (0.03, 0.09),
-        },
-    )
-    randomize_actuator_friction_ankle = EventTerm(
-        func=mdp.randomize_actuator_friction,
-        mode="reset",
-        params={
-            "actuator_names": ["ankle"],
-            "static_friction_range": (0.1, 0.25),
-            "dynamic_friction_range": (0.01, 0.025),
-        },
-    )
+    # randomize_actuator_friction_hip_knee = EventTerm(
+    #     func=mdp.randomize_actuator_friction,
+    #     mode="reset",
+    #     params={
+    #         "actuator_names": ["hip_knee"],
+    #         "static_friction_range": (0.3, 0.9),
+    #         "dynamic_friction_range": (0.03, 0.09),
+    #     },
+    # )
+    # randomize_actuator_friction_ankle = EventTerm(
+    #     func=mdp.randomize_actuator_friction,
+    #     mode="reset",
+    #     params={
+    #         "actuator_names": ["ankle"],
+    #         "static_friction_range": (0.1, 0.25),
+    #         "dynamic_friction_range": (0.01, 0.025),
+    #     },
+    # )
 
     # interval
     push_robot = EventTerm(
