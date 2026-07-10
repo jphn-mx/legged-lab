@@ -37,7 +37,7 @@ class A1AmpRangeRewards:
     )
 
     # -- penalties
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-2.5)
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1.5)
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-0.2)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     # NOTE: this weight is POSITIVE (2e-6) — carried over verbatim from the range
@@ -81,18 +81,18 @@ class A1AmpRangeRewards:
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-20.0)
 
     # full-sole flatness (pitch+roll); off by default here (weight 0)
-    feet_flat = RewTerm(
-        func=mdp.feet_orientation_l2,
-        weight=0.0,
-        params={
-            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
-            "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
-        },
-    )
+    # feet_flat = RewTerm(
+    #     func=mdp.feet_orientation_l2,
+    #     weight=0.0,
+    #     params={
+    #         "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["Link_R6", "Link_L6"]),
+    #         "asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"]),
+    #     },
+    # )
 
     feet_flat_orientation = RewTerm(
         func=mdp.feet_flat_orientation_l2,
-        weight=-0.5,
+        weight=-1.0,
         params={"asset_cfg": SceneEntityCfg("robot", body_names=["Link_R6", "Link_L6"])},
     )
 

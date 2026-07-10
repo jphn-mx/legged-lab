@@ -193,7 +193,7 @@ class A1RslRlOnPolicyRunnerAmpRangeCfg(RslRlOnPolicyRunnerCfg):
                 # Single-clip walk demo + a stand-still mode with no matching demo.
                 # task_style_lerp raised to 0.7 (vs 0.6) so the task reward keeps
                 # standing envs well-behaved despite their ~0 style reward.
-                hidden_dims=[1024, 512], activation="elu", style_reward_scale=4.0, task_style_lerp=0.6,
+                hidden_dims=[1024, 512], activation="elu", style_reward_scale=4.0, task_style_lerp=0.5,
                 use_spectral_norm=False,
             ),
             loss_type="LSGAN",
