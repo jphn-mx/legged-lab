@@ -5,7 +5,6 @@ from isaaclab.actuators import ImplicitActuatorCfg,DelayedPDActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 
 from legged_lab import LEGGED_LAB_ROOT_DIR
-from legged_lab.assets import unitree_actuators
 
 
 # Heuristic PD gains following the WBT paper (2508.08241v4, Supp. S1):
@@ -13,29 +12,28 @@ from legged_lab.assets import unitree_actuators
 # Motors (Damiao DM-J series, rotor inertia from datasheet):
 #   DM-J4340  hip/knee (joint 1-4, peak torque 27 N.m): g=40, J_rotor=2.0e-5
 #   DM-J4310  ankle    (joint 5-6, peak torque  7 N.m): g=10, J_rotor=1.8e-5
-ROTOR_INERTIA_4340 = 2.193e-5
-ROTOR_INERTIA_4310 = 2.193e-5
-GEAR_4340 = 48.19
+ROTOR_INERTIA_4340 = 2.00e-5
+ROTOR_INERTIA_4310 = 1.80e-5
+GEAR_4340 = 40.0
 GEAR_4310 = 10.0
 
 NATURAL_FREQ = 10 * 2.0 * 3.1415926535  # 10Hz -> w ~= 62.83 rad/s (low value promotes compliance)
-DAMPING_RATIO = 1.2  # zeta = 2 (overdamped, compensates for inertia underestimation)
+DAMPING_RATIO = 1.2  # zeta = 2 (overdamped, compensates for inertia underestimation) old 2.0
 
-ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.05092751
-ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.002193
+ARMATURE_4340 = ROTOR_INERTIA_4340 * GEAR_4340**2  # ~= 0.0320
+ARMATURE_4310 = ROTOR_INERTIA_4310 * GEAR_4310**2  # ~= 0.0018
 
-STIFFNESS_4340 = ARMATURE_4340 * NATURAL_FREQ**2  # ~= 
-STIFFNESS_4310 = ARMATURE_4310 * NATURAL_FREQ**2  # ~= 
-DAMPING_4340 = 2.0 * DAMPING_RATIO * ARMATURE_4340 * NATURAL_FREQ  # ~= 
-DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 
+STIFFNESS_4340 = ARMATURE_4340 * NATURAL_FREQ**2  # ~= 126
+STIFFNESS_4310 = ARMATURE_4310 * NATURAL_FREQ**2  # ~= 7.1
+DAMPING_4340 = 2.0 * DAMPING_RATIO * ARMATURE_4340 * NATURAL_FREQ  # ~= 8.0
+DAMPING_4310 = 2.0 * DAMPING_RATIO * ARMATURE_4310 * NATURAL_FREQ  # ~= 0.45
 
 
 A1_LEGS_V1_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
         # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1/A1-legs_V1.urdf",
-        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_new_feet.urdf",
+        asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_feet_mesh.urdf",
         # asset_path=f"{LEGGED_LAB_ROOT_DIR}/data/Robots/A1_V2/A1_legs_V2_ball.urdf",
-        replace_cylinders_with_capsules=False,
         fix_base=False,
         joint_drive=sim_utils.UrdfFileCfg.JointDriveCfg(
             drive_type="force",
@@ -63,25 +61,11 @@ A1_LEGS_V1_CFG = ArticulationCfg(
     ),
     init_state=ArticulationCfg.InitialStateCfg(
         pos=(0.0, 0.0, 0.65),
-        # joint_pos={
-        #     "joint_R1": -0.22,
-        #     "joint_R2": 0.0,
-        #     "joint_R3": 0.0,
-        #     "joint_R4": 0.70,
-        #     "joint_R5": -0.48,
-        #     "joint_R6": 0.0,
-        #     "joint_L1": -0.22,
-        #     "joint_L2": 0.0,
-        #     "joint_L3": 0.0,
-        #     "joint_L4": 0.70,
-        #     "joint_L5": -0.48,
-        #     "joint_L6": 0.0,
-        # },
         joint_pos={
             "joint_R1": -0.2,
             "joint_R2": 0.0,
             "joint_R3": 0.0,
-            "joint_R4": 0.40,
+            "joint_R4": 0.4,
             "joint_R5": -0.2,
             "joint_R6": 0.0,
             "joint_L1": -0.2,
@@ -93,46 +77,45 @@ A1_LEGS_V1_CFG = ArticulationCfg(
         },
         joint_vel={".*": 0.0},
     ),
-    # actuators={
-    #     "hip_knee": ImplicitActuatorCfg(
-    #         joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
-    #         effort_limit_sim=18.0,  # DM-J4340 24V dyno-measured peak (was 27 catalog)
-    #         velocity_limit_sim=5.5,  # DM-J4340 no-load speed: 52.5 rpm = 5.50 rad/s (was 36, unrealistic)
-    #         stiffness=STIFFNESS_4340,
-    #         damping=DAMPING_4340,
-    #         armature=ARMATURE_4340,
-    #     ),
-    #     "ankle": ImplicitActuatorCfg(
-    #         joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
-    #         effort_limit_sim=7.0,
-    #         velocity_limit_sim=20.9,  # DM-J4310 no-load speed: 200 rpm = 20.94 rad/s (was 120, unrealistic)
-    #         stiffness=STIFFNESS_4310,
-    #         damping=DAMPING_4310,
-    #         armature=ARMATURE_4310,
-    #     ),
-    # },
     actuators={
         "hip_knee": DelayedPDActuatorCfg(
             joint_names_expr=["joint_R[1-4]", "joint_L[1-4]"],
-            effort_limit_sim=28.0,  
-            velocity_limit_sim=5.5,  # HARD PhysX velocity brake -> fights gravity/impacts, breaks training
+            effort_limit_sim=18.0,
+            velocity_limit_sim=5.5,#5.5
+            # stiffness=STIFFNESS_4340,
+            # damping=DAMPING_4340,
+            # armature=ARMATURE_4340,
             stiffness=200.0,
             damping=5.0,
-            armature=ARMATURE_4340,
-            min_delay=1,
-            max_delay=4,
+            armature=0.0509,
+            min_delay=12,
+            max_delay=12,
         ),
-        "ankle": DelayedPDActuatorCfg(
-            joint_names_expr=["joint_R[5-6]", "joint_L[5-6]"],
-            effort_limit_sim=5.8,
-            velocity_limit_sim=20.9,  # HARD PhysX velocity brake -> fights gravity/impacts, breaks training
+        "ankle1": DelayedPDActuatorCfg(
+            joint_names_expr=["joint_R5", "joint_L5"],
+            effort_limit_sim=18.0,
+            velocity_limit_sim=5.5,#20.9,
+            # stiffness=STIFFNESS_4310,
+            # damping=DAMPING_4310,
+            # armature=ARMATURE_4310,
             stiffness=40.0,
             damping=0.5,
-            armature=ARMATURE_4310,
-            min_delay=1,
-            max_delay=4,
+            armature=0.0509,
+            min_delay=12,
+            max_delay=12,
+        ),
+        "ankle2": DelayedPDActuatorCfg(
+            joint_names_expr=["joint_R6", "joint_L6"],
+            effort_limit_sim=7.0,
+            velocity_limit_sim=20.9,#20.9,
+            # stiffness=STIFFNESS_4310,
+            # damping=DAMPING_4310,
+            # armature=ARMATURE_4310,
+            stiffness=40.0,
+            damping=0.5,
+            armature=0.002193,
+            min_delay=12,
+            max_delay=12,
         ),
     },
 )
-
-
