@@ -1,0 +1,43 @@
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_bendi/__init__.py
+  s_7615e9c8cc44cc::t_7edc6fd47f55df 8-48
+  s_7615e9c8cc44cc::t_80c75c6771b652 55
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_fixed_env_cfg.py
+  h_3a925938c75d22 1-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/mdp/rewards.py
+  h_3a925938c75d22 77-103
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/__init__.py
+  s_7615e9c8cc44cc::t_b3f3e8aafd0369 28,32-43,65-95
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_env_cfg.py
+  s_7615e9c8cc44cc::t_e0cd8df44f3bd4 33,38-39,42,49-53,60-64,75-86,89,98,104-126,144,181-187,190-195,260-261,283-299,316-319
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/a1_amp_range_env_cfg.py
+  s_7615e9c8cc44cc::t_6337f6223f1f76 11,15-22,29,34-36,50,52-54,59-61,64-67,69-96,99,101-104,121
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1/agents/rsl_rl_ppo_cfg.py
+  s_7615e9c8cc44cc::t_31d5de742a2268 72,75-76,86,145-211,275-283
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_bendi/a1_amp_env_cfg.py
+  s_7615e9c8cc44cc::t_e0cc483c8e7f0e 33,38-39,42,49-53,72,81,104,141-177,180-184,249-250,253,255-256,275-291,308-311
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_bendi/a1_amp_range_env_cfg.py
+  s_7615e9c8cc44cc::t_7f8dded26374f7 11-19,23-28,31-108,112-114,116,134-168,179-185
+legged_lab/source/legged_lab/legged_lab/tasks/locomotion/amp/config/a1_bendi/agents/rsl_rl_ppo_cfg.py
+  s_7615e9c8cc44cc::t_9a41b30b098c66 72,75-76,86,196,208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8bb1479d2fd61da0b9f2e7492796eae7249a8c20",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
