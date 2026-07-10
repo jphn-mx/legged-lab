@@ -1,0 +1,92 @@
+rl_real_py/configs/a1_amp.yaml
+  s_7615e9c8cc44cc::t_ee7511ac8e9923 1-63
+rl_real_py/configs/common.yaml
+  s_7615e9c8cc44cc::t_1374a8653f394b 1-86
+rl_real_py/configs/dog.yaml
+  s_7615e9c8cc44cc::t_8476d2c2ff40e9 1-80
+rl_real_py/configs/dog_gym.yaml
+  s_7615e9c8cc44cc::t_8ba79722b9ad85 1-49
+rl_real_py/configs/dual_tron.yaml
+  s_7615e9c8cc44cc::t_b64f3dc4d5f6c2 1-65
+rl_real_py/configs/flat.yaml
+  s_7615e9c8cc44cc::t_2a4e0aa1a891bd 1-62
+rl_real_py/configs/wan.yaml
+  s_7615e9c8cc44cc::t_7e9a55f06d85d7 1-42
+rl_real_py/configs/yao.yaml
+  s_7615e9c8cc44cc::t_9f2d1c91b0ff20 1-59
+rl_real_py/configs/zhao.yaml
+  s_7615e9c8cc44cc::t_9781ce5b0596c3 1-61
+rl_real_py/package.xml
+  s_7615e9c8cc44cc::t_14528afe9ff384 1-20
+rl_real_py/rl_real_py/imu_check.py
+  s_7615e9c8cc44cc::t_89cf32048981c0 1-117
+rl_real_py/rl_real_py/imu_viz.py
+  s_7615e9c8cc44cc::t_2971e243cfa9ee 1-139
+rl_real_py/rl_real_py/motor_tracking_test.py
+  s_7615e9c8cc44cc::t_9eee462ebababd 1-404
+rl_real_py/rl_real_py/obs_history.py
+  s_7615e9c8cc44cc::t_c930aaa42c0830 1-46
+rl_real_py/rl_real_py/rl_obs_pub_test.py
+  s_7615e9c8cc44cc::t_beb2c3cb359e38 1-26
+"rl_real_py/rl_real_py/rl_real copy.py"
+  s_7615e9c8cc44cc::t_f7b9df4835aeb4 1-364
+rl_real_py/rl_real_py/rl_real.py
+  s_7615e9c8cc44cc::t_9e3285beabd4c2 1-415
+rl_real_py/rl_real_py/rl_real_amp.py
+  s_7615e9c8cc44cc::t_ea3757db0d46f9 1-673
+rl_real_py/rl_real_py/rl_real_common.py
+  s_7615e9c8cc44cc::t_ad12443be22483 1-485
+rl_real_py/rl_real_py/rl_real_flat.py
+  s_7615e9c8cc44cc::t_94d6f55f690b49 1-695
+rl_real_py/rl_real_py/rl_real_gym.py
+  s_7615e9c8cc44cc::t_aa71166ae6db36 1-339
+rl_real_py/rl_real_py/rl_real_thread.py
+  s_7615e9c8cc44cc::t_5bd28383ccba9f 1-369
+rl_real_py/rl_real_py/rl_real_tron.py
+  s_7615e9c8cc44cc::t_8a7c686beb3cb7 1-478
+rl_real_py/rl_real_py/rl_real_wan.py
+  s_7615e9c8cc44cc::t_e23227323f31c6 1-519
+rl_real_py/rl_real_py/rl_real_xbox.py
+  s_7615e9c8cc44cc::t_b62dc8091e3149 1-417
+rl_real_py/rl_real_py/rl_real_yao.py
+  s_7615e9c8cc44cc::t_f4e7f26df4ebe4 1-336
+rl_real_py/rl_real_py/rl_real_zhao.py
+  s_7615e9c8cc44cc::t_adb9ee55df167c 1-519
+rl_real_py/rl_real_py/stiffness_test.py
+  s_7615e9c8cc44cc::t_2db1d286ffa680 1-456
+rl_real_py/rl_real_py/target_log.py
+  s_7615e9c8cc44cc::t_0ae54f371f82dd 1-120
+rl_real_py/setup.cfg
+  s_7615e9c8cc44cc::t_7791c0c5addee4 1-4
+rl_real_py/setup.py
+  s_7615e9c8cc44cc::t_b4f0a5a56bb870 1-49
+rl_real_py/test/test_copyright.py
+  s_7615e9c8cc44cc::t_b791b52566166b 1-25
+rl_real_py/test/test_flake8.py
+  s_7615e9c8cc44cc::t_7eaa1fe11deb6d 1-25
+rl_real_py/test/test_pep257.py
+  s_7615e9c8cc44cc::t_e589bdba273037 1-23
+rl_real_py/utils/math.py
+  s_7615e9c8cc44cc::t_eaf530c7252f06 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cf5a572acaf432c627596cad4b688b09018f289a",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "unknown"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
