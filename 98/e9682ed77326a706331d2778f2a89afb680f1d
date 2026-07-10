@@ -1,0 +1,27 @@
+human/configs/a1_amp.yaml
+  h_3a925938c75d22 1
+legged_lab/source/legged_lab/legged_lab/assets/a1.py
+  h_3a925938c75d22 15-17,21,23-24,26-29,35,68,83-87,90-92,94-100,103-105,107-118
+  s_7615e9c8cc44cc::t_6de30304c12789 106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "98e9682ed77326a706331d2778f2a89afb680f1d",
+  "prompts": {},
+  "humans": {
+    "h_3a925938c75d22": {
+      "author": "mx <miximixiiii@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7615e9c8cc44cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b28bb3c6-7d51-4bec-85cf-6a4ddf8ea539",
+        "model": "unknown"
+      },
+      "human_author": "mx <miximixiiii@163.com>"
+    }
+  }
+}
