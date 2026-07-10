@@ -1,0 +1,61 @@
+# A1-legs 双足机器人 — leg VELOCITY (flat) 策略实机部署配置 (rl_real_zhao 节点)。
+# 从 /home/woan/rl_real/test2/deploy_mujoco.py 迁移而来。
+# 仿真里的 PD/力矩部分丢弃 (实机电机自带 PD), 节点只发布目标关节角。
+
+policy_path: /home/woan/rl_real/test2/policy_zhao7   # 加载时按 model_type 补 .pt / .onnx
+model_type: jit
+
+# 控制时序: 策略控制率 = 1/(simulation_dt*control_decimation) = 50Hz (= 仿真 CONTROL_DT 0.02s);
+# 发布率 = 1/simulation_dt = 500Hz (沿用 rl_real_amp.py 的实机时序)。
+simulation_dt: 0.02
+control_decimation: 1
+
+# 策略 I/O 维度。
+num_obs: 47          # ang_vel(3)+grav(3)+cmd(3)+joint_pos(12)+joint_vel(12)+action(12)+gait_phase(2)
+num_actions: 12
+num_hist: 5          # 策略输入 = 47 * 5 = 235 (按 term 分组拼接, history_length=5)
+
+# 观测缩放 (匹配 deploy_mujoco.py; 该策略除 gait 外均不缩放, cmd 也不缩放)
+dof_pos_scale: 1.0
+dof_vel_scale: 1.0
+ang_vel_scale: 1.0
+action_scale: 0.25
+cmd_scale: [1.0, 1.0, 1.0]   # [vx, vy, wz]
+
+# 手柄遥控: 摇杆绝对映射到训练指令范围 (满杆 = 上限), 与 deploy_mujoco.py 的 CMD_CLIP 一致。
+# 训练范围: lin_vel_x(-0.5,0.5) lin_vel_y(-0.3,0.3) ang_vel_z(-1.0,1.0)。
+cmd_clip: [0.5, 0.3, 1.0]    # [|vx|, |vy|, |wz|]
+
+# 步态时钟 (gait_phase term 用): phase = (gait_steps*step_dt) % gait_period / gait_period
+gait_period: 0.8     # deploy_mujoco.py 的 GAIT_PERIOD; 必须与训练 flat_env_cfg 一致
+step_dt: 0.02        # CONTROL_DT (= sim_dt 0.005 * decimation 4), 每个策略步推进时钟
+
+# 默认站姿, 按 Lab 序 (与 action 同序相加; deploy_mujoco.py DEFAULT_Q)。
+# Lab 序: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+# default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+#                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+default_angles: [-0.1, -0.1, 0.0, 0.0, 0.0, 0.0,
+                  0.4,  0.4, -0.1, -0.1, 0.0, 0.0]
+# 观测顺序 (匹配 deploy_mujoco.py LegObservationsCfg.PolicyCfg 的 47 维布局)
+obs_index: ['base_ang_vel', 'projected_gravity', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action', 'gait_phase']
+
+# 关节名表 (代码内按名字推导重排, 勿手填映射)。
+# 策略/Lab 序 — 观测与动作同序 (交错 L/R)。
+joint_index_in_sim:        ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+joint_action_index_in_sim: ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+# 实机话题序 (/left_joint_states 入, /dog_joint_pos 出): L1..L6,R1..R6。
+joint_index_in_real:        ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+joint_action_index_in_real: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+
+# 发布目标的硬件安全限位 (实机序 L1..L6,R1..R6)。
+# 注意: 暂沿用 a1_amp.yaml 的占位值, 需按 A1-legs 实机关节范围核实后再上电!
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35]
+
+# PD 增益 (实机序 L1..L6,R1..R6), 仅用于"理论 PD 力矩"记录, 不参与控制 (实机电机自带 PD)。
+# 默认为仿真增益; 需与实测 effort 对齐时, 改成实机真实 PD。
+joint_kp: [126.0, 126.0, 126.0, 126.0, 7.0, 7.0, 126.0, 126.0, 126.0, 126.0, 7.0, 7.0]
+joint_kd: [4.83, 4.83, 4.83, 4.83, 0.27, 0.27,
+      4.83, 4.83, 4.83, 4.83, 0.27, 0.27,]

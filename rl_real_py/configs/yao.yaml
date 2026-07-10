@@ -1,0 +1,59 @@
+# A1-legs 双足机器人 — RSL-RL flat 策略实机部署配置 (rl_real_yao 节点)。
+# 从 test/deploy_mujoco_a1.py + test/a1_mujoco_base.yaml 迁移而来。
+# 仿真里的 PD/力矩部分丢弃 (实机电机自带 PD), 节点只发布目标关节角。
+
+policy_path: /home/woan/rl_real/test/policy_yao7   # 加载时按 model_type 补 .pt / .onnx
+model_type: jit
+
+# 控制时序: 策略控制率 = 1/(simulation_dt*control_decimation) = 50Hz (与仿真 0.001*20 同为 50Hz);
+# 发布率 = 1/simulation_dt = 500Hz (沿用 rl_real_amp.py 的实机时序, 而非仿真的 1000Hz)。
+simulation_dt: 0.02
+control_decimation: 1
+
+# 策略 I/O 维度。
+num_obs: 47          # 带相位 47 = ...+gait_phase(2); 关相位(use_gait_phase:false)则为 45
+num_actions: 12
+num_hist: 1          # 单帧观测 (无历史)
+
+# 步态相位开关: true=带 gait_phase 的 47 维版本 (policy_yao4);
+#               false=最早的无相位 45 维版本 (节点自动从 obs 去掉 gait_phase, 须把 policy_path 指向无相位策略)。
+use_gait_phase: true
+
+# 观测缩放 (必须与 Isaac Lab PolicyCfg ObsTerm scales 一致)
+dof_pos_scale: 1.0        # joint_pos_rel (无缩放)
+dof_vel_scale: 0.05       # joint_vel scale=0.05
+ang_vel_scale: 0.2        # base_ang_vel scale=0.2
+action_scale: 0.5         # JointPositionActionCfg scale=0.5, use_default_offset=True
+cmd_scale: [1.0, 1.0, 1.0]  # [vx, vy, wz]; 仿真未缩放 cmd
+
+# 指令低通软启动 (deploy_mujoco_a1(2)): 喂给策略的 vx/vy 用一阶低通平滑, yaw 直通。
+# alpha = ctrl_dt/(tau+ctrl_dt); 设 0 = 不滤波(忠实 step 指令)。实机起步更柔, 减少冲。
+command_lin_time_constant: 0.4
+
+# 步态时钟 (gait_phase term 用): phase = (counter*simulation_dt) % gait_period / gait_period
+gait_period: 0.7         # 必须与 mdp.gait_phase params["period"] 一致
+
+# 默认站姿, 按 Lab 序 (与 action 同序相加)。
+# Lab 序: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+# (由仿真 MuJoCo 序 R1..R6,L1..L6 的 default_joint_pos 重排得; 左右腿一致)
+default_angles: [-0.45, -0.45, 0.0, 0.0, 0.0, 0.0,
+                  0.60,  0.60, -0.25, -0.25, 0.0, 0.0]
+
+# 观测顺序 (匹配 deploy_mujoco_a1.py 的 49 维布局)
+# 观测顺序 (匹配 deploy_mujoco_a1(1).py 的 47 维布局)
+obs_index: ['joint_pos_rel', 'joint_vel', 'last_action', 'base_ang_vel', 'velocity_commands', 'projected_gravity', 'gait_phase']
+
+# 关节名表 (代码内按名字推导重排, 勿手填映射)。
+# 策略/Lab 序 — 观测与动作同序 (交错 L/R)。
+joint_index_in_sim:        ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+joint_action_index_in_sim: ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+# 实机话题序 (/left_joint_states 入, /dog_joint_pos 出): L1..L6,R1..R6。
+joint_index_in_real:        ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+joint_action_index_in_real: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+
+# 发布目标的硬件安全限位 (实机序 L1..L6,R1..R6)。
+# 注意: 暂沿用 a1_amp.yaml 的占位值, 需按 A1-legs 实机关节范围核实后再上电!
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35]

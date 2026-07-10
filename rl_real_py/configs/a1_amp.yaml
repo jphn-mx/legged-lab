@@ -1,0 +1,63 @@
+# A1-legs 双足机器人 — AMP 策略实机部署配置 (rl_real_amp 节点)。
+# 从 /home/woan/legged_lab/human/deploy_a1_amp.py + configs/a1_amp.yaml 迁移而来。
+# 仿真里的 PD/力矩部分丢弃 (实机电机自带 PD), 节点只发布目标关节角。
+
+policy_path: /home/woan/legged_lab/human/policy/policy_amp   # ".onnx" 在加载时补全
+model_type: onnx
+
+# 控制时序: 策略控制率 = 1/(simulation_dt*control_decimation) = 50Hz (与仿真 0.001/20 同为 50Hz);
+# 发布率 = 1/simulation_dt = 500Hz (沿用 rl_real_tron.py 的实机时序, 而非仿真的 1000Hz)。
+simulation_dt: 0.02
+control_decimation: 1
+
+# 策略 I/O 维度。
+num_obs: 48          # 单帧观测维度 (各 term 之和)
+num_actions: 12
+num_history: 5       # 策略输入 = 48 * 5 = 240 (按 term 分组拼接)
+
+action_scale: 0.25
+cmd_scale: [1.0, 1.0, 1.0]     # [vx, vy, yaw]
+clip_observations: 18.0
+clip_actions: 18.0
+
+# 默认站姿, 按 Lab 序 (与 action 同序相加; 照搬源 a1_amp.yaml)。
+# Lab 序: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+# default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+#                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+default_angles: [-0.2, -0.2, 0.0, 0.0, 0.0, 0.0,
+                  0.4,  0.4, -0.2, -0.2, 0.0, 0.0]
+# 观测顺序 (匹配 AMP 策略); key_body_pos_b 默认关闭 (策略未用)。
+obs_index: ['base_ang_vel', 'root_local_rot_tan_norm', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action'] #, 'key_body_pos_b']
+
+# 关节名表 (代码内按名字推导 real<->lab<->mj 重排, 勿手填映射)。
+# 实机话题序 (/left_joint_states, /dog_joint_pos): L0..L5,R0..R5 == L1..L6,R1..R6。
+joint_index_in_real: ["L1","L2","L3","L4","L5","L6","R1","R2","R3","R4","R5","R6"]
+# AMP 策略 (Isaac Lab) 序 — 观测与动作同序。
+obs_index_in_lab:    ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+# MuJoCo XML 序 (FK key_body_pos_b 用)。
+obs_index_in_mj:     ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+
+# FK key body (默认未启用, 仅当 obs_index 打开 key_body_pos_b 时生效)。
+key_body_names: ["Link_L6", "Link_R6"]
+
+# 发布目标的硬件安全限位 (实机序 L1..L6,R1..R6)。
+# 来自 URDF /home/woan/legged_lab/A1_legs_V2/A1_legs_V2.urdf 的 <limit lower/upper>
+# (与本配置 model/A1_legs_V2_mjcf 同一机型; 已核实 default_angles 落在限位内)。
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35]
+
+# PD 增益 (实机序 L1..L6,R1..R6), 仅用于"理论 PD 力矩"记录, 不参与控制 (实机电机自带 PD)。
+# 默认取仿真增益; 需与实测 effort 对齐时改成实机真实 PD。
+joint_kp: [126.0, 126.0, 126.0, 126.0, 7.0, 7.0, 126.0, 126.0, 126.0, 126.0, 7.0, 7.0]
+joint_kd: [4.83, 4.83, 4.83, 4.83, 0.27, 0.27,4.83, 4.83, 4.83, 4.83, 0.27, 0.27,]
+
+# 键盘控制 (终端聚焦时生效): W/S=vx±  A/D=vy±  Q/E=yaw±  空格=清零  R=复位  P=暂停  G=模型开关  M/N=记录
+keyboard:
+  lin_vel_x_step: 0.1
+  lin_vel_y_step: 0.1
+  ang_vel_yaw_step: 0.1
+  lin_vel_x_max: 10
+  lin_vel_y_max: 0.8
+  ang_vel_yaw_max: 1.0

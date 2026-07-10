@@ -1,0 +1,62 @@
+# A1-legs 双足机器人 — RSL-RL flat (纯速度) 策略实机部署配置 (rl_real_flat 节点)。
+# 从 /home/woan/legged_lab/human/deploy_a1_flat.py + configs/a1_flat.yaml 迁移而来。
+# 仿真里的 PD/力矩部分丢弃 (实机电机自带 PD), 节点只发布目标关节角。
+
+policy_path: /home/woan/legged_lab/human/policy/policy_ref # 加载时按 model_type 补 .pt / .onnx
+model_type: onnx
+
+# 控制时序: 策略控制率 = 1/(simulation_dt*control_decimation) = 50Hz (= 仿真 step_dt 0.02s);
+# 发布率 = 1/simulation_dt = 500Hz (沿用 rl_real_amp.py 的实机时序)。
+simulation_dt: 0.02
+control_decimation: 1
+
+# 策略 I/O 维度。
+num_obs: 47          # ang_vel(3)+grav(3)+cmd(3)+joint_pos(12)+joint_vel(12)+action(12)+gait_phase(2)
+num_actions: 12
+num_hist: 5          # 策略输入 = 47 * 5 = 235 (按 term 分组拼接, history_length=5)
+
+# 观测缩放 (匹配 A1FlatEnvCfg.PolicyCfg; 该策略除 cmd 外均不缩放)
+dof_pos_scale: 1.0
+dof_vel_scale: 1.0
+ang_vel_scale: 1.0
+action_scale: 0.25
+cmd_scale: [1.0, 1.0, 1.0]   # [vx, vy, wz]
+
+# 步态时钟 (gait_phase term 用): phi = (gait_steps*step_dt) % gait_period / gait_period
+gait_period: 0.7     # flat_env_cfg.py 的 GAIT_PERIOD
+step_dt: 0.02        # env step_dt, 每个策略步推进时钟
+stand_still: false
+
+# 默认站姿, 按 Lab 序 (与 action 同序相加)。
+# Lab 序: L1,R1,L2,R2,L3,R3,L4,R4,L5,R5,L6,R6
+# default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+#                   0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+
+default_angles: [-0.2, -0.2, 0.0, 0.0, 0.0, 0.0,
+                  0.4,  0.4, -0.2, -0.2, 0.0, 0.0]
+
+# 观测顺序 (匹配 deploy_a1_flat.py 的 47 维布局)
+obs_index: ['base_ang_vel', 'projected_gravity', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action', 'gait_phase']
+
+# 关节名表 (代码内按名字推导重排, 勿手填映射)。
+# 策略/Lab 序 — 观测与动作同序 (交错 L/R)。
+joint_index_in_sim:        ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+joint_action_index_in_sim: ['L1', 'R1', 'L2', 'R2', 'L3', 'R3', 'L4', 'R4', 'L5', 'R5', 'L6', 'R6']
+# 实机话题序 (/left_joint_states 入, /dog_joint_pos 出): L1..L6,R1..R6。
+joint_index_in_real:        ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+joint_action_index_in_real: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6']
+
+# 发布目标的硬件安全限位 (实机序 L1..L6,R1..R6)。
+# 注意: 暂沿用 a1_amp.yaml 的占位值, 需按 A1-legs 实机关节范围核实后再上电!
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.62, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.62, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.62,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.62,  0.35]
+
+# PD 增益 (实机序 L1..L6,R1..R6), 仅用于"理论 PD 力矩"记录 tau=(target-q)*kp+(0-dq)*kd。
+# 默认取仿真训练增益 (a1_flat.yaml: hip/knee kp=126 kd=8, ankle kp=7 kd=0.4);
+# 若要与实测 effort 对齐, 请改成实机电机的真实 PD 增益。
+joint_kp: [200, 200, 200, 200, 200, 40,
+      200, 200, 200, 200, 200, 40,]
+joint_kd: [5.0, 5.0, 5.0, 5.0, 5.0, 0.5,
+      5.0, 5.0, 5.0, 5.0, 5.0, 0.5,]

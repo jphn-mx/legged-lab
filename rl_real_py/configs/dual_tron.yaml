@@ -1,0 +1,65 @@
+# WOAN bipedal robot — real-robot deployment config (dual_tron / rl_real_tron node).
+# Migrated from /home/woan/lqf/mujoco_woan/sim2sim.py (PolicyRunner) + config/woan_v2.yaml.
+#
+# Joint order (policy / Isaac-Gym DOF order): L-leg first, then R-leg.
+#   joint_L1..L6, joint_R1..R6
+# Real topics /left_joint_states (in) and /dog_joint_pos (out) are ordered
+#   L0..L5, R0..R5  ==> maps 1:1 onto joint_L1..L6, joint_R1..R6 (identity, no reindex).
+
+policy_path: policy/policy_0610(0.16)   # ".onnx" appended at load time
+model_type: onnx
+
+# Control timing: ctrl rate = 1/(simulation_dt * control_decimation) = 50 Hz (matches sim2sim).
+simulation_dt: 0.002
+control_decimation: 10
+
+# Policy I/O dims.
+num_obs: 48                  # per-step obs
+num_actions: 12
+num_commands: 3
+obs_history_length: 10       # encoder input = 48 * 10 = 480
+
+# Standing defaults, in joint_order (L1..L6, R1..R6).
+default_angles: [-0.13, 0.0, 0.0, 0.40, -0.27, 0.0,
+                 -0.13, 0.0, 0.0, 0.40, -0.27, 0.0]
+
+# PD gains — used ONLY to derive kp_mean/kd_mean for the PD-feasibility action
+# clip (matches Isaac-Gym training). The real motor controller runs its own PD.
+kps: [30.0, 30.0, 30.0, 30.0, 30.0, 15.0,
+      30.0, 30.0, 30.0, 30.0, 30.0, 15.0]
+kds: [1.0, 1.0, 1.0, 1.0, 1.0, 0.4,
+      1.0, 1.0, 1.0, 1.0, 1.0, 0.4]
+
+action_scale: 0.25
+clip_actions: 100.0
+clip_observations: 100.0
+user_torque_limit: 27.0      # training-side soft cap used in _action_clip
+
+# Observation scales (must match training compute_group_observations).
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+cmd_scale: [2.0, 2.0, 0.25]  # [lin_vel_x, lin_vel_y, ang_vel_yaw]
+
+# Gait clock parameters (fixed at inference).
+gait_frequency: 1.25
+gait_offset: 0.5
+gait_duration: 0.5
+gait_swing_height: 0.10
+
+# Safety clamps on published targets — hardware joint ranges from
+# robot/legs_URDF/legs_URDF.xml, in joint_order (note L2/R2 are mirrored).
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35]
+
+# 键盘控制 (终端聚焦时生效): W/S=vx±  A/D=vy±  Q/E=yaw±  空格=清零  R=复位  P=暂停切换
+# 每次按键的增量步长与上限 (手柄接口保留, 不受此影响)。
+keyboard:
+  lin_vel_x_step: 0.1
+  lin_vel_y_step: 0.1
+  ang_vel_yaw_step: 0.1
+  lin_vel_x_max: 1.0
+  lin_vel_y_max: 1.0
+  ang_vel_yaw_max: 1.0

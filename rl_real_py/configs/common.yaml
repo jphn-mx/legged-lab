@@ -1,0 +1,86 @@
+# 通用实机部署配置 (rl_real 节点)。
+# 一个 config 驱动的通用部署文件: 观测项可选、仿真关节顺序可设、常见参数齐全。
+# 本模板等价于 a1_amp.yaml (可直接跑), 注释里给出 gym / tron 风格的替代写法。
+
+# ---------- 策略 ----------
+policy_path: /home/woan/rl_real/test2/policy_zhao2.pt   # onnx 时 ".onnx" 自动补全
+model_type: jit                          # onnx | jit (jit 才需要 torch, 按需懒加载)
+
+# ---------- 控制时序 ----------
+simulation_dt: 0.02        # 发布周期 (timer)
+control_decimation: 1      # 每 N 个 timer 跑一次策略 => 策略率 = 1/(dt*N) = 50Hz
+
+# ---------- 维度 ----------
+num_obs: 47                 # 单帧观测维度 (= 各启用 term 维度之和, 启动时会断言校验); 当前 obs_index 含 gait_phase 共 47
+num_actions: 12
+num_history: 5              # 策略输入历史帧数; 历史输入维度 = num_obs * num_history
+num_commands: 3             # velocity_commands 维度
+
+# ---------- 常见标量参数 ----------
+action_scale: 0.25
+clip_observations: 18.0     # gym 常用 100.0
+clip_actions: 18.0          # gym 常用 100.0
+
+# 各观测缩放 (默认 1.0 即不缩放; AMP 全 1.0, tron 用下面注释的值)
+ang_vel_scale: 1.0          # tron: 0.25
+dof_pos_scale: 1.0          # joint_pos_rel 用
+dof_vel_scale: 1.0          # joint_vel 用; tron: 0.05
+cmd_scale: [1.0, 1.0, 1.0]  # tron: [2.0, 2.0, 0.25]
+
+# ---------- 默认站姿 (按"仿真关节顺序"给出) ----------
+# 与 action 同序相加; 发布前自动重排到实机顺序。
+default_angles: [-0.22, -0.22, 0.0, 0.0, 0.0, 0.0,
+                  0.70,  0.70, -0.48, -0.48, 0.0, 0.0]
+
+# ---------- 可选观测项 (按此顺序拼成单帧 obs) ----------
+# 支持: base_ang_vel(3) projected_gravity(3) root_local_rot_tan_norm(6)
+#       velocity_commands(num_commands) joint_pos(na) joint_pos_rel(na)
+#       joint_vel(na) last_action(na) gait_clock(2) gait_phase(2) gait_params(4) key_body_pos_b(n*3)
+#       (gait_phase = gait_clock 同义: [sin,cos]; 用到时需设 gait_frequency=1/步态周期 才会推进相位)
+obs_index: ['base_ang_vel', 'projected_gravity', 'velocity_commands', 'joint_pos', 'joint_vel', 'last_action', 'gait_phase']
+# gym 风格示例:  ['base_ang_vel','projected_gravity','velocity_commands','joint_pos_rel','joint_vel','last_action']
+# tron 风格示例: ['base_ang_vel','projected_gravity','joint_pos_rel','joint_vel','last_action','gait_clock','gait_params']
+
+# ---------- 历史缓冲方式 ----------
+history_type: term_grouped  # term_grouped (IsaacLab/AMP, 每 term 先拼 N 帧) | flat (整帧拼接, gym/tron)
+history_order: oldest_first # flat 模式下帧顺序: oldest_first(旧->新) | newest_first(新->旧, 旧 gym 写法)
+
+# ---------- 关节顺序 (设置"仿真腿顺序"; 代码按名字推导映射, 勿手填下标) ----------
+# 实机话题序 (/left_joint_states, /dog_joint_pos): L0..L5,R0..R5 == L1..L6,R1..R6
+joint_index_in_real: ["L1","L2","L3","L4","L5","L6","R1","R2","R3","R4","R5","R6"]
+# 仿真/策略序 (本例 = Isaac Lab 交错序)
+joint_index_in_sim:  ["L1","R1","L2","R2","L3","R3","L4","R4","L5","R5","L6","R6"]
+
+# ---------- 发布安全限位 (实机顺序) ----------
+# 注意: 暂沿用 dual_tron 值占位, 需按实机关节范围核实后再上电!
+joint_lower_limits: [-1.05, -0.26, -1.0, 0.0, -0.52, -0.35,
+                     -1.05, -1.05, -1.0, 0.0, -0.52, -0.35]
+joint_upper_limits: [ 1.05,  1.05,  1.0, 1.92, 0.52,  0.35,
+                      1.05,  0.26,  1.0, 1.92, 0.52,  0.35]
+
+# ---------- 可选: key_body_pos_b (FK, A1-legs 专用链) ----------
+# 启用时需提供 MuJoCo 关节序; 不用 key_body_pos_b 可整段删除。
+# obs_index_in_mj: ["R1","R2","R3","R4","R5","R6","L1","L2","L3","L4","L5","L6"]
+# key_body_names: ["Link_L6", "Link_R6"]
+
+# ---------- gait 时钟 (用到 gait_clock / gait_phase / gait_params 时需要) ----------
+gait_frequency: 1.25         # = 1/步态周期; policy_zhao2 周期 0.8s -> 1.25。不设则相位不推进(gait_phase 恒 [0,1])
+gait_zero_speed_thresh: 0.05 # 速度指令范数小于此值时相位清零(站立冻结)
+# gait_offset: 0.5
+# gait_duration: 0.5
+# gait_swing_height: 0.10
+
+# ---------- 可选: onnx 多输入映射 (单输入可省略) ----------
+# 把每个 onnx 输入名映射到来源: history(历史) | obs(单帧) | commands(速度指令)
+# 缺省时按名字自动判断 (含"history"->history, =="commands"->commands, =="obs"->单帧)。
+# onnx_input_map: {obs_history: history, obs: obs, commands: commands}
+
+# ---------- 键盘控制参数 ----------
+# W/S=vx±  A/D=vy±  Q/E=yaw±  空格=清零  R=复位  P=暂停切换
+keyboard:
+  lin_vel_x_step: 0.1
+  lin_vel_y_step: 0.1
+  ang_vel_yaw_step: 0.1
+  lin_vel_x_max: 1.0
+  lin_vel_y_max: 1.0
+  ang_vel_yaw_max: 1.0
